@@ -45,19 +45,17 @@ const (
 	*/
 )
 
-var okStatus = newStatusOK()
-
-type Status struct {
-	Code    int      `json:"code"`
-	err     error    `json:"err"`
-	handled bool     `json:"handled"`
-	trace   []string `json:"location"`
-}
-
-func newStatusOK() *Status {
+var okStatus = func() *Status {
 	s := new(Status)
 	s.Code = http.StatusOK
 	return s
+}()
+
+type Status struct {
+	Code    int      `json:"code"`
+	Err     error    `json:"err"`
+	Handled bool     `json:"handled"`
+	trace   []string `json:"location"`
 }
 
 func StatusOK() *Status {
@@ -73,7 +71,7 @@ func NewStatus(code int) *Status {
 func NewStatusError(code int, err error) *Status {
 	s := new(Status)
 	s.Code = code
-	s.err = err
+	s.Err = err
 	s.addTrace(getLocation(2))
 	return s
 }
@@ -88,15 +86,6 @@ func (s *Status) StatusCode() int {
 
 func (s *Status) HttpCode() int {
 	return HttpCode(s.Code)
-}
-
-func (s *Status) Error() error {
-	return s.err
-}
-
-func (s *Status) AddError(err error) *Status {
-	s.err = err
-	return s
 }
 
 func (s *Status) Trace() []string {
@@ -128,16 +117,12 @@ func (s *Status) addTrace(loc string) *Status {
 }
 
 func (s *Status) String() string {
-	if s.err != nil {
-		return fmt.Sprintf("%v [%v]", HttpStatus(s.Code), s.err)
+	if s.Err != nil {
+		return fmt.Sprintf("%v [%v]", HttpStatus(s.Code), s.Err)
 	} else {
 		return fmt.Sprintf("%v", HttpStatus(s.Code))
 	}
 }
-
-//func isAttrs(attrs []any) bool {
-//	return !(len(attrs) == 0 || (len(attrs) == 1 && attrs[0] == nil))
-//}
 
 func getLocation(skip int) string {
 	if pc, _, _, ok := runtime.Caller(skip); ok {
