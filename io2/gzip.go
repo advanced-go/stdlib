@@ -2,7 +2,7 @@ package io2
 
 import (
 	"compress/gzip"
-	"github.com/advanced-go/stdlib/core"
+	"github.com/advaced-go/stdlib/core"
 	"io"
 )
 
