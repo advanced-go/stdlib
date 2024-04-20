@@ -1,4 +1,4 @@
-package fmt2
+package sfmt
 
 import (
 	"fmt"

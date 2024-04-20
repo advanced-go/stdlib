@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/fmt2"
+	"github.com/advaced-go/stdlib/sfmt"
 	"log"
 	"strconv"
 	"strings"
@@ -132,7 +132,7 @@ func handle(s *Status, requestId string, output func()) *Status {
 func defaultFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v }\n",
-		jsonMarkup(TimestampName, fmt2.FmtRFC3339Millis(ts), true),
+		jsonMarkup(TimestampName, sfmt.FmtRFC3339Millis(ts), true),
 		jsonMarkup(CodeName, str, false),
 		jsonMarkup(StatusName, status, true),
 		jsonMarkup(RequestIdName, requestId, true),

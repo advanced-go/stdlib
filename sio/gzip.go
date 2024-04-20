@@ -1,4 +1,4 @@
-package io2
+package sio
 
 import (
 	"compress/gzip"

@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/fmt2"
+	"github.com/advaced-go/stdlib/sfmt"
 	"strconv"
 	"time"
 )
@@ -60,7 +60,7 @@ func formatAttrs(attrs []any) string {
 			continue
 		}
 		if t, ok2 := attrs[i+1].(time.Time); ok2 {
-			result += jsonMarkup(name, fmt2.FmtRFC3339Millis(t), true)
+			result += jsonMarkup(name, sfmt.FmtRFC3339Millis(t), true)
 			continue
 		}
 		value = fmt.Sprintf("%v", attrs[i+1])

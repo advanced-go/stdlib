@@ -1,4 +1,4 @@
-package io2
+package sio
 
 import (
 	"fmt"
@@ -66,7 +66,7 @@ func Example_FileName() {
 	name = FileName(u)
 	fmt.Printf("test: FileName(%v) -> [type:%v] [url:%v]\n", s, reflect.TypeOf(u), name)
 
-	s = "file:///c:/Users/markb/GitHub/stdlib/io2/io2test/test-response.txt"
+	s = "file:///c:/Users/markb/GitHub/stdlib/sio/io2test/test-response.txt"
 	name = FileName(s)
 	fmt.Printf("test: FileName(%v) -> [type:%v] [url:%v]\n", s, reflect.TypeOf(s), name)
 
@@ -76,10 +76,10 @@ func Example_FileName() {
 
 	//Output:
 	//test: url.Parse(file://[cwd]/io2test/test-response.txt) -> [err:<nil>]
-	//test: FileName(file://[cwd]/io2test/test-response.txt) -> [type:string] [url:C:\Users\markb\GitHub\stdlib\io2\io2test\test-response.txt]
-	//test: FileName(file://[cwd]/io2test/test-response.txt) -> [type:*url.URL] [url:C:\Users\markb\GitHub\stdlib\io2\io2test\test-response.txt]
-	//test: FileName(file:///c:/Users/markb/GitHub/stdlib/io2/io2test/test-response.txt) -> [type:string] [url:c:\Users\markb\GitHub\stdlib\io2\io2test\test-response.txt]
-	//test: FileName(file:///c:/Users/markb/GitHub/stdlib/io2/io2test/test-response.txt) -> [type:*url.URL] [url:c:\Users\markb\GitHub\stdlib\io2\io2test\test-response.txt]
+	//test: FileName(file://[cwd]/io2test/test-response.txt) -> [type:string] [url:C:\Users\markb\GitHub\stdlib\sio\io2test\test-response.txt]
+	//test: FileName(file://[cwd]/io2test/test-response.txt) -> [type:*url.URL] [url:C:\Users\markb\GitHub\stdlib\sio\io2test\test-response.txt]
+	//test: FileName(file:///c:/Users/markb/GitHub/stdlib/sio/io2test/test-response.txt) -> [type:string] [url:c:\Users\markb\GitHub\stdlib\sio\io2test\test-response.txt]
+	//test: FileName(file:///c:/Users/markb/GitHub/stdlib/sio/io2test/test-response.txt) -> [type:*url.URL] [url:c:\Users\markb\GitHub\stdlib\sio\io2test\test-response.txt]
 
 }
 
@@ -89,13 +89,13 @@ func Example_ReadFile() {
 	buf, err := os.ReadFile(FileName(u))
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
-	s = "file:///c:/Users/markb/GitHub/stdlib/io2/io2test/test-response.txt"
+	s = "file:///c:/Users/markb/GitHub/stdlib/sio/io2test/test-response.txt"
 	u, _ = url.Parse(s)
 	buf, err = os.ReadFile(FileName(u))
 	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
 	//test: ReadFile(file://[cwd]/io2test/test-response.txt) -> [err:<nil>] [buf:188]
-	//test: ReadFile(file:///c:/Users/markb/GitHub/stdlib/io2/io2test/test-response.txt) -> [err:<nil>] [buf:188]
+	//test: ReadFile(file:///c:/Users/markb/GitHub/stdlib/sio/io2test/test-response.txt) -> [err:<nil>] [buf:188]
 
 }
