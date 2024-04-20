@@ -2,14 +2,13 @@ package controller
 
 import (
 	"context"
-	"github.com/advaced-go/stdlib/core"
-	"github.com/advaced-go/stdlib/shttp"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
 
 func doInternal(duration time.Duration, handler func(w http.ResponseWriter, r *http.Request), req *http.Request) (r2 *http.Request, resp *http.Response, status *core.Status) {
-	w := controller.NewResponseWriter()
+	w := NewResponseWriter()
 	if duration > 0 {
 		ctx, cancel := context.WithTimeout(req.Context(), duration)
 		defer cancel()
@@ -20,6 +19,6 @@ func doInternal(duration time.Duration, handler func(w http.ResponseWriter, r *h
 		handler(w, req)
 	}
 	resp = w.Response()
-	resp.ContentLength = w.written
+	resp.ContentLength = w.Written()
 	return r2, resp, core.NewStatus(resp.StatusCode)
 }

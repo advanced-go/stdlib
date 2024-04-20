@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
 	"time"

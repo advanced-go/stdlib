@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/sfmt"
+	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -23,12 +23,6 @@ const (
 	githubTemplate = "https://%v/tree/main%v"
 	fragmentId     = "#"
 	urnSeparator   = ":"
-)
-
-const (
-	markupNull   = "\"%v\":null"
-	markupString = "\"%v\":\"%v\""
-	markupValue  = "\"%v\":%v"
 )
 
 // Formatter - output formatting type
@@ -132,10 +126,10 @@ func handle(s *Status, requestId string, output func()) *Status {
 func defaultFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
 	return fmt.Sprintf("{ %v, %v, %v, %v, %v, %v }\n",
-		jsonMarkup(TimestampName, sfmt.FmtRFC3339Millis(ts), true),
-		jsonMarkup(CodeName, str, false),
-		jsonMarkup(StatusName, status, true),
-		jsonMarkup(RequestIdName, requestId, true),
+		fmt2.JsonMarkup(TimestampName, fmt2.FmtRFC3339Millis(ts), true),
+		fmt2.JsonMarkup(CodeName, str, false),
+		fmt2.JsonMarkup(StatusName, status, true),
+		fmt2.JsonMarkup(RequestIdName, requestId, true),
 		formatErrors(ErrorsName, errs),
 		formatTrace(TraceName, trace))
 }
@@ -182,16 +176,4 @@ func formatUri(uri string) string {
 		return fmt.Sprintf(githubTemplate, first, last)
 	}
 	return uri
-}
-
-// jsonMarkup - markup a name/value pair
-func jsonMarkup(name, value string, stringValue bool) string {
-	if len(value) == 0 {
-		return fmt.Sprintf(markupNull, name)
-	}
-	format := markupString
-	if !stringValue {
-		format = markupValue
-	}
-	return fmt.Sprintf(format, name, value)
 }

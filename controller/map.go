@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/advaced-go/stdlib/sfmt"
 	"sync"
 	"time"
 )
@@ -40,7 +39,7 @@ func NewMap(buf []byte) (*Map, error) {
 		c := new(Controller2)
 		c.Name = cfg.Name
 
-		c.Duration, err = sfmt.ParseDuration(cfg.DurationS)
+		c.Duration, err = ParseDuration(cfg.DurationS)
 		if err != nil {
 			return nil, err
 		}

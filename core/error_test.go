@@ -55,6 +55,6 @@ func Example_DefaultFormat() {
 	fmt.Printf("test: formatter() -> %v", str)
 
 	//Output:
-	//test: formatter() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":404, "status":"Not Found", "request-id":"1234-5678", "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advaced-go/stdlib/tree/main/core#Example_DefaultFormat" ] }
+	//test: formatter() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":404, "status":"Not Found", "request-id":"1234-5678", "errors" : [ "test error message 1" ], "trace" : [ "https://github.com/advanced-go/stdlib/tree/main/core#Example_DefaultFormat" ] }
 
 }

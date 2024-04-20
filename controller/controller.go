@@ -2,8 +2,8 @@ package controller
 
 import (
 	"errors"
-	"github.com/advaced-go/stdlib/access"
-	"github.com/advaced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/access"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -52,6 +52,6 @@ func (c *Controller) Do(do func(r *http.Request) (*http.Response, *core.Status),
 	if resp.StatusCode == http.StatusGatewayTimeout {
 		flags = TimeoutFlag
 	}
-	access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, Milliseconds(duration), flags)
+	access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, access.Milliseconds(duration), flags)
 	return
 }

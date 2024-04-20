@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/sfmt"
+	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"strconv"
 	"time"
 )
@@ -47,7 +47,7 @@ func formatAttrs(attrs []any) string {
 		name = fmt.Sprintf("%v", attrs[i])
 		if n, ok := attrs[i+1].(int); ok {
 			value = strconv.Itoa(n)
-			result += jsonMarkup(name, value, false)
+			result += fmt2.JsonMarkup(name, value, false)
 			continue
 		}
 		if b, ok1 := attrs[i+1].(bool); ok1 {
@@ -56,20 +56,20 @@ func formatAttrs(attrs []any) string {
 			} else {
 				value = "false"
 			}
-			result += jsonMarkup(name, value, false)
+			result += fmt2.JsonMarkup(name, value, false)
 			continue
 		}
 		if t, ok2 := attrs[i+1].(time.Time); ok2 {
-			result += jsonMarkup(name, sfmt.FmtRFC3339Millis(t), true)
+			result += fmt2.JsonMarkup(name, fmt2.FmtRFC3339Millis(t), true)
 			continue
 		}
 		value = fmt.Sprintf("%v", attrs[i+1])
-		result += jsonMarkup(name, value, true)
+		result += fmt2.JsonMarkup(name, value, true)
 	}
 	if (len(attrs) & 0x01) == 1 {
 		result += ", "
 		name = fmt.Sprintf("%v", attrs[len(attrs)-1])
-		result += jsonMarkup(name, "", true)
+		result += fmt2.JsonMarkup(name, "", true)
 	}
 	return result
 }

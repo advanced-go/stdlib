@@ -2,7 +2,7 @@ package access
 
 import (
 	"fmt"
-	"github.com/advaced-go/stdlib/sfmt"
+	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,12 +14,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLogger = func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+var defaultLog = func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
 	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
+func DefaultFormat(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	if o == nil {
 		o = &origin
 	}
@@ -49,33 +49,33 @@ func DefaultFormatter(o *Origin, traffic string, start time.Time, duration time.
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
 		"\"threshold-flags\":%v }",
-		sfmt.JsonString(o.Region),
-		sfmt.JsonString(o.Zone),
-		sfmt.JsonString(o.SubZone),
-		sfmt.JsonString(o.App),
-		sfmt.JsonString(o.InstanceId),
+		fmt2.JsonString(o.Region),
+		fmt2.JsonString(o.Zone),
+		fmt2.JsonString(o.SubZone),
+		fmt2.JsonString(o.App),
+		fmt2.JsonString(o.InstanceId),
 
 		traffic,
-		sfmt.FmtRFC3339Millis(start),
+		fmt2.FmtRFC3339Millis(start),
 		strconv.Itoa(Milliseconds(duration)),
 
-		sfmt.JsonString(req.Header.Get(XRequestId)),
-		sfmt.JsonString(req.Header.Get(XRelatesTo)),
-		sfmt.JsonString(req.Proto),
-		sfmt.JsonString(req.Method),
-		sfmt.JsonString(url),
-		sfmt.JsonString(host),
-		sfmt.JsonString(path),
+		fmt2.JsonString(req.Header.Get(XRequestId)),
+		fmt2.JsonString(req.Header.Get(XRelatesTo)),
+		fmt2.JsonString(req.Proto),
+		fmt2.JsonString(req.Method),
+		fmt2.JsonString(url),
+		fmt2.JsonString(host),
+		fmt2.JsonString(path),
 
 		resp.StatusCode,
-		//sfmt.JsonString(resp.Status),
-		sfmt.JsonString(Encoding(resp)),
+		//fmt2.JsonString(resp.Status),
+		fmt2.JsonString(Encoding(resp)),
 		fmt.Sprintf("%v", resp.ContentLength),
 
-		sfmt.JsonString(routeName),
-		sfmt.JsonString(routeTo),
+		fmt2.JsonString(routeName),
+		fmt2.JsonString(routeTo),
 		threshold,
-		sfmt.JsonString(thresholdFlags),
+		fmt2.JsonString(thresholdFlags),
 	)
 
 	return s

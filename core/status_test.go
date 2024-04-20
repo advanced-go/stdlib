@@ -20,8 +20,8 @@ func ExampleNewStatus_OK() {
 	fmt.Printf("test: NewStatus() -> %v\n", str)
 
 	//Output:
-	//test: NewStatus() -> [status:OK] [type:github.com/advaced-go/stdlib/core/Status]
-	//test: NewStatus() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":502, "status":"error: code not mapped: 502", "request-id":"1234-56-789", "errors" : [ "this is an error message" ], "trace" : [ "https://github.com/advaced-go/stdlib/tree/main/core#ExampleNewStatus_OK" ] }
+	//test: NewStatus() -> [status:OK] [type:github.com/advanced-go/stdlib/core/Status]
+	//test: NewStatus() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":502, "status":"error: code not mapped: 502", "request-id":"1234-56-789", "errors" : [ "this is an error message" ], "trace" : [ "https://github.com/advanced-go/stdlib/tree/main/core#ExampleNewStatus_OK" ] }
 
 }
 
@@ -34,7 +34,7 @@ func ExampleNewStatus_Teapot() {
 
 	//Output:
 	//test: NewStatus() -> [status:I'm A Teapot]
-	//test: NewStatus() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":418, "status":"I'm A Teapot", "request-id":"1234-56-789", "errors" : [ "this is an error message" ], "trace" : [ "https://github.com/advaced-go/stdlib/tree/main/core#ExampleNewStatus_Teapot" ] }
+	//test: NewStatus() -> { "timestamp":"2024-03-01T18:23:50.205Z", "code":418, "status":"I'm A Teapot", "request-id":"1234-56-789", "errors" : [ "this is an error message" ], "trace" : [ "https://github.com/advanced-go/stdlib/tree/main/core#ExampleNewStatus_Teapot" ] }
 
 }
 
@@ -46,8 +46,8 @@ func ExampleNewStatus_Location() {
 	fmt.Printf("test: Location() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:
-	//test: Location() -> [out:{ "timestamp":"2024-03-01T18:23:50.205Z", "code":400, "status":"Bad Request", "request-id":"1234-5678", "errors" : [ "test bad request error" ], "trace" : [ "https://github.com/advaced-go/stdlib/tree/main/core#ExampleNewStatus_Location","https://github.com/advaced-go/stdlib/tree/main/core#errorFunc" ] }
-	//] [trace:[github/advaced-go/stdlib/core:errorFunc github/advaced-go/stdlib/core:ExampleNewStatus_Location]]
+	//test: Location() -> [out:{ "timestamp":"2024-03-01T18:23:50.205Z", "code":400, "status":"Bad Request", "request-id":"1234-5678", "errors" : [ "test bad request error" ], "trace" : [ "https://github.com/advanced-go/stdlib/tree/main/core#ExampleNewStatus_Location","https://github.com/advanced-go/stdlib/tree/main/core#errorFunc" ] }
+	//] [trace:[github/advanced-go/stdlib/core:errorFunc github/advanced-go/stdlib/core:ExampleNewStatus_Location]]
 
 }
 
@@ -63,8 +63,8 @@ func ExampleNewStatus_GenericLocation() {
 	fmt.Printf("test: GenericLocation() -> [out:%v] [trace:%v]\n", str, s.Trace())
 
 	//Output:
-	//test: GenericLocation() -> [out:{ "timestamp":"2024-03-01T18:23:50.205Z", "code":400, "status":"Bad Request", "request-id":"1234-5678", "errors" : [ "test bad request error" ], "trace" : [ "https://github.com/advaced-go/stdlib/tree/main/core#ExampleNewStatus_GenericLocation","https://github.com/advaced-go/stdlib/tree/main/core#genericErrorFunc[...]" ] }
-	//] [trace:[github/advaced-go/stdlib/core:genericErrorFunc[...] github/advaced-go/stdlib/core:ExampleNewStatus_GenericLocation]]
+	//test: GenericLocation() -> [out:{ "timestamp":"2024-03-01T18:23:50.205Z", "code":400, "status":"Bad Request", "request-id":"1234-5678", "errors" : [ "test bad request error" ], "trace" : [ "https://github.com/advanced-go/stdlib/tree/main/core#ExampleNewStatus_GenericLocation","https://github.com/advanced-go/stdlib/tree/main/core#genericErrorFunc[...]" ] }
+	//] [trace:[github/advanced-go/stdlib/core:genericErrorFunc[...] github/advanced-go/stdlib/core:ExampleNewStatus_GenericLocation]]
 
 }
 

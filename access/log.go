@@ -28,11 +28,11 @@ func SetOrigin(o Origin) {
 	origin = o
 }
 
-// Formatter - log formatting
-type Formatter func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
+// FormatFunc - formatting
+type FormatFunc func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
 
-// SetFormatter - override log formatting
-func SetFormatter(fn Formatter) {
+// SetFormatFunc - override formatting
+func SetFormatFunc(fn FormatFunc) {
 	if fn != nil {
 		formatter = fn
 	}
@@ -50,8 +50,8 @@ func SetLogFn(fn LogFn) {
 
 var (
 	origin    = Origin{}
-	formatter = DefaultFormatter
-	logger    = defaultLogger
+	formatter = DefaultFormat
+	logger    = defaultLog
 )
 
 // Log - access logging
