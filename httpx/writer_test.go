@@ -6,11 +6,6 @@ import (
 	"net/http"
 )
 
-const (
-	requestId = "123-request-id"
-	relatesTo = "test-relates-to"
-)
-
 func Example_ResponseWriter() {
 	requestId2 := "123-request-id"
 	relatesTo2 := "test-relates-to"
