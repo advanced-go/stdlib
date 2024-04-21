@@ -21,11 +21,10 @@ const (
 
 // NewConstraints - constraints
 //type NewConstraints interface {
-//	string | *url.URL | []byte | io.ReadCloser | io.Reader
+//	string | *url.URL | []byte | io.Reader | io.ReadCloser
 //}
 
 // New - create a new type from JSON content, supporting: string, *url.URL, []byte, io.Reader, io.ReadCloser
-// Note: content encoded []byte is not supported
 func New[T any](v any, h http.Header) (t T, status *core.Status) {
 	var buf []byte
 
@@ -34,7 +33,7 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		//if isStatusURL(ptr) {
 		//	return t, NewStatusFrom(ptr)
 		//}
-		buf, status = io2.ReadFile(ptr)
+		buf, status = io2.ReadFileWithEncoding(ptr, h)
 		if !status.OK() {
 			return
 		}
@@ -47,7 +46,7 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		//if isStatusURL(ptr.String()) {
 		//	return t, NewStatusFrom(ptr.String())
 		//}
-		buf, status = io2.ReadFile(ptr.String())
+		buf, status = io2.ReadFileWithEncoding(ptr.String(), h)
 		if !status.OK() {
 			return
 		}
@@ -57,8 +56,10 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		}
 		return
 	case []byte:
-		// TO DO : determine if encoding is supported for []byte
-		buf = ptr
+		buf, status = io2.Decode(ptr, h)
+		if !status.OK() {
+			return
+		}
 		err := json.Unmarshal(buf, &t)
 		if err != nil {
 			return t, core.NewStatusError(core.StatusJsonDecodeError, err)

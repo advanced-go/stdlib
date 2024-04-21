@@ -2,6 +2,8 @@ package io
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
+	"net/http"
 	"net/url"
 	"os"
 	"reflect"
@@ -10,8 +12,6 @@ import (
 
 const (
 	CwdVariable = "[cwd]"
-	statusToken = "status"
-	jsonExt     = ".json"
 	fileScheme  = "file"
 )
 
@@ -64,4 +64,26 @@ func fileName(u *url.URL) string {
 		name = strings.ReplaceAll(name, "/", "\\")
 	}
 	return name
+}
+
+// ReadFile - read a file with a Status
+func ReadFile(uri string) ([]byte, *core.Status) {
+	status := ValidateUri(uri)
+	if !status.OK() {
+		return nil, status
+	}
+	buf, err := os.ReadFile(FileName(uri))
+	if err != nil {
+		return nil, core.NewStatusError(core.StatusIOError, err)
+	}
+	return buf, core.StatusOK()
+}
+
+// ReadFileWithEncoding - read a file with a possible encoding and a Status
+func ReadFileWithEncoding(uri string, h http.Header) ([]byte, *core.Status) {
+	buf, status := ReadFile(uri)
+	if !status.OK() {
+		return nil, status
+	}
+	return Decode(buf, h)
 }

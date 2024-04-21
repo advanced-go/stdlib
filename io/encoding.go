@@ -7,6 +7,7 @@ import (
 	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -88,4 +89,40 @@ func Decode(buf []byte, h http.Header) ([]byte, *core.Status) {
 	default:
 		return buf, core.StatusOK()
 	}
+}
+
+func ZipFile(uri string) *core.Status {
+	if len(uri) == 0 {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New("error: file path is empty"))
+	}
+	path := FileName(uri)
+	content, err0 := os.ReadFile(path)
+	if err0 != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err0)
+		return core.NewStatusError(core.StatusIOError, err0)
+	}
+	// write content
+	buff := new(bytes.Buffer)
+	zw := NewGzipWriter(buff)
+	cnt, err := zw.Write(content)
+	err1 := zw.Close()
+	if err != nil {
+		return core.NewStatusError(core.StatusIOError, err)
+	}
+	if cnt == 0 || err1 != nil {
+		fmt.Printf("error: count %v err %v", cnt, err1)
+	}
+	i := strings.LastIndex(path, ".")
+	path2 := ""
+	if i > 0 {
+		path2 = path[:i]
+		path2 += ".gz"
+	} else {
+		path2 = path + ".gz"
+	}
+	err = os.WriteFile(path2, buff.Bytes(), 667)
+	if err != nil {
+		return core.NewStatusError(core.StatusIOError, err)
+	}
+	return core.StatusOK()
 }

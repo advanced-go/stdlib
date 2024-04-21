@@ -83,19 +83,65 @@ func Example_FileName() {
 
 }
 
-func Example_ReadFile() {
+func Example_OSReadFile() {
 	s := "file://[cwd]/iotest/test-response.txt"
 	u, _ := url.Parse(s)
 	buf, err := os.ReadFile(FileName(u))
-	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
+	fmt.Printf("test: os.ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	s = "file:///c:/Users/markb/GitHub/stdlib/io/iotest/test-response.txt"
 	u, _ = url.Parse(s)
 	buf, err = os.ReadFile(FileName(u))
-	fmt.Printf("test: ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
+	fmt.Printf("test: os.ReadFile(%v) -> [err:%v] [buf:%v]\n", s, err, len(buf))
 
 	//Output:
-	//test: ReadFile(file://[cwd]/iotest/test-response.txt) -> [err:<nil>] [buf:188]
-	//test: ReadFile(file:///c:/Users/markb/GitHub/stdlib/io/iotest/test-response.txt) -> [err:<nil>] [buf:188]
+	//test: os.ReadFile(file://[cwd]/iotest/test-response.txt) -> [err:<nil>] [buf:188]
+	//test: os.ReadFile(file:///c:/Users/markb/GitHub/stdlib/io/iotest/test-response.txt) -> [err:<nil>] [buf:188]
+
+}
+
+func ExampleReadFile() {
+	s := status504
+	buf, status := ReadFile(s)
+	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(s), len(buf), status)
+
+	s = address1Url
+	buf, status = ReadFile(s)
+	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(s), len(buf), status)
+
+	s = status504
+	u := parseRaw(s)
+	buf, status = ReadFile(u.String())
+	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
+
+	s = address1Url
+	u = parseRaw(s)
+	buf, status = ReadFile(u.String())
+	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
+
+	//Output:
+	//test: ReadFile(file://[cwd]/iotest/status-504.json) -> [type:string] [buf:82] [status:OK]
+	//test: ReadFile(file://[cwd]/iotest/address1.json) -> [type:string] [buf:68] [status:OK]
+	//test: ReadFile(file://[cwd]/iotest/status-504.json) -> [type:*url.URL] [buf:82] [status:OK]
+	//test: ReadFile(file://[cwd]/iotest/address1.json) -> [type:*url.URL] [buf:68] [status:OK]
+
+}
+
+func ExampleReadFileWithEncoding() {
+	buf, status := ReadFileWithEncoding(helloWorldGzip, nil)
+	fmt.Printf("test: ReadFileWithEncoding(\"%v\",nil) -> [buf:%v] [status:%v]\n", helloWorldGzip, string(buf), status)
+
+	h := make(http.Header)
+	h.Set(ContentEncoding, GzipEncoding)
+	buf, status = ReadFileWithEncoding(helloWorldGzip, h)
+	fmt.Printf("test: ReadFileWithEncoding(\"%v\",h) -> [buf:%v] [status:%v]\n", helloWorldGzip, string(buf), status)
+
+	buf, status = ReadFileWithEncoding(helloWorldTxt, nil)
+	fmt.Printf("test: ReadFileWithEncoding(\"%v\",nil) -> [buf:%v] [status:%v]\n", helloWorldTxt, string(buf), status)
+
+	//Output:
+	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.gz",nil) -> [buf:Hello World!!] [status:OK]
+	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.gz",h) -> [buf:Hello World!!] [status:OK]
+	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.txt",nil) -> [buf:Hello World!!] [status:OK]
 
 }

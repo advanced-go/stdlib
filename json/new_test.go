@@ -10,10 +10,11 @@ import (
 )
 
 const (
-	address1Url = "file://[cwd]/jsontest/address1.json"
-	address2Url = "file://[cwd]/jsontest/address2.json"
-	address3Url = "file://[cwd]/jsontest/address3.json"
-	status504   = "file://[cwd]/jsontest/status-504.json"
+	address1Url     = "file://[cwd]/jsontest/address1.json"
+	address2Url     = "file://[cwd]/jsontest/address2.json"
+	address2UrlGzip = "file://[cwd]/jsontest/address2.gz"
+	address3Url     = "file://[cwd]/jsontest/address3.json"
+	status504       = "file://[cwd]/jsontest/status-504.json"
 )
 
 type newAddress struct {
@@ -139,18 +140,35 @@ func ExampleNew_URL() {
 
 }
 
+func _ExampleZipFile() {
+	status := io2.ZipFile(address2Url)
+
+	fmt.Printf("test: ZipFile(\"\") -> [status:%v]\n", status)
+
+	//Output:
+	//test: ZipFile("") -> [status:OK]
+}
+
 func ExampleNew_Bytes() {
 	s := address2Url
 	buf, err := os.ReadFile(io2.FileName(s))
 	if err != nil {
 		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
 	}
-
 	addr, status := New[newAddress](buf, nil)
 	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
 
+	s = address2UrlGzip
+	buf, err = os.ReadFile(io2.FileName(s))
+	if err != nil {
+		fmt.Printf("test: os.ReadFile() -> [err:%v]\n", err)
+	}
+	addr, status = New[newAddress](buf, nil)
+	fmt.Printf("test: New(%v) -> [addr:%v] [status:%v]\n", s, addr, status)
+
 	//Output:
-	//test: New(file://[cwd]/jsontest/address2.json) -> [addr:{vinton iowa 52349}] [status:<nil>]
+	//test: New(file://[cwd]/jsontest/address2.json) -> [addr:{vinton iowa 52349}] [status:OK]
+	//test: New(file://[cwd]/jsontest/address2.gz) -> [addr:{vinton iowa 52349}] [status:OK]
 
 }
 

@@ -9,50 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	contentType = "Content-Type"
-)
-
-const (
-	address1Url = "file://[cwd]/iotest/address1.json"
-	address2Url = "file://[cwd]/iotest/address2.json"
-	address3Url = "file://[cwd]/iotest/address3.json"
-	status504   = "file://[cwd]/iotest/status-504.json"
-)
-
-type newAddress struct {
-	City    string
-	State   string
-	ZipCode string
-}
-
-func ExampleReadFile() {
-	s := status504
-	buf, status := ReadFile(s)
-	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(s), len(buf), status)
-
-	s = address1Url
-	buf, status = ReadFile(s)
-	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(s), len(buf), status)
-
-	s = status504
-	u := parseRaw(s)
-	buf, status = ReadFile(u.String())
-	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
-
-	s = address1Url
-	u = parseRaw(s)
-	buf, status = ReadFile(u.String())
-	fmt.Printf("test: ReadFile(%v) -> [type:%v] [buf:%v] [status:%v]\n", s, reflect.TypeOf(u), len(buf), status)
-
-	//Output:
-	//test: ReadFile(file://[cwd]/iotest/status-504.json) -> [type:string] [buf:82] [status:OK]
-	//test: ReadFile(file://[cwd]/iotest/address1.json) -> [type:string] [buf:68] [status:OK]
-	//test: ReadFile(file://[cwd]/iotest/status-504.json) -> [type:*url.URL] [buf:82] [status:OK]
-	//test: ReadFile(file://[cwd]/iotest/address1.json) -> [type:*url.URL] [buf:68] [status:OK]
-
-}
-
 func ExampleReadAll_Reader() {
 	s := address3Url
 	buf0, err := os.ReadFile(FileName(s))

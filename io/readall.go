@@ -6,36 +6,8 @@ import (
 	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 )
-
-const (
-	readFileLoc = PkgPath + ":ReadFile"
-	readAllLoc  = PkgPath + ":ReadAll"
-)
-
-// ReadFile - read a file with a Status
-func ReadFile(uri string) ([]byte, *core.Status) {
-	status := ValidateUri(uri)
-	if !status.OK() {
-		return nil, status
-	}
-	buf, err := os.ReadFile(FileName(uri))
-	if err != nil {
-		return nil, core.NewStatusError(core.StatusIOError, err)
-	}
-	return buf, core.StatusOK()
-}
-
-// ReadFileWithEncoding - read a file with a possible encoding and a Status
-func ReadFileWithEncoding(uri string, h http.Header) ([]byte, *core.Status) {
-	buf, status := ReadFile(uri)
-	if !status.OK() {
-		return nil, status
-	}
-	return Decode(buf, h)
-}
 
 // ReadAll - read the body with a Status
 func ReadAll(body io.Reader, h http.Header) ([]byte, *core.Status) {
