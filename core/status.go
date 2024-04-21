@@ -8,17 +8,18 @@ import (
 )
 
 const (
-	StatusInvalidContent       = int(90)  // Content is not available, is nil, or is of the wrong type, usually found via unmarshalling
-	StatusIOError              = int(91)  // I/O operation failed
-	StatusJsonDecodeError      = int(92)  // Json decoding failed
-	StatusJsonEncodeError      = int(93)  // Json encoding failed
-	StatusContentEncodingError = int(94)  // Content encoding error
-	StatusNotProvided          = int(95)  // No status is available
-	StatusRateLimited          = int(96)  // Rate limited
-	StatusNotStarted           = int(97)  // Not started
-	StatusHaveContent          = int(98)  // Content is available
-	StatusGzipEncodingError    = int(99)  // Gzip encoding error
-	StatusGzipDecodingError    = int(100) // Gzip decoding error
+	StatusInvalidContent             = int(90)  // Content is not available, is nil, or is of the wrong type, usually found via unmarshalling
+	StatusIOError                    = int(91)  // I/O operation failed
+	StatusJsonDecodeError            = int(92)  // Json decoding failed
+	StatusJsonEncodeError            = int(93)  // Json encoding failed
+	StatusContentEncodingError       = int(94)  // Content encoding error
+	StatusContentEncodingInvalidType = int(95)  // Content encoding error
+	StatusNotProvided                = int(96)  // No status is available
+	StatusRateLimited                = int(97)  // Rate limited
+	StatusNotStarted                 = int(98)  // Not started
+	StatusHaveContent                = int(99)  // Content is available
+	StatusGzipEncodingError          = int(100) // Gzip encoding error
+	StatusGzipDecodingError          = int(101) // Gzip decoding error
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
@@ -185,6 +186,8 @@ func HttpStatus(code int) string {
 		return "Json Decode Failure"
 	case StatusContentEncodingError:
 		return "Content Decoding Failure"
+	case StatusContentEncodingInvalidType:
+		return "Invalid Content Encoding Type"
 	case StatusGzipDecodingError:
 		return "gzip Decoding Failure"
 	case StatusGzipEncodingError:

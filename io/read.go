@@ -28,6 +28,15 @@ func ReadFile(uri string) ([]byte, *core.Status) {
 	return buf, core.StatusOK()
 }
 
+// ReadFileWithEncoding - read a file with a possible encoding and a Status
+func ReadFileWithEncoding(uri string, h http.Header) ([]byte, *core.Status) {
+	buf, status := ReadFile(uri)
+	if !status.OK() {
+		return nil, status
+	}
+	return Decode(buf, h)
+}
+
 // ReadAll - read the body with a Status
 func ReadAll(body io.Reader, h http.Header) ([]byte, *core.Status) {
 	if body == nil {

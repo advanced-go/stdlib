@@ -1,6 +1,7 @@
 package io
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
@@ -11,45 +12,31 @@ import (
 
 const (
 	AcceptEncoding      = "Accept-Encoding"
-	ContentEncoding     = "Content-Encoding"
-	GzipEncoding        = "gzip"
-	BrotliEncoding      = "br"
-	DeflateEncoding     = "deflate"
-	CompressEncoding    = "compress"
-	NoneEncoding        = "none"
 	AcceptEncodingValue = "gzip, deflate, br"
+	ContentEncoding     = "Content-Encoding"
 
-	encodingErrorFmt  = "error: content encoding not supported [%v]"
-	encodingReaderLoc = PkgPath + ":EncodingReader"
+	GzipEncoding     = "gzip"
+	BrotliEncoding   = "br"
+	DeflateEncoding  = "deflate"
+	CompressEncoding = "compress"
+	NoneEncoding     = "none"
+
+	ApplicationGzip    = "application/x-gzip"
+	ApplicationBrotli  = "application/x-br"
+	ApplicationDeflate = "application/x-deflate"
+
+	encodingErrorFmt = "error: content encoding not supported [%v]"
 )
 
-type EncodingReader interface {
-	io.ReadCloser
-}
-
-type EncodingWriter interface {
-	io.WriteCloser
-	ContentEncoding() string
-}
-
-func NewEncodingReader(r io.Reader, h http.Header) (EncodingReader, *core.Status) {
-	encoding := contentEncoding(h)
-	switch encoding {
-	case GzipEncoding:
-		return NewGzipReader(r)
-	case BrotliEncoding, DeflateEncoding, CompressEncoding:
-		return nil, core.NewStatusError(core.StatusContentEncodingError, errors.New(fmt.Sprintf(encodingErrorFmt, encoding)))
-	default:
-		return NewIdentityReader(r), core.StatusOK()
+func acceptEncoding(h http.Header) string {
+	if h == nil {
+		return NoneEncoding
 	}
-}
-
-func NewEncodingWriter(w io.Writer, h http.Header) (EncodingWriter, *core.Status) {
-	encoding := acceptEncoding(h)
-	if strings.Contains(encoding, GzipEncoding) {
-		return NewGzipWriter(w), core.StatusOK()
+	enc := h.Get(AcceptEncoding)
+	if len(enc) > 0 {
+		return strings.ToLower(enc)
 	}
-	return NewIdentityWriter(w), core.StatusOK()
+	return NoneEncoding
 }
 
 func contentEncoding(h http.Header) string {
@@ -63,55 +50,42 @@ func contentEncoding(h http.Header) string {
 	return NoneEncoding
 }
 
-func acceptEncoding(h http.Header) string {
+func newStatusContentEncodingError(ct string) *core.Status {
+	return core.NewStatusError(core.StatusContentEncodingError, errors.New(fmt.Sprintf(encodingErrorFmt, ct)))
+
+}
+
+// Decode - decode a []byte
+func Decode(buf []byte, h http.Header) ([]byte, *core.Status) {
+	if len(buf) == 0 {
+		return buf, core.StatusOK()
+	}
+	ct := NoneEncoding
 	if h == nil {
-		return NoneEncoding
+		ct = http.DetectContentType(buf)
+	} else {
+		ct = contentEncoding(h)
 	}
-	enc := h.Get(AcceptEncoding)
-	if len(enc) > 0 {
-		return strings.ToLower(enc)
+	switch ct {
+	case ApplicationGzip, GzipEncoding:
+		zr, status := NewGzipReader(bytes.NewReader(buf))
+		if !status.OK() {
+			return nil, status
+		}
+		buf2, err1 := io.ReadAll(zr)
+		err2 := zr.Close()
+		if err1 != nil {
+			return nil, core.NewStatusError(core.StatusIOError, err1)
+		}
+		if err2 != nil {
+			//return nil, core.NewStatusError(core.StatusIOError,err1)
+		}
+		return buf2, core.StatusOK()
+	case ApplicationBrotli, BrotliEncoding:
+		return buf, newStatusContentEncodingError(ct)
+	case ApplicationDeflate, DeflateEncoding:
+		return buf, newStatusContentEncodingError(ct)
+	default:
+		return buf, core.StatusOK()
 	}
-	return NoneEncoding
-}
-
-type identityReader struct {
-	reader io.Reader
-}
-
-// NewIdentityReader - The default (identity) encoding; the use of no transformation whatsoever
-func NewIdentityReader(r io.Reader) EncodingReader {
-	ir := new(identityReader)
-	ir.reader = r
-	return ir
-}
-
-func (i *identityReader) Read(p []byte) (n int, err error) {
-	return i.reader.Read(p)
-}
-
-func (i *identityReader) Close() error {
-	return nil
-}
-
-type identityWriter struct {
-	writer io.Writer
-}
-
-// NewIdentityWriter - The default (identity) encoding; the use of no transformation whatsoever
-func NewIdentityWriter(w io.Writer) EncodingWriter {
-	iw := new(identityWriter)
-	iw.writer = w
-	return iw
-}
-
-func (i *identityWriter) Write(p []byte) (n int, err error) {
-	return i.writer.Write(p)
-}
-
-func (i *identityWriter) ContentEncoding() string {
-	return NoneEncoding
-}
-
-func (i *identityWriter) Close() error {
-	return nil
 }

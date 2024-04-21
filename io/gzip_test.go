@@ -8,11 +8,6 @@ import (
 	"os"
 )
 
-const (
-	testResponseTxt  = "file://[cwd]/iotest/test-response.txt"
-	testResponseGzip = "file://[cwd]/iotest/test-response.gz"
-)
-
 func ExampleGzipReader() {
 	content, err0 := os.ReadFile(FileName(testResponseGzip))
 	if err0 != nil {
