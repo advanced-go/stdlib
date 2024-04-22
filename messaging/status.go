@@ -5,14 +5,8 @@ import (
 	"time"
 )
 
-func NewStatusDuration(code int, duration time.Duration) *core.Status {
-	s := core.NewStatus(code)
-	s.Duration = duration
-	return s
-}
-
-func NewStatusDurationError(code int, duration time.Duration, err error) *core.Status {
-	s := NewStatusDuration(code, duration)
+func NewStatusDurationError2(code int, duration time.Duration, err error) *core.Status {
+	s := core.NewStatusDuration(code, duration)
 	s.Err = err
 	return s
 }

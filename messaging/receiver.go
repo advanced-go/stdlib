@@ -39,15 +39,15 @@ func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *core
 	for {
 		select {
 		case <-tick:
-			status = NewStatusDuration(http.StatusGatewayTimeout, time.Since(start))
+			status = core.NewStatusDuration(http.StatusGatewayTimeout, time.Since(start))
 			return
 		case msg, open := <-reply:
 			if !open {
-				status = NewStatusDuration(http.StatusInternalServerError, time.Since(start))
+				status = core.NewStatusDuration(http.StatusInternalServerError, time.Since(start))
 				return
 			}
 			if done(msg) {
-				status = NewStatusDuration(http.StatusOK, time.Since(start))
+				status = core.NewStatusDuration(http.StatusOK, time.Since(start))
 				return
 			}
 		default:

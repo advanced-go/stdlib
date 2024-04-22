@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -11,7 +12,7 @@ import (
 // https://go.dev/play/p/yQULMVaQK0
 
 func ExampleNewStatusDuration() {
-	s := NewStatusDuration(http.StatusOK, time.Millisecond*200)
+	s := core.NewStatusDuration(http.StatusOK, time.Millisecond*200)
 
 	fmt.Printf("test: NewStatusDuration() -> [status:%v] [ok:%v] [duration:%v]\n", s, s.OK(), s.Duration)
 

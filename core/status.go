@@ -79,6 +79,12 @@ func NewStatusError(code int, err error) *Status {
 	return s
 }
 
+func NewStatusDuration(code int, duration time.Duration) *Status {
+	s := NewStatus(code)
+	s.Duration = duration
+	return s
+}
+
 func (s *Status) OK() bool {
 	return s.Code == http.StatusOK
 }
