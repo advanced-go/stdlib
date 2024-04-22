@@ -3,7 +3,8 @@ package host
 import (
 	"errors"
 	"fmt"
-	"net/http"
+	"github.com/advanced-go/stdlib/core"
+	uri2 "github.com/advanced-go/stdlib/uri"
 	"sync"
 )
 
@@ -20,11 +21,11 @@ func NewProxy() *Proxy {
 }
 
 // Register - add an HttpHandler to the proxy
-func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http.Request)) error {
+func (p *Proxy) Register(uri string, handler core.HttpExchange) error {
 	if len(uri) == 0 {
 		return errors.New("error: proxy.Register() path is empty")
 	}
-	nid, _, ok := UprootUrn(uri)
+	nid, _, ok := uri2.UprootUrn(uri)
 	if !ok {
 		return errors.New(fmt.Sprintf("error: proxy.Register() path is invalid: [%v]", uri))
 	}
@@ -40,8 +41,8 @@ func (p *Proxy) Register(uri string, handler func(w http.ResponseWriter, r *http
 }
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
-func (p *Proxy) Lookup(uri string) func(w http.ResponseWriter, r *http.Request) {
-	nid, _, ok := UprootUrn(uri)
+func (p *Proxy) Lookup(uri string) core.HttpExchange {
+	nid, _, ok := uri2.UprootUrn(uri)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
 	}
@@ -49,12 +50,12 @@ func (p *Proxy) Lookup(uri string) func(w http.ResponseWriter, r *http.Request) 
 }
 
 // LookupByNID - get an HttpHandler from the proxy, using an NID as a key
-func (p *Proxy) LookupByNID(nid string) func(w http.ResponseWriter, r *http.Request) {
+func (p *Proxy) LookupByNID(nid string) core.HttpExchange {
 	v, ok := p.m.Load(nid)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByNID() HTTP handler does not exist: [%v]", nid))
 	}
-	if handler, ok1 := v.(func(w http.ResponseWriter, r *http.Request)); ok1 {
+	if handler, ok1 := v.(core.HttpExchange); ok1 {
 		return handler //, StatusOK()
 	}
 	return nil //, NewStatus(StatusInvalidContent)

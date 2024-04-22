@@ -3,6 +3,8 @@ package host
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"time"
 )
@@ -10,7 +12,7 @@ import (
 var (
 	httpHandlerProxy = NewProxy()
 	duration         time.Duration
-	authHandler      HttpHandlerFunc //func(w http.ResponseWriter,r *http.Request)
+	authHandler      core.HttpExchange //HttpHandlerFunc //func(w http.ResponseWriter,r *http.Request)
 	okFunc           = func(code int) bool { return code == http.StatusOK }
 )
 
@@ -18,7 +20,7 @@ func SetHostTimeout(d time.Duration) {
 	duration = d
 }
 
-func SetAuthHandler(h func(w http.ResponseWriter, r *http.Request), ok func(int) bool) {
+func SetAuthHandler(h core.HttpExchange, ok func(int) bool) {
 	if h != nil {
 		authHandler = h
 		if ok != nil {
@@ -29,7 +31,7 @@ func SetAuthHandler(h func(w http.ResponseWriter, r *http.Request), ok func(int)
 
 // RegisterHandler - add a path and Http handler to the proxy
 // TO DO : panic on duplicate handler and pattern combination
-func RegisterHandler(path string, handler HttpHandlerFunc) error {
+func RegisterHandler(path string, handler core.HttpExchange) error {
 	if len(path) == 0 {
 		return errors.New("error: path is empty")
 	}
@@ -53,7 +55,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	nid, _, ok := UprootUrn(r.URL.Path)
+	nid, _, ok := uri.UprootUrn(r.URL.Path)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return

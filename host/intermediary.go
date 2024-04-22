@@ -3,6 +3,7 @@ package host
 import (
 	"fmt"
 	"github.com/advanced-go/stdlib/access"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -13,9 +14,7 @@ const (
 	XRequestId    = "X-Request-Id"
 )
 
-type HttpHandlerFunc func(w http.ResponseWriter, r *http.Request)
-
-func NewConditionalIntermediary(c1 HttpHandlerFunc, c2 HttpHandlerFunc, ok func(int) bool) HttpHandlerFunc {
+func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok func(int) bool) core.HttpExchange {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -32,7 +31,7 @@ func NewConditionalIntermediary(c1 HttpHandlerFunc, c2 HttpHandlerFunc, ok func(
 	}
 }
 
-func NewAccessLogIntermediary(routeName string, c2 HttpHandlerFunc) HttpHandlerFunc {
+func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpExchange {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)

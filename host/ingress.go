@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/access"
+	"github.com/advanced-go/stdlib/core"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
@@ -13,15 +14,15 @@ const (
 	RouteName = "host"
 )
 
-func NewHostTimeoutIntermediary(d time.Duration, c2 HttpHandlerFunc) HttpHandlerFunc {
+func NewHostTimeoutIntermediary(d time.Duration, c2 core.HttpExchange) core.HttpExchange {
 	return newIngressTimeoutIntermediary(RouteName, d, c2, access.IngressTraffic)
 }
 
-func NewIngressTimeoutIntermediary(routeName string, d time.Duration, c2 HttpHandlerFunc) HttpHandlerFunc {
+func NewIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpExchange) core.HttpExchange {
 	return newIngressTimeoutIntermediary(routeName, d, c2, access.InternalTraffic)
 }
 
-func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 HttpHandlerFunc, traffic string) HttpHandlerFunc {
+func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpExchange, traffic string) core.HttpExchange {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -39,7 +40,7 @@ func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 HttpHan
 	}
 }
 
-func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration, handler HttpHandlerFunc, traffic, routeTo string) {
+func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration, handler core.HttpExchange, traffic, routeTo string) {
 	if handler == nil {
 		return
 	}

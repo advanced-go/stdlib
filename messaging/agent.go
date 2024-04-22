@@ -4,10 +4,6 @@ import (
 	"errors"
 )
 
-const (
-	newAgentLocation = PkgPath + ":NewDefaultAgent"
-)
-
 // Agent - AI Agent
 type Agent struct {
 	m   *Mailbox

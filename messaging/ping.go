@@ -15,10 +15,6 @@ const (
 	timeout = time.Second * 3
 )
 
-const (
-	pingLocation = PkgPath + ":Ping"
-)
-
 // Ping - function to "ping" a resource
 func Ping(ctx context.Context, uri any) *Status {
 	return ping(ctx, HostExchange, uri)
