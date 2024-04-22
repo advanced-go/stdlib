@@ -3,6 +3,7 @@ package messaging
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -81,7 +82,7 @@ func pingGood(c chan *Message) {
 			if !open {
 				return
 			}
-			SendReply(msg, StatusOK())
+			SendReply(msg, core.StatusOK())
 		default:
 		}
 	}
@@ -95,7 +96,7 @@ func pingTimeout(c chan *Message) {
 				return
 			}
 			time.Sleep(maxWait)
-			SendReply(msg, StatusOK())
+			SendReply(msg, core.StatusOK())
 		default:
 		}
 	}
@@ -110,7 +111,7 @@ func pingError(c chan *Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				SendReply(msg, NewStatusError(http.StatusTeapot, errors.New("ping response error")))
+				SendReply(msg, core.NewStatusError(http.StatusTeapot, errors.New("ping response error")))
 			}
 		default:
 		}
@@ -125,7 +126,7 @@ func pingDelay(c chan *Message) {
 				return
 			}
 			time.Sleep(timeout / 2)
-			SendReply(msg, StatusOK())
+			SendReply(msg, core.StatusOK())
 		default:
 		}
 	}

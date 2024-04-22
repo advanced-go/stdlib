@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 )
 
@@ -11,10 +12,10 @@ func handler(msg *Message) {
 
 func Example_ReplyTo() {
 	msg := NewMessageWithReply(ChannelNone, "test", "", "startup", handler)
-	SendReply(msg, StatusOK())
+	SendReply(msg, core.StatusOK())
 
 	msg = NewMessage(ChannelNone, "test", "", "startup")
-	SendReply(msg, StatusOK())
+	SendReply(msg, core.StatusOK())
 
 	//Output:
 	//startup
@@ -22,7 +23,7 @@ func Example_ReplyTo() {
 }
 
 func ExampleStatusContent() {
-	status := NewStatus(http.StatusTeapot)
+	status := core.NewStatus(http.StatusTeapot)
 	m := NewMessage(ChannelNone, "to", "from", StartupEvent)
 
 	err := m.SetContent("", status)
@@ -81,3 +82,23 @@ func ExampleConfigContent() {
 	//test: Status() -> [body:map[uri:http://www.google/com]]
 
 }
+
+/*
+func ExampleDuration() {
+	msg := NewMessage(ChannelNone, "to", "from", StartupEvent)
+
+	duration := msg.Duration()
+	fmt.Printf("test: msg.Duration(0) -> [dur:%v]\n", duration)
+
+	msg.SetDuration(time.Millisecond * 555)
+	duration = msg.Duration()
+	fmt.Printf("test: msg.Duration(555ms) -> [dur:%v]\n", duration)
+
+	//Output:
+	//test: msg.Duration(0) -> [dur:0s]
+	//test: msg.Duration(555ms) -> [dur:555ms]
+
+}
+
+
+*/

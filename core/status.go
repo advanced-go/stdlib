@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"runtime"
 	"strings"
+	"time"
 )
 
 const (
@@ -53,10 +54,11 @@ var okStatus = func() *Status {
 }()
 
 type Status struct {
-	Code    int      `json:"code"`
-	Err     error    `json:"err"`
-	Handled bool     `json:"handled"`
-	trace   []string `json:"location"`
+	Code     int   `json:"code"`
+	Err      error `json:"err"`
+	Handled  bool  `json:"handled"`
+	Duration time.Duration
+	trace    []string `json:"location"`
 }
 
 func StatusOK() *Status {

@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"errors"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 )
 
@@ -14,12 +15,13 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 
-	ContentType       = "Content-Type"
-	XRelatesTo        = "x-relates-to"
-	XMessageId        = "x-message-id"
-	XTo               = "x-to"
-	XFrom             = "x-from"
-	XEvent            = "x-event"
+	ContentType = "Content-Type"
+	XRelatesTo  = "x-relates-to"
+	XMessageId  = "x-message-id"
+	XTo         = "x-to"
+	XFrom       = "x-from"
+	XEvent      = "x-event"
+	//XDuration         = "x-duration"
 	ContentTypeStatus = "application/status"
 	ContentTypeConfig = "application/config"
 	ChannelData       = "DATA"
@@ -67,7 +69,7 @@ func NewMessageWithReply(channel, to, from, event string, replyTo Handler) *Mess
 	return m
 }
 
-func NewMessageWithStatus(channel, to, from, event string, status *Status) *Message {
+func NewMessageWithStatus(channel, to, from, event string, status *core.Status) *Message {
 	m := NewMessage(channel, to, from, event)
 	m.SetContent(ContentTypeStatus, status)
 	m.Body = status
@@ -90,12 +92,12 @@ func (m *Message) RelatesTo() string {
 	return m.Header.Get(XRelatesTo)
 }
 
-func (m *Message) Status() *Status {
+func (m *Message) Status() *core.Status {
 	ct := m.Header.Get(ContentType)
 	if ct != ContentTypeStatus || m.Body == nil {
 		return nil
 	}
-	if s, ok := m.Body.(*Status); ok {
+	if s, ok := m.Body.(*core.Status); ok {
 		return s
 	}
 	return nil //StatusOK()
@@ -135,12 +137,29 @@ func (m *Message) SetContent(contentType string, content any) error {
 	return nil
 }
 
+/*
+func (m *Message) Duration() string {
+	ct := m.Header.Get(XDuration)
+	if len(ct) == 0 {
+		return fmt.Sprintf("%v", time.Second*0)
+	}
+	return ct
+}
+
+func (m *Message) SetDuration(d time.Duration) {
+	m.Header.Add(XDuration, fmt.Sprintf("%v", d))
+}
+
+
+*/
+
 // SendReply - function used by message recipient to reply with a Status
-func SendReply(msg *Message, status *Status) {
+func SendReply(msg *Message, status *core.Status) {
 	if msg == nil || msg.ReplyTo == nil {
 		return
 	}
 	m := NewMessageWithStatus(ChannelNone, msg.From(), msg.To(), msg.Event(), status)
 	m.Header.Add(XRelatesTo, msg.RelatesTo())
+	//msg.SetDuration(duration)
 	msg.ReplyTo(m)
 }

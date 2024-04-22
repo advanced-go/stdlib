@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -24,9 +25,9 @@ func NewReceiverReplyTo(reply chan *Message) Handler {
 
 // Receiver - receives reply messages and forwards to a function which will return true if the receiving is complete. The interval
 // bounds the time spent receiving, and result status is sent on the status channel.
-func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *Status, done DoneFunc) {
+func Receiver(interval time.Duration, reply <-chan *Message, result chan<- *core.Status, done DoneFunc) {
 	tick := time.Tick(interval)
-	status := StatusOK()
+	status := core.StatusOK()
 	start := time.Now().UTC()
 
 	if interval <= 0 || reply == nil || result == nil || done == nil {

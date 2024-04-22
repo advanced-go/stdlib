@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	uri2 "github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"net/url"
@@ -16,24 +17,24 @@ const (
 )
 
 // Ping - function to "ping" a resource
-func Ping(ctx context.Context, uri any) *Status {
+func Ping(ctx context.Context, uri any) *core.Status {
 	return ping(ctx, HostExchange, uri)
 }
 
-func ping(ctx context.Context, ex *Exchange, uri any) *Status {
+func ping(ctx context.Context, ex *Exchange, uri any) *core.Status {
 	to, status := createTo(uri)
 	if !status.OK() {
 		return status
 	}
 	var response *Message
 
-	result := make(chan *Status)
+	result := make(chan *core.Status)
 	reply := make(chan *Message, 16)
 	msg := NewControlMessage(to, PkgPath, PingEvent)
 	msg.ReplyTo = NewReceiverReplyTo(reply)
 	err := ex.Send(msg)
 	if err != nil {
-		return NewStatusError(http.StatusInternalServerError, err)
+		return core.NewStatusError(http.StatusInternalServerError, err)
 	}
 	go Receiver(timeout, reply, result, func(msg *Message) bool {
 		response = msg
@@ -50,9 +51,9 @@ func ping(ctx context.Context, ex *Exchange, uri any) *Status {
 	return status
 }
 
-func createTo(uri any) (string, *Status) {
+func createTo(uri any) (string, *core.Status) {
 	if uri == nil {
-		return "", NewStatusError(http.StatusBadRequest, errors.New("error: Ping() uri is nil"))
+		return "", core.NewStatusError(http.StatusBadRequest, errors.New("error: Ping() uri is nil"))
 	}
 	path := ""
 	if u, ok := uri.(*url.URL); ok {
@@ -61,12 +62,12 @@ func createTo(uri any) (string, *Status) {
 		if u2, ok1 := uri.(string); ok1 {
 			path = u2
 		} else {
-			return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())))
+			return "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())))
 		}
 	}
 	nid, _, ok := uri2.UprootUrn(path)
 	if !ok {
-		return "", NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)))
+		return "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)))
 	}
-	return nid, StatusOK()
+	return nid, core.StatusOK()
 }

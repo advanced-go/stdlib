@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 )
 
 const (
@@ -11,11 +12,11 @@ const (
 func ExampleCache_Add() {
 	resp := NewCache()
 
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-1", StartupEvent, StatusOK()))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-2", PingEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-3", PingEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-4", PingEvent, StatusOK()))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-0", StartupEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-1", StartupEvent, core.StatusOK()))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-2", PingEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-3", PingEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-4", PingEvent, core.StatusOK()))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 
@@ -50,11 +51,11 @@ func ExampleCache_Add() {
 func ExampleCache_Uri() {
 	resp := NewCache()
 
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-0", StartupEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-1", StartupEvent, StatusOK()))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-2", PingEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-3", PingEvent, NewStatus(StatusNotProvided)))
-	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-4", PingEvent, StatusOK()))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-0", StartupEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-1", StartupEvent, core.StatusOK()))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-2", PingEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-3", PingEvent, core.NewStatus(StatusNotProvided)))
+	resp.Add(NewMessageWithStatus(ChannelNone, "to-uri", "from-uri-4", PingEvent, core.StatusOK()))
 
 	fmt.Printf("test: count() -> : %v\n", resp.Count())
 

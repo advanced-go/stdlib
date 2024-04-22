@@ -2,13 +2,14 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"time"
 )
 
 func ExampleReceiver_Timeout() {
-	var result *Status
+	var result *core.Status
 	duration := time.Second * 2
-	status := make(chan *Status, 1)
+	status := make(chan *core.Status, 1)
 	reply := make(chan *Message, 16)
 
 	go Receiver(duration, reply, status, func(msg *Message) bool { return true })
@@ -24,9 +25,9 @@ func ExampleReceiver_Timeout() {
 }
 
 func ExampleReceiver_OK() {
-	var result *Status
+	var result *core.Status
 	duration := time.Second * 2
-	status := make(chan *Status)
+	status := make(chan *core.Status)
 	reply := make(chan *Message, 16)
 
 	go Receiver(duration, reply, status, func(msg *Message) bool {
@@ -47,9 +48,9 @@ func ExampleReceiver_OK() {
 }
 
 func ExampleReceiver_Closed() {
-	var result *Status
+	var result *core.Status
 	duration := time.Second * 5
-	status := make(chan *Status, 1)
+	status := make(chan *core.Status, 1)
 	reply := make(chan *Message, 16)
 
 	go Receiver(duration, reply, status, func(msg *Message) bool {
