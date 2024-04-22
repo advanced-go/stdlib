@@ -16,8 +16,8 @@ const (
 	localHost   = "localhost"
 )
 
-// Pair - key, value pair
-type Pair struct {
+// Attr - key, value pair
+type Attr struct {
 	Key, Value string
 }
 
@@ -37,7 +37,7 @@ func NewResolver() *Resolver {
 }
 
 // SetTemplates - configure templates
-func (r *Resolver) SetTemplates(values []Pair) func() {
+func (r *Resolver) SetTemplates(values []Attr) func() {
 	if len(values) == 0 {
 		r.template = nil
 		return func() {}

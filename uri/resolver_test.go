@@ -31,7 +31,7 @@ func Example_ExpandUrl() {
 	fmt.Printf("test: ExpandUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
 	path = "/search"
-	r.SetTemplates([]Pair{{path, yahooSearch}})
+	r.SetTemplates([]Attr{{path, yahooSearch}})
 	uri, ok = r.ExpandUrl(path)
 	fmt.Printf("test: ExpandUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
 
@@ -53,7 +53,7 @@ func ExampleBuild() {
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetTemplates([]Pair{{path, yahooSearch}})
+	r.SetTemplates([]Attr{{path, yahooSearch}})
 	uri = r.Build(path)
 	fmt.Printf("test: Build-Override(\"%v\") -> [uri:%v]\n", path, uri)
 
@@ -65,7 +65,7 @@ func ExampleBuild() {
 }
 
 func override(path string, r *Resolver) {
-	defer r.SetTemplates([]Pair{{path, yahooSearch}})()
+	defer r.SetTemplates([]Attr{{path, yahooSearch}})()
 	uri := r.Build(path)
 	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
 }
@@ -99,11 +99,11 @@ func ExampleBuild_Values() {
 	uri := r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetTemplates([]Pair{{path, yahooSearchTemplate}})
+	r.SetTemplates([]Attr{{path, yahooSearchTemplate}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-Values(\"%v\") -> [uri:%v]\n", path, uri)
 
-	r.SetTemplates([]Pair{{path, fileAttrs}})
+	r.SetTemplates([]Attr{{path, fileAttrs}})
 	uri = r.Build(path, values.Encode())
 	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
 
