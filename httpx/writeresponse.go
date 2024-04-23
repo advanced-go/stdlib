@@ -24,6 +24,7 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, content any, stat
 	writer, status0 := io.NewEncodingWriter(w, h)
 	if !status0.OK() {
 		e.Handle(status0, RequestId(w.Header()))
+		w.WriteHeader(status0.HttpCode())
 		return
 	}
 	if writer.ContentEncoding() != io.NoneEncoding {
