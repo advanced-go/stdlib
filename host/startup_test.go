@@ -3,6 +3,7 @@ package host
 import (
 	"errors"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"net/http"
 	"time"
@@ -35,7 +36,7 @@ func ExampleCreateToSend() {
 	fmt.Printf("test: createToSend(nil,nil) -> [to:%v] [from:%v]\n", msg.To(), msg.From())
 
 	//Output:
-	//test: createToSend(nil,nil) -> [to:startup/none] [from:github/advanced-go/core/host:Startup]
+	//test: createToSend(nil,nil) -> [to:startup/none] [from:github/advanced-go/stdlib/host:Startup]
 
 }
 
@@ -108,7 +109,7 @@ func startupGood(c chan *messaging.Message) {
 			if !open {
 				return
 			}
-			messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
+			messaging.SendReply(msg, core.NewStatusDuration(http.StatusOK, time.Since(start)))
 		default:
 		}
 	}
@@ -122,7 +123,7 @@ func startupBad(c chan *messaging.Message) {
 				return
 			}
 			time.Sleep(time.Second + time.Millisecond*100)
-			messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
+			messaging.SendReply(msg, core.NewStatusDuration(http.StatusOK, time.Since(start)))
 		default:
 		}
 	}
@@ -137,10 +138,12 @@ func startupDepends(c chan *messaging.Message, err error) {
 			}
 			if err != nil {
 				time.Sleep(time.Second)
-				messaging.SendReply(msg, messaging.NewStatusDurationError(0, time.Since(start), err))
+				s := core.NewStatusDuration(0, time.Since(start))
+				s.Err = err
+				messaging.SendReply(msg, s)
 			} else {
 				time.Sleep(time.Second + (time.Millisecond * 900))
-				messaging.SendReply(msg, messaging.NewStatusDuration(http.StatusOK, time.Since(start)))
+				messaging.SendReply(msg, core.NewStatusDuration(http.StatusOK, time.Since(start)))
 			}
 
 		default:
