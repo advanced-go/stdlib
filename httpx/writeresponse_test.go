@@ -81,32 +81,32 @@ func init() {
 func ExampleWriteResponse_StatusHeaders() {
 	// all nil
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, nil, nil, nil)
-	fmt.Printf("test: WriteResponse(w,nil,nil,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
+	WriteResponse[core.Output](rec, nil, 0, nil)
+	fmt.Printf("test: WriteResponse(w,nil,0,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, nil, core.NewStatus(http.StatusTeapot), nil)
+	WriteResponse[core.Output](rec, nil, http.StatusTeapot, nil)
 	fmt.Printf("test: WriteResponse(w,nil,StatusTeapot,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code, headers list
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, nil, core.StatusOK(), []Attr{{Key: ContentType, Value: ContentTypeTextHtml}, {Key: AcceptEncoding, Value: AcceptEncodingValue}})
-	fmt.Printf("test: WriteResponse(w,nil,StatusOK,list) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
+	WriteResponse[core.Output](rec, []Attr{{Key: ContentType, Value: ContentTypeTextHtml}, {Key: AcceptEncoding, Value: AcceptEncodingValue}}, http.StatusOK, nil)
+	fmt.Printf("test: WriteResponse(w,list,StatusOK,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code, http.Header
 	rec = httptest.NewRecorder()
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
 	h.Add(ContentEncoding, ContentEncodingGzip)
-	WriteResponse[core.Output](rec, nil, core.NewStatus(http.StatusGatewayTimeout), h)
-	fmt.Printf("test: WriteResponse(w,nil,StatusGatewayTimeout,http.Header) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
+	WriteResponse[core.Output](rec, h, http.StatusGatewayTimeout, nil)
+	fmt.Printf("test: WriteResponse(w,http.Header,StatusGatewayTimeout,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	//Output:
-	//test: WriteResponse(w,nil,nil,nil) -> [status-code:200] [header:map[]]
+	//test: WriteResponse(w,nil,0,nil) -> [status-code:200] [header:map[]]
 	//test: WriteResponse(w,nil,StatusTeapot,nil) -> [status-code:418] [header:map[]]
-	//test: WriteResponse(w,nil,StatusOK,list) -> [status-code:200] [header:map[Accept-Encoding:[gzip, deflate, br] Content-Type:[text/html]]]
-	//test: WriteResponse(w,nil,StatusGatewayTimeout,http.Header) -> [status-code:504] [header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
+	//test: WriteResponse(w,list,StatusOK,nil) -> [status-code:200] [header:map[Accept-Encoding:[gzip, deflate, br] Content-Type:[text/html]]]
+	//test: WriteResponse(w,http.Header,StatusGatewayTimeout,nil) -> [status-code:504] [header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
 
 }
 
@@ -116,20 +116,20 @@ func ExampleWriteResponse_JSON() {
 
 	// JSON activity list
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, activityList, core.StatusOK(), h)
+	WriteResponse[core.Output](rec, h, 0, activityList)
 	buf, status0 := io.ReadAll(rec.Result().Body, nil)
-	fmt.Printf("test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
+	fmt.Printf("test: WriteResponse(w,http.Header,OK,[]activity) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
 
 	// JSON reader
 	rec = httptest.NewRecorder()
 	reader := bytes.NewReader(activityJson)
-	WriteResponse[core.Output](rec, reader, core.StatusOK(), h)
+	WriteResponse[core.Output](rec, h, 0, reader)
 	buf, status0 = io.ReadAll(rec.Result().Body, nil)
-	fmt.Printf("test: WriteResponse(w,io.Reader,OK,http.Header) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
+	fmt.Printf("test: WriteResponse(w,http.Header,OK,io.Reader) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
 
 	//Output:
-	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [in:395] [out:395]
-	//test: WriteResponse(w,io.Reader,OK,http.Header) -> [read-all:OK] [in:395] [out:395]
+	//test: WriteResponse(w,http.Header,OK,[]activity) -> [read-all:OK] [in:395] [out:395]
+	//test: WriteResponse(w,http.Header,OK,io.Reader) -> [read-all:OK] [in:395] [out:395]
 
 }
 
@@ -140,9 +140,9 @@ func ExampleWriteResponse_Encoding() {
 
 	// Should encode
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, activityList, core.StatusOK(), h)
+	WriteResponse[core.Output](rec, h, 0, activityList)
 	buf, status0 := io.ReadAll(rec.Result().Body, nil)
-	fmt.Printf("test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
+	fmt.Printf("test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
 
 	// Should not encode as a ContentEncoding header exists
 	h = make(http.Header)
@@ -150,12 +150,12 @@ func ExampleWriteResponse_Encoding() {
 	h.Add(AcceptEncoding, AcceptEncodingValue)
 	h.Add(ContentEncoding, io.NoneEncoding)
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, activityList, core.StatusOK(), h)
+	WriteResponse[core.Output](rec, h, 0, activityList)
 	buf, status0 = io.ReadAll(rec.Result().Body, nil)
-	fmt.Printf("test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
+	fmt.Printf("test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
 
 	//Output:
-	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:application/x-gzip][header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
-	//test: WriteResponse(w,[]activity,OK,http.Header) -> [read-all:OK] [buf:text/plain; charset=utf-8][header:map[Content-Encoding:[none] Content-Type:[application/json]]]
+	//test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:OK] [buf:application/x-gzip][header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
+	//test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:OK] [buf:text/plain; charset=utf-8][header:map[Content-Encoding:[none] Content-Type:[application/json]]]
 
 }
