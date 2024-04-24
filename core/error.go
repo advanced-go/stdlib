@@ -1,9 +1,11 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"log"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -176,4 +178,9 @@ func formatUri(uri string) string {
 		return fmt.Sprintf(githubTemplate, first, last)
 	}
 	return uri
+}
+
+// NewInvalidBodyTypeError - invalid type error
+func NewInvalidBodyTypeError(t any) error {
+	return errors.New(fmt.Sprintf("invalid body type: %v", reflect.TypeOf(t)))
 }
