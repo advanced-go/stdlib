@@ -23,7 +23,7 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, stat
 	h := createAcceptEncoding(w.Header())
 	writer, status0 := io.NewEncodingWriter(w, h)
 	if !status0.OK() {
-		e.Handle(status0, RequestId(w.Header()))
+		e.Handle(status0, core.RequestId(w.Header()))
 		w.WriteHeader(status0.HttpCode())
 		return
 	}
@@ -34,7 +34,7 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, stat
 	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	_ = writer.Close()
 	if !status0.OK() {
-		e.Handle(status0, RequestId(w.Header()))
+		e.Handle(status0, core.RequestId(w.Header()))
 	}
 }
 
