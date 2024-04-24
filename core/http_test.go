@@ -5,24 +5,24 @@ import (
 	"net/http"
 )
 
-func ExampleHttpExchange() {
+func ExampleHttpHandler() {
 	ok := exchange(func(w http.ResponseWriter, r *http.Request) {})
-	fmt.Printf("test: HttpExchange(anonymous-function) -> [ok:%v|\n", ok)
+	fmt.Printf("test: HttpHandler(anonymous-function) -> [ok:%v|\n", ok)
 
 	ok = exchange(handler2)
-	fmt.Printf("test: HttpExchange(function) -> [ok:%v|\n", ok)
+	fmt.Printf("test: HttpHandler(function) -> [ok:%v|\n", ok)
 
 	ok = exchange(handler3())
-	fmt.Printf("test: HttpExchange(return-function) -> [ok:%v|\n", ok)
+	fmt.Printf("test: HttpHandler(return-function) -> [ok:%v|\n", ok)
 
 	//Output:
-	//test: HttpExchange(anonymous-function) -> [ok:true|
-	//test: HttpExchange(function) -> [ok:true|
-	//test: HttpExchange(return-function) -> [ok:true|
-	
+	//test: HttpHandler(anonymous-function) -> [ok:true|
+	//test: HttpHandler(function) -> [ok:true|
+	//test: HttpHandler(return-function) -> [ok:true|
+
 }
 
-func exchange(fn HttpExchange) bool {
+func exchange(fn HttpHandler) bool {
 	if fn == nil {
 		return false
 	}

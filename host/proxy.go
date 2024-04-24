@@ -21,7 +21,7 @@ func NewProxy() *Proxy {
 }
 
 // Register - add an HttpHandler to the proxy
-func (p *Proxy) Register(uri string, handler core.HttpExchange) error {
+func (p *Proxy) Register(uri string, handler core.HttpHandler) error {
 	if len(uri) == 0 {
 		return errors.New("error: proxy.Register() path is empty")
 	}
@@ -41,7 +41,7 @@ func (p *Proxy) Register(uri string, handler core.HttpExchange) error {
 }
 
 // Lookup - get an HttpHandler from the proxy, using a URI as the key
-func (p *Proxy) Lookup(uri string) core.HttpExchange {
+func (p *Proxy) Lookup(uri string) core.HttpHandler {
 	nid, _, ok := uri2.UprootUrn(uri)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
@@ -50,12 +50,12 @@ func (p *Proxy) Lookup(uri string) core.HttpExchange {
 }
 
 // LookupByNID - get an HttpHandler from the proxy, using an NID as a key
-func (p *Proxy) LookupByNID(nid string) core.HttpExchange {
+func (p *Proxy) LookupByNID(nid string) core.HttpHandler {
 	v, ok := p.m.Load(nid)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByNID() HTTP handler does not exist: [%v]", nid))
 	}
-	if handler, ok1 := v.(core.HttpExchange); ok1 {
+	if handler, ok1 := v.(core.HttpHandler); ok1 {
 		return handler //, StatusOK()
 	}
 	return nil //, NewStatus(StatusInvalidContent)

@@ -11,28 +11,28 @@ import (
 )
 
 var (
-	exchangeProxy = NewProxy()
-	duration      time.Duration
-	authExchange  core.HttpExchange
-	okFunc        = func(code int) bool { return code == http.StatusOK }
+	handlerProxy = NewProxy()
+	duration     time.Duration
+	authHandler  core.HttpHandler
+	okFunc       = func(code int) bool { return code == http.StatusOK }
 )
 
 func SetHostTimeout(d time.Duration) {
 	duration = d
 }
 
-func SetAuthExchange(h core.HttpExchange, ok func(int) bool) {
+func SetAuthHandler(h core.HttpHandler, ok func(int) bool) {
 	if h != nil {
-		authExchange = h
+		authHandler = h
 		if ok != nil {
 			okFunc = ok
 		}
 	}
 }
 
-// RegisterExchange - add a path and Http handler to the proxy
+// RegisterHandler - add a path and Http handler to the proxy
 // TO DO : panic on duplicate handler and pattern combination
-func RegisterExchange(path string, handler core.HttpExchange) error {
+func RegisterHandler(path string, handler core.HttpHandler) error {
 	if len(path) == 0 {
 		return errors.New("error: path is empty")
 	}
@@ -40,18 +40,18 @@ func RegisterExchange(path string, handler core.HttpExchange) error {
 		return errors.New(fmt.Sprintf("error: handler for path %v is nil", path))
 	}
 	h := handler
-	if authExchange != nil {
-		h = NewConditionalIntermediary(authExchange, handler, okFunc)
+	if authHandler != nil {
+		h = NewConditionalIntermediary(authHandler, handler, okFunc)
 	}
 	if duration > 0 {
 		h = NewHostTimeoutIntermediary(duration, h)
 	}
-	err := exchangeProxy.Register(path, h)
+	err := handlerProxy.Register(path, h)
 	return err
 }
 
-// HttpExchange - process an HTTP exchange
-func HttpExchange(w http.ResponseWriter, r *http.Request) {
+// HttpHandler - process an HTTP request
+func HttpHandler(w http.ResponseWriter, r *http.Request) {
 	if r == nil || w == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -61,7 +61,7 @@ func HttpExchange(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	handler := exchangeProxy.LookupByNID(nid)
+	handler := handlerProxy.LookupByNID(nid)
 	if handler == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

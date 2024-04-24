@@ -14,15 +14,15 @@ const (
 	RouteName = "host"
 )
 
-func NewHostTimeoutIntermediary(d time.Duration, c2 core.HttpExchange) core.HttpExchange {
+func NewHostTimeoutIntermediary(d time.Duration, c2 core.HttpHandler) core.HttpHandler {
 	return newIngressTimeoutIntermediary(RouteName, d, c2, access.IngressTraffic)
 }
 
-func NewIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpExchange) core.HttpExchange {
+func NewIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpHandler) core.HttpHandler {
 	return newIngressTimeoutIntermediary(routeName, d, c2, access.InternalTraffic)
 }
 
-func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpExchange, traffic string) core.HttpExchange {
+func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.HttpHandler, traffic string) core.HttpHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -40,7 +40,7 @@ func newIngressTimeoutIntermediary(routeName string, d time.Duration, c2 core.Ht
 	}
 }
 
-func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration, handler core.HttpExchange, traffic, routeTo string) {
+func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration, handler core.HttpHandler, traffic, routeTo string) {
 	if handler == nil {
 		return
 	}

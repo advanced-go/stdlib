@@ -14,7 +14,7 @@ const (
 	XRequestId    = "X-Request-Id"
 )
 
-func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok func(int) bool) core.HttpExchange {
+func NewConditionalIntermediary(c1 core.HttpHandler, c2 core.HttpHandler, ok func(int) bool) core.HttpHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -31,7 +31,7 @@ func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok f
 	}
 }
 
-func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpExchange {
+func NewAccessLogIntermediary(routeName string, c2 core.HttpHandler) core.HttpHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if c2 == nil {
 			w.WriteHeader(http.StatusInternalServerError)

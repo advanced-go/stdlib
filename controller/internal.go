@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func doInternal(duration time.Duration, handler core.HttpExchange, req *http.Request) (r2 *http.Request, resp *http.Response, status *core.Status) {
+func doInternal(duration time.Duration, handler core.HttpHandler, req *http.Request) (r2 *http.Request, resp *http.Response, status *core.Status) {
 	w := NewResponseWriter()
 	if duration > 0 {
 		ctx, cancel := context.WithTimeout(req.Context(), duration)

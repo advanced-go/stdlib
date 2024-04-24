@@ -48,7 +48,7 @@ func DeadlineExceededError(t any) bool {
 	return false
 }
 
-// Do - process a request, checking for overrides of file://, and a registered controller.
+// Do - process an HTTP request, checking for file:// scheme
 func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
@@ -83,8 +83,8 @@ func DoExchange(ctx context.Context, method, url string, h http.Header, body io.
 	if h != nil {
 		req.Header = h
 	}
-	ctrl, status1 := controller.Lookup(url)
-	if status1.OK() {
+	ctrl, status := controller.Lookup(url)
+	if status.OK() {
 		return ctrl.Do(Do, req)
 	}
 	return Do(req)

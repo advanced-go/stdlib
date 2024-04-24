@@ -216,6 +216,6 @@ func ExampleExchangeDo_Timeout() {
 
 	//Output:
 	//test: ExchangeDo_Timeout()-Get()-timeout -> [status-code:504] [err:Get "https://www.google.com/search?q=golang": context deadline exceeded]
-	//test: ExchangeDo_Timeout()-ReadAll()-timeout -> [status-code:504] [err:Timeout [context deadline exceeded]]
+	//test: ExchangeDo_Timeout()-ReadAll()-timeout -> [status-code:504] [err:Timeout [Get "https://www.google.com/search?q=golang": context deadline exceeded]]
 
 }
