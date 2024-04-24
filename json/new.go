@@ -12,13 +12,6 @@ import (
 	"reflect"
 )
 
-const (
-	StatusOKUri       = "urn:status:ok"
-	StatusNotFoundUri = "urn:status:notfound"
-	StatusTimeoutUri  = "urn:status:timeout"
-	//newLoc            = runtime.PkgPath + ":New"
-)
-
 // NewConstraints - constraints
 //type NewConstraints interface {
 //	string | *url.URL | []byte | io.Reader | io.ReadCloser
