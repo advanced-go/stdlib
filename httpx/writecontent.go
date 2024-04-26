@@ -15,8 +15,9 @@ const (
 	jsonToken = "json"
 )
 
-func writeContent(w io.Writer, content any, contentType string) (cnt int, status *core.Status) {
+func writeContent(w io.Writer, content any, contentType string) (length int64, status *core.Status) {
 	var err error
+	var cnt int
 
 	if content == nil {
 		return 0, core.StatusOK()
@@ -64,5 +65,5 @@ func writeContent(w io.Writer, content any, contentType string) (cnt int, status
 	if err != nil {
 		return 0, core.NewStatusError(core.StatusIOError, err)
 	}
-	return cnt, core.StatusOK()
+	return int64(cnt), core.StatusOK()
 }

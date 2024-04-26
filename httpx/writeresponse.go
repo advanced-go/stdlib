@@ -9,7 +9,7 @@ import (
 // WriteResponse - write a http.Response, utilizing the content, status code, and headers
 // Content types supported: []byte, string, error, io.Reader, io.ReadCloser. Other types will be treated as JSON and serialized, if
 // the headers content type is JSON. If not JSON, then an error will be raised.
-func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, statusCode int, content any) {
+func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, statusCode int, content any) (contentLength int64) {
 	var e E
 
 	if statusCode == 0 {
@@ -18,24 +18,25 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, stat
 	SetHeaders(w, headers)
 	if content == nil {
 		w.WriteHeader(statusCode)
-		return
+		return 0
 	}
 	h := createAcceptEncoding(w.Header())
 	writer, status0 := io.NewEncodingWriter(w, h)
 	if !status0.OK() {
 		e.Handle(status0, core.RequestId(w.Header()))
 		w.WriteHeader(status0.HttpCode())
-		return
+		return 0
 	}
 	if writer.ContentEncoding() != io.NoneEncoding {
 		w.Header().Add(ContentEncoding, writer.ContentEncoding())
 	}
 	w.WriteHeader(statusCode)
-	_, status0 = writeContent(writer, content, w.Header().Get(ContentType))
+	contentLength, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	_ = writer.Close()
 	if !status0.OK() {
 		e.Handle(status0, core.RequestId(w.Header()))
 	}
+	return contentLength
 }
 
 func createAcceptEncoding(h http.Header) http.Header {
