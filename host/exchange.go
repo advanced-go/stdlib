@@ -12,13 +12,13 @@ import (
 
 var (
 	exchangeProxy = NewProxy2()
-	duration2     time.Duration
+	hostDuration  time.Duration
 	authExchange  core.HttpExchange
 	okFunc2       = func(code int) bool { return code == http.StatusOK }
 )
 
 func SetHostTimeout2(d time.Duration) {
-	duration2 = d
+	hostDuration = d
 }
 
 func SetAuthExchange(h core.HttpExchange, ok func(int) bool) {
