@@ -1,6 +1,7 @@
 package host
 
 import (
+	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
@@ -28,6 +29,25 @@ func NewConditionalIntermediary(c1 core.HttpHandler, c2 core.HttpHandler, ok fun
 		if (ok == nil && w2.statusCode == http.StatusOK) || (ok != nil && ok(w2.statusCode)) {
 			c2(w, r)
 		}
+	}
+}
+
+func NewConditionalIntermediary2(c1 core.HttpExchange, c2 core.HttpExchange, ok func(int) bool) core.HttpExchange {
+	return func(r *http.Request) (resp *http.Response, status *core.Status) {
+		if c1 == nil {
+			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(http.StatusBadRequest, errors.New("error: HttpExchange 1 is nil"))
+		}
+		if c2 == nil {
+			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(http.StatusBadRequest, errors.New("error: HttpExchange 2 is nil"))
+		}
+		resp, status = c1(r)
+		if resp == nil {
+			return
+		}
+		if (ok == nil && resp.StatusCode == http.StatusOK) || (ok != nil && ok(resp.StatusCode)) {
+			resp, status = c2(r)
+		}
+		return
 	}
 }
 

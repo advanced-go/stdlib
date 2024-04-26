@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
-	"github.com/advanced-go/stdlib/httpx"
 	"github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"time"
@@ -66,7 +65,7 @@ func HttpHandler2(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	resp, status := handler(r)
-	httpx.WriteResponse[core.Log](w, resp.Header, status.HttpCode(), resp.Body)
-
+	//resp, status := handler(r)
+	//httpx.WriteResponse[core.Log](w, resp.Header, status.HttpCode(), resp.Body)
+	hostExchange[core.Log](w, r, hostDuration, handler)
 }
