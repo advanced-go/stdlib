@@ -47,8 +47,8 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 }
 
 func ExampleHttpHandler2() {
-	pattern := "github/advanced-go/example-domain/activity"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/activity:entry", nil)
+	pattern := "github/advanced-go/host/HttpHandler"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/HttpHandler:entry", nil)
 
 	RegisterExchange(pattern, appHttpExchange)
 
@@ -63,8 +63,8 @@ func ExampleHttpHandler2() {
 }
 
 func ExampleHttpHandler_Host_OK() {
-	pattern := "github/advanced-go/example-domain/slo"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/slo:entry", nil)
+	pattern := "github/advanced-go/host/ok"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/ok:entry", nil)
 
 	SetHostTimeout2(time.Second * 2)
 	RegisterExchange(pattern, testDo)
@@ -80,8 +80,8 @@ func ExampleHttpHandler_Host_OK() {
 }
 
 func ExampleHttpHandler_Host_Timeout() {
-	pattern := "github/advanced-go/example-domain/timeseries"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/timeseries:entry", nil)
+	pattern := "github/advanced-go/host/timeout"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/timeout:entry", nil)
 
 	SetHostTimeout2(time.Millisecond)
 	RegisterExchange(pattern, testDo)
@@ -97,8 +97,8 @@ func ExampleHttpHandler_Host_Timeout() {
 }
 
 func ExampleHttpHandler_Auth_Authorized() {
-	pattern := "github/advanced-go/example-domain/host-auth-ok"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-ok:entry", nil)
+	pattern := "github/advanced-go/host/authorized"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/authorized:entry", nil)
 
 	SetAuthExchange(testAuthExchangeOK, nil)
 	SetHostTimeout2(time.Second * 2)
@@ -115,12 +115,66 @@ func ExampleHttpHandler_Auth_Authorized() {
 }
 
 func ExampleHttpHandler_Auth_Unauthorized() {
-	pattern := "github/advanced-go/example-domain/host-auth-unauthorized"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/host-auth-unauthorized:entry", nil)
+	pattern := "github/advanced-go/host/unauthorized"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/unauthorized:entry", nil)
 
 	SetAuthExchange(testAuthExchangeFail, nil)
 	SetHostTimeout2(time.Second * 2)
 	RegisterExchange(pattern, testDo)
+
+	rec := httptest.NewRecorder()
+	HttpHandler2(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:401] [content:Missing authorization header]
+
+}
+
+func ExampleHttpHandler_AccessLog_Service_OK() {
+	pattern := "github/advanced-go/host/access-log-service-ok"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-ok:entry", nil)
+
+	SetAuthExchange(testAuthExchangeOK, nil)
+	SetHostTimeout2(time.Second * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-ok", testDo))
+
+	rec := httptest.NewRecorder()
+	HttpHandler2(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:200] [content:200 OK]
+
+}
+
+func ExampleHttpHandler_AccessLog_Service_Timeout() {
+	pattern := "github/advanced-go/host/access-log-service-timeout"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-timeout:entry", nil)
+
+	SetAuthExchange(testAuthExchangeOK, nil)
+	SetHostTimeout2(time.Millisecond * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-timeout", testDo))
+
+	rec := httptest.NewRecorder()
+	HttpHandler2(rec, r)
+	buf, _ := io.ReadAll(rec.Result().Body)
+	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+
+	//Output:
+	//test: HttpHandler() -> [status-code:504] [content:Timeout [Get "https://www.google.com/search?q=golang": context deadline exceeded]]
+
+}
+
+func ExampleHttpHandler_AccessLog_Service_Unauthorized() {
+	pattern := "github/advanced-go/host/access-log-service-unauthorized"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-unauthorized:entry", nil)
+
+	SetAuthExchange(testAuthExchangeFail, nil)
+	SetHostTimeout2(time.Second * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-unauthorized", testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler2(rec, r)
