@@ -24,9 +24,9 @@ func NewController(routeName string, primary, secondary *Resource) *Controller {
 	return c
 }
 
-func (c *Controller) Do(do func(r *http.Request) (*http.Response, *core.Status), req *http.Request) (resp *http.Response, status *core.Status) {
-	if req == nil {
-		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
+func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Response, status *core.Status) {
+	if req == nil || do == nil {
+		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	rsc := c.Router.RouteTo()
 	duration := rsc.timeout(req)

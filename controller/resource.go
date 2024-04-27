@@ -13,10 +13,10 @@ type Resource struct {
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
 	duration     time.Duration
-	handler      core.HttpHandler
+	handler      core.HttpExchange
 }
 
-func newResource(name, authority, livenessPath string, duration time.Duration, handler core.HttpHandler) *Resource {
+func newResource(name, authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
 	r := new(Resource)
 	r.internal = false
 	r.Name = name
@@ -30,11 +30,11 @@ func newResource(name, authority, livenessPath string, duration time.Duration, h
 	return r
 }
 
-func NewPrimaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpHandler) *Resource {
+func NewPrimaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
 	return newResource(PrimaryName, authority, livenessPath, duration, handler)
 }
 
-func NewSecondaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpHandler) *Resource {
+func NewSecondaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
 	return newResource(SecondaryName, authority, livenessPath, duration, handler)
 }
 

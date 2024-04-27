@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/advanced-go/stdlib/controller"
 	"github.com/advanced-go/stdlib/core"
-	"io"
 	"net/http"
 	"time"
 )
@@ -18,7 +17,7 @@ const (
 )
 
 var (
-	client = http.DefaultClient
+	Client = http.DefaultClient
 )
 
 func init() {
@@ -29,9 +28,9 @@ func init() {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		transport.MaxIdleConns = 200
 		transport.MaxIdleConnsPerHost = 100
-		client = &http.Client{Transport: transport, Timeout: time.Second * 5}
+		Client = &http.Client{Transport: transport, Timeout: time.Second * 5}
 	} else {
-		client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
+		Client = &http.Client{Transport: http.DefaultTransport, Timeout: time.Second * 5}
 	}
 }
 
@@ -62,7 +61,7 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 	}
 	var err error
 
-	resp, err = client.Do(req)
+	resp, err = Client.Do(req)
 	if err != nil {
 		// catch connectivity error, even with a valid URL
 		if resp == nil {
@@ -78,12 +77,12 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 }
 
 // DoExchange - process an HTTP call utilizing a controller if configured
-func DoExchange(ctx context.Context, method, url string, h http.Header, body io.Reader) (*http.Response, *core.Status) {
-	req, _ := http.NewRequestWithContext(ctx, method, url, body)
-	if h != nil {
-		req.Header = h
-	}
-	ctrl, status := controller.Lookup(url)
+func DoExchange(req *http.Request) (*http.Response, *core.Status) {
+	//req, _ := http.NewRequestWithContext(ctx, method, url, body)
+	//if h != nil {
+	//	req.Header = h
+	//}
+	ctrl, status := controller.Lookup(req.URL.String())
 	if status.OK() {
 		return ctrl.Do(Do, req)
 	}

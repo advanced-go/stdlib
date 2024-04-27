@@ -3,39 +3,50 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
 	"time"
 )
 
-func httpCall(w http.ResponseWriter, r *http.Request) {
+func httpCall(r *http.Request) (resp *http.Response, status *core.Status) {
 	cnt := 0
+	var err0 error
 	var err2 error
 	var err1 error
-	var buf []byte
+	//var buf []byte
 
-	resp, err0 := http.DefaultClient.Do(r)
+	resp, err0 = http.DefaultClient.Do(r)
 	if err0 != nil {
+		resp = new(http.Response)
 		if r.Context().Err() == context.DeadlineExceeded {
-			w.WriteHeader(http.StatusGatewayTimeout)
+			//w.WriteHeader(http.StatusGatewayTimeout)
+			status = core.NewStatus(http.StatusGatewayTimeout)
 		} else {
-			w.WriteHeader(http.StatusInternalServerError)
+			//w.WriteHeader(http.StatusInternalServerError)
+			status = core.NewStatus(http.StatusInternalServerError)
 		}
+		resp.StatusCode = status.Code
 	} else {
-		buf, err1 = io.ReadAll(resp.Body)
+		_, err1 = io.ReadAll(resp.Body)
 		if err1 != nil {
 			if err1 == context.DeadlineExceeded {
-				w.WriteHeader(http.StatusGatewayTimeout)
+				//w.WriteHeader(http.StatusGatewayTimeout)
+				status = core.NewStatus(http.StatusGatewayTimeout)
 			} else {
-				w.WriteHeader(http.StatusInternalServerError)
+				//w.WriteHeader(http.StatusInternalServerError)
+				status = core.NewStatus(http.StatusInternalServerError)
 			}
 		} else {
-			w.WriteHeader(http.StatusOK)
-			cnt, err2 = w.Write(buf)
+			//w.WriteHeader(http.StatusOK)
+			status = core.StatusOK()
+			//cnt, err2 = w.Write(buf)
+			//  resp.
 
 		}
 	}
 	fmt.Printf("test: httpCall() -> [content:%v] [do-err:%v] [read-err:%v] [write-err:%v]\n", cnt, err0, err1, err2)
+	return
 }
 
 func ExampleDoInternal() {
