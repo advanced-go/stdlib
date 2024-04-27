@@ -15,6 +15,7 @@ func appHttpExchange(r *http.Request) (*http.Response, *core.Status) {
 	return &http.Response{StatusCode: status.Code}, status
 }
 
+/*
 func testAuthExchangeOK(r *http.Request) (*http.Response, *core.Status) {
 	//fmt.Fprint(w, "OK")
 	status := core.StatusOK()
@@ -27,11 +28,14 @@ func testAuthExchangeFail(r *http.Request) (*http.Response, *core.Status) {
 	return &http.Response{StatusCode: status.Code, Body: io.NopCloser(bytes.NewReader([]byte("Missing authorization header")))}, status
 }
 
-func testExchange(r *http.Request) (*http.Response, *core.Status) {
+
+*/
+
+func testDo(r *http.Request) (*http.Response, *core.Status) {
 	req, _ := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://www.google.com/search?q=golang", nil)
 	resp, _ := http.DefaultClient.Do(req)
 	if resp == nil {
-		resp.Body = io.NopCloser(bytes.NewReader([]byte("Timeout [Get \"https://www.google.com/search?q=golang\": context deadline exceeded]")))
+		resp = &http.Response{StatusCode: http.StatusGatewayTimeout, Body: io.NopCloser(bytes.NewReader([]byte("Timeout [Get \"https://www.google.com/search?q=golang\": context deadline exceeded]")))}
 		return resp, core.NewStatus(http.StatusGatewayTimeout)
 	} else {
 		resp.Body = io.NopCloser(bytes.NewReader([]byte("200 OK")))
@@ -60,7 +64,7 @@ func Example_Host_TestExchange_OK2() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/slo:entry", nil)
 
 	SetHostTimeout2(time.Second * 2)
-	RegisterExchange(pattern, testExchange)
+	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
 	HttpHandler2(rec, r)
@@ -77,7 +81,7 @@ func _Example_Host_TestExchange_Timeout2() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/example-domain/timeseries:entry", nil)
 
 	SetHostTimeout2(time.Millisecond)
-	RegisterExchange(pattern, testExchange)
+	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
 	HttpHandler2(rec, r)
