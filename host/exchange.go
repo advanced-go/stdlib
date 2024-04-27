@@ -39,14 +39,11 @@ func RegisterExchange(path string, handler core.HttpExchange) error {
 		return errors.New(fmt.Sprintf("error: handler for path %v is nil", path))
 	}
 	h := handler
-	//if authHandler != nil {
-	//	h = NewConditionalIntermediary(authHandler, handler, okFunc)
-	//}
-	//if duration2 > 0 {
-	//	h = NewHostTimeoutIntermediary(duration, h)
-	//}
-	err := exchangeProxy.Register(path, h)
-	return err
+	if authExchange != nil {
+		h = NewConditionalIntermediary2(authExchange, handler, okFunc)
+	}
+	return exchangeProxy.Register(path, h)
+
 }
 
 // HttpHandler2 - process an HTTP request
