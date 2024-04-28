@@ -8,7 +8,6 @@ import (
 )
 
 type Resource struct {
-	internal     bool
 	Name         string `json:"name"`
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
@@ -18,14 +17,12 @@ type Resource struct {
 
 func newResource(name, authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
 	r := new(Resource)
-	r.internal = false
 	r.Name = name
 	r.Authority = authority
 	r.LivenessPath = livenessPath
 	r.duration = duration
 	if handler != nil {
 		r.handler = handler
-		r.internal = true
 	}
 	return r
 }
