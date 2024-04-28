@@ -1,15 +1,12 @@
 package controller
 
 import (
+	"context"
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
-)
-
-const (
-	TimeoutFlag = "TO"
 )
 
 type Controller struct {
@@ -28,30 +25,66 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if req == nil || do == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
+	traffic := access.EgressTraffic
 	rsc := c.Router.RouteTo()
-	duration := rsc.timeout(req)
-	traffic := access.InternalTraffic
+	if rsc.handler != nil {
+		traffic = access.InternalTraffic
+		do = rsc.handler
+	}
+	inDuration, outDuration := durations(rsc, req)
+	duration := time.Duration(0)
 	flags := ""
-	req.URL = rsc.BuildUri(req.URL)
+	newURL := rsc.BuildUri(req.URL)
+	req.URL = newURL
 	if req.URL != nil {
 		req.Host = req.URL.Host
 	}
 	start := time.Now().UTC()
-	if rsc.internal {
-		req, resp, status = doInternal(duration, rsc.handler, req)
+
+	// if no timeout or an existing deadline and existing deadline is <= timeout, then use the existing request
+	if outDuration == 0 || (inDuration > 0 && inDuration <= outDuration) {
+		duration = inDuration * -1
+		resp, status = do(req)
 	} else {
-		traffic = access.EgressTraffic
-		if duration <= 0 {
-			resp, status = do(req)
-		} else {
-			resp, status = doEgress(duration, do, req)
-		}
+		duration = outDuration
+		ctx, cancel := context.WithTimeout(req.Context(), outDuration)
+		defer cancel()
+		r2 := req.Clone(ctx)
+		resp, status = do(r2)
+		//req = r2
+		/*
+			if rsc.internal {
+				req, resp, status = doInternal(duration, rsc.handler, req)
+			} else {
+				traffic = access.EgressTraffic
+				if duration <= 0 {
+					resp, status = do(req)
+				} else {
+					resp, status = doEgress(duration, do, req)
+				}
+			}
+		*/
 	}
 	elapsed := time.Since(start)
-	c.Router.UpdateStats(resp.StatusCode, rsc)
-	if resp.StatusCode == http.StatusGatewayTimeout {
-		flags = TimeoutFlag
+	if resp != nil {
+		c.Router.UpdateStats(resp.StatusCode, rsc)
+		if resp.StatusCode == http.StatusGatewayTimeout {
+			flags = access.TimeoutFlag
+		}
+	} else {
+		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, access.Milliseconds(duration), flags)
+	return
+}
+
+func durations(rsc *Resource, req *http.Request) (in time.Duration, out time.Duration) {
+	deadline, ok := req.Context().Deadline()
+	if ok {
+		in = time.Until(deadline) // * -1
+	}
+	if rsc.duration > 0 {
+		out = rsc.duration
+	}
 	return
 }

@@ -12,6 +12,7 @@ const (
 	failsafeUri     = "https://invalid-uri.com"
 	XRequestId      = "x-request-id"
 	XRelatesTo      = "x-relates-to"
+	TimeoutFlag     = "TO"
 )
 
 // Origin - log source location

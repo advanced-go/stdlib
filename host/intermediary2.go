@@ -44,7 +44,7 @@ func NewAccessLogIntermediary2(routeName string, c2 core.HttpExchange) core.Http
 		start := time.Now().UTC()
 		resp, status = c2(r)
 		if status.Code == http.StatusGatewayTimeout {
-			flags = TimeoutFlag
+			flags = access.TimeoutFlag
 		}
 		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, routeName, "", Milliseconds(dur), flags)
 		return

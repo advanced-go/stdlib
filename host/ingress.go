@@ -60,7 +60,7 @@ func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration
 		handler(w, r)
 	}
 	if w.statusCode == http.StatusGatewayTimeout {
-		flags = TimeoutFlag
+		flags = access.TimeoutFlag
 	}
 	if traffic == "" {
 		traffic = access.InternalTraffic
@@ -140,7 +140,7 @@ func apply(w *wrapper, r *http.Request, routeName string, duration time.Duration
 		c2(w2, r)
 	}
 	if w2.statusCode == http.StatusGatewayTimeout {
-		flags = TimeoutFlag
+		flags = access.TimeoutFlag
 	}
 	if traffic == "" {
 		traffic = access.InternalTraffic

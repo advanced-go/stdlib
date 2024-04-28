@@ -10,7 +10,6 @@ import (
 
 const (
 	Authorization = "Authorization"
-	TimeoutFlag   = "TO"
 	XRequestId    = "X-Request-Id"
 )
 
@@ -47,7 +46,7 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpHandler) core.HttpHa
 		start := time.Now().UTC()
 		c2(w2, r)
 		if w2.statusCode == http.StatusGatewayTimeout {
-			flags = TimeoutFlag
+			flags = access.TimeoutFlag
 		}
 		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(dur), flags)
 	}
