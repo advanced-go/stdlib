@@ -2,7 +2,6 @@ package host
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"io"
@@ -29,10 +28,6 @@ func testAuthExchangeFail(_ *http.Request) (*http.Response, *core.Status) {
 }
 
 func testDo(r *http.Request) (*http.Response, *core.Status) {
-	ctx := r.Context()
-	if ctx == nil {
-		ctx = context.Background()
-	}
 	req, _ := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://www.google.com/search?q=golang", nil)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

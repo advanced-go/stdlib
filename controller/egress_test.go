@@ -8,15 +8,6 @@ import (
 	"time"
 )
 
-func testDo(req *http.Request) (*http.Response, *core.Status) {
-	resp, err := http.DefaultClient.Do(req)
-	if resp != nil {
-		return resp, core.NewStatus(resp.StatusCode)
-	}
-	resp = &http.Response{StatusCode: core.StatusDeadlineExceeded}
-	return resp, core.NewStatusError(core.StatusDeadlineExceeded, err)
-}
-
 func ExampleDoEgress() {
 	uri := "https://www.google.com/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)

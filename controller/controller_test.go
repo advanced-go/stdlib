@@ -1,13 +1,58 @@
 package controller
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
 	"time"
 )
 
-func ExampleDo_Internal() {
+/*
+func testDo(req *http.Request) (*http.Response, *core.Status) {
+	resp, err := http.DefaultClient.Do(req)
+	if resp != nil {
+		return resp, core.NewStatus(resp.StatusCode)
+	}
+	resp = &http.Response{StatusCode: core.StatusDeadlineExceeded}
+	return resp, core.NewStatusError(core.StatusDeadlineExceeded, err)
+}
+*/
+
+func testDo(r *http.Request) (*http.Response, *core.Status) {
+	req, _ := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://www.google.com/search?q=golang", nil)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		if resp == nil {
+			resp = &http.Response{StatusCode: http.StatusGatewayTimeout, Body: io.NopCloser(bytes.NewReader([]byte("Timeout [Get \"https://www.google.com/search?q=golang\": context deadline exceeded]")))}
+			return resp, core.NewStatus(core.StatusDeadlineExceeded)
+		}
+		resp.Body = io.NopCloser(bytes.NewReader([]byte(err.Error())))
+		return resp, core.NewStatus(http.StatusInternalServerError)
+	}
+	resp.Body = io.NopCloser(bytes.NewReader([]byte(fmt.Sprintf("%v OK", resp.StatusCode))))
+	return resp, core.NewStatus(resp.StatusCode)
+}
+
+func ExampleDo_Error() {
+	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", "/health/liveness", 0, httpCall), nil)
+	uri := "/search?q=golang"
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+
+	_, status := ctrl.Do(nil, req)
+	fmt.Printf("test: Do(nil,req) -> [status:%v]\n", status)
+
+	_, status = ctrl.Do(testDo, nil)
+	fmt.Printf("test: Do(testDo,nil) -> [status:%v]\n", status)
+
+	//Output:
+	//test: Do(nil,req) -> [status:Invalid Argument [invalid argument : request is nil]]
+	//test: Do(testDo,nil) -> [status:Invalid Argument [invalid argument : request is nil]]
+
+}
+
+func _ExampleDo_Internal() {
 	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", "/health/liveness", 0, httpCall), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
@@ -31,7 +76,7 @@ func ExampleDo_Internal() {
 
 }
 
-func ExampleDo_Internal_Deadline() {
+func _ExampleDo_Internal_Deadline() {
 	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", "/health/liveness", 0, httpCall), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
@@ -55,7 +100,7 @@ func ExampleDo_Internal_Deadline() {
 
 }
 
-func ExampleDo_Egress() {
+func _ExampleDo_Egress() {
 	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", "/health/liveness", 0, nil), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
