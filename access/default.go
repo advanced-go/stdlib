@@ -44,7 +44,7 @@ func DefaultFormat(o *Origin, traffic string, start time.Time, duration time.Dur
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"encoding\":%v, "+
-		"\"bytes-written\":%v, "+
+		"\"bytes\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
