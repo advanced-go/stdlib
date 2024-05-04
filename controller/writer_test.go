@@ -15,7 +15,7 @@ func Example_ResponseWriter() {
 	requestId2 := "123-request-id"
 	relatesTo2 := "test-relates-to"
 	content := "this is response write content"
-	w := NewResponseWriter()
+	w := newResponseWriter()
 
 	w.Header().Add(XRequestId, requestId2)
 	w.Header().Add(XRelatesTo, relatesTo2)

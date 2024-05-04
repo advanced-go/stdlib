@@ -21,7 +21,7 @@ type ResponseWriter struct {
 }
 
 // NewResponseWriter - create a new response writer
-func NewResponseWriter() *ResponseWriter {
+func newResponseWriter() *ResponseWriter {
 	w := new(ResponseWriter)
 	w.header = make(http.Header)
 	w.body = new(bytes.Buffer)
