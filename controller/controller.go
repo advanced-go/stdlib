@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
@@ -22,7 +21,7 @@ func NewController(routeName string, primary, secondary *Resource) *Controller {
 }
 
 func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Response, status *core.Status) {
-	if req == nil || do == nil {
+	if req == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	traffic := access.EgressTraffic
@@ -30,6 +29,10 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if rsc.handler != nil {
 		traffic = access.InternalTraffic
 		do = rsc.handler
+	} else {
+		if do == nil {
+			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))
+		}
 	}
 	inDuration, outDuration := durations(rsc, req)
 	duration := time.Duration(0)
@@ -47,23 +50,15 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		resp, status = do(req)
 	} else {
 		duration = outDuration
-		ctx, cancel := context.WithTimeout(req.Context(), outDuration)
-		defer cancel()
-		r2 := req.Clone(ctx)
-		resp, status = do(r2)
-		//req = r2
-		/*
-			if rsc.internal {
-				req, resp, status = doInternal(duration, rsc.handler, req)
-			} else {
-				traffic = access.EgressTraffic
-				if duration <= 0 {
-					resp, status = do(req)
-				} else {
-					resp, status = doEgress(duration, do, req)
-				}
-			}
-		*/
+		// Internal call
+		if rsc.handler != nil {
+			//ctx, cancel := context.WithTimeout(req.Context(), outDuration)
+			//defer cancel()
+			//r2 := req.Clone(ctx)
+			resp, status = doInternal(outDuration, do, req)
+		} else {
+			resp, status = doEgress(outDuration, do, req)
+		}
 	}
 	elapsed := time.Since(start)
 	if resp != nil {

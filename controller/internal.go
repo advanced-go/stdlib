@@ -7,18 +7,13 @@ import (
 	"time"
 )
 
-func doInternal(duration time.Duration, handler core.HttpExchange, req *http.Request) (r2 *http.Request, resp *http.Response, status *core.Status) {
-	//w := NewResponseWriter()
-	if duration > 0 {
-		ctx, cancel := context.WithTimeout(req.Context(), duration)
-		defer cancel()
-		r2 = req.Clone(ctx)
-		resp, status = handler(r2)
-	} else {
-		r2 = req
-		resp, status = handler(req)
+func doInternal(duration time.Duration, handler core.HttpExchange, req *http.Request) (resp *http.Response, status *core.Status) {
+	if duration <= 0 || handler == nil {
+		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatus(http.StatusBadRequest)
 	}
-	//resp = w.Response()
-	//resp.ContentLength = 0
-	return r2, resp, status //core.NewStatus(resp.StatusCode)
+	ctx, cancel := context.WithTimeout(req.Context(), duration)
+	defer cancel()
+	r2 := req.Clone(ctx)
+	resp, status = handler(r2)
+	return
 }
