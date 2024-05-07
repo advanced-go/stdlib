@@ -28,6 +28,6 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	if status.Code == http.StatusGatewayTimeout {
 		flags = access.TimeoutFlag
 	}
-	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body)
+	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
 	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, RouteName, "", Milliseconds(dur), flags)
 }
