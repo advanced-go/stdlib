@@ -81,17 +81,17 @@ func init() {
 func ExampleWriteResponse_StatusHeaders() {
 	// all nil
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, nil, 0, nil)
+	WriteResponse[core.Output](rec, nil, 0, nil, nil)
 	fmt.Printf("test: WriteResponse(w,nil,0,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, nil, http.StatusTeapot, nil)
+	WriteResponse[core.Output](rec, nil, http.StatusTeapot, nil, nil)
 	fmt.Printf("test: WriteResponse(w,nil,StatusTeapot,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code, headers list
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, []Attr{{Key: ContentType, Value: ContentTypeTextHtml}, {Key: AcceptEncoding, Value: AcceptEncodingValue}}, http.StatusOK, nil)
+	WriteResponse[core.Output](rec, []Attr{{Key: ContentType, Value: ContentTypeTextHtml}}, http.StatusOK, nil, CreateAcceptEncodingHeader())
 	fmt.Printf("test: WriteResponse(w,list,StatusOK,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	// status code, http.Header
@@ -99,13 +99,13 @@ func ExampleWriteResponse_StatusHeaders() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
 	h.Add(ContentEncoding, ContentEncodingGzip)
-	WriteResponse[core.Output](rec, h, http.StatusGatewayTimeout, nil)
+	WriteResponse[core.Output](rec, h, http.StatusGatewayTimeout, nil, nil)
 	fmt.Printf("test: WriteResponse(w,http.Header,StatusGatewayTimeout,nil) -> [status-code:%v] [header:%v]\n", rec.Result().StatusCode, rec.Result().Header)
 
 	//Output:
 	//test: WriteResponse(w,nil,0,nil) -> [status-code:200] [header:map[]]
 	//test: WriteResponse(w,nil,StatusTeapot,nil) -> [status-code:418] [header:map[]]
-	//test: WriteResponse(w,list,StatusOK,nil) -> [status-code:200] [header:map[Accept-Encoding:[gzip, deflate, br] Content-Type:[text/html]]]
+	//test: WriteResponse(w,list,StatusOK,nil) -> [status-code:200] [header:map[Content-Type:[text/html]]]
 	//test: WriteResponse(w,http.Header,StatusGatewayTimeout,nil) -> [status-code:504] [header:map[Content-Encoding:[gzip] Content-Type:[application/json]]]
 
 }
@@ -116,14 +116,14 @@ func ExampleWriteResponse_JSON() {
 
 	// JSON activity list
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, h, 0, activityList)
+	WriteResponse[core.Output](rec, h, 0, activityList, nil)
 	buf, status0 := io.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: WriteResponse(w,http.Header,OK,[]activity) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
 
 	// JSON reader
 	rec = httptest.NewRecorder()
 	reader := bytes.NewReader(activityJson)
-	WriteResponse[core.Output](rec, h, 0, reader)
+	WriteResponse[core.Output](rec, h, 0, reader, nil)
 	buf, status0 = io.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: WriteResponse(w,http.Header,OK,io.Reader) -> [read-all:%v] [in:%v] [out:%v]\n", status0, len(activityJson), len(buf))
 
@@ -136,21 +136,21 @@ func ExampleWriteResponse_JSON() {
 func ExampleWriteResponse_Encoding() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
-	h.Add(AcceptEncoding, AcceptEncodingValue)
+	//h.Add(AcceptEncoding, AcceptEncodingValue)
 
 	// Should encode
 	rec := httptest.NewRecorder()
-	WriteResponse[core.Output](rec, h, 0, activityList)
+	WriteResponse[core.Output](rec, h, 0, activityList, CreateAcceptEncodingHeader())
 	buf, status0 := io.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
 
 	// Should not encode as a ContentEncoding header exists
 	h = make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
-	h.Add(AcceptEncoding, AcceptEncodingValue)
+	//h.Add(AcceptEncoding, AcceptEncodingValue)
 	h.Add(ContentEncoding, io.NoneEncoding)
 	rec = httptest.NewRecorder()
-	WriteResponse[core.Output](rec, h, 0, activityList)
+	WriteResponse[core.Output](rec, h, 0, activityList, CreateAcceptEncodingHeader())
 	buf, status0 = io.ReadAll(rec.Result().Body, nil)
 	fmt.Printf("test: WriteResponse(w,http.Header,0,[]activity) -> [read-all:%v] [buf:%v][header:%v]\n", status0, http.DetectContentType(buf), rec.Result().Header)
 
