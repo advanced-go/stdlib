@@ -1,14 +1,6 @@
 package host
 
-import (
-	"context"
-	"fmt"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"time"
-)
-
+/*
 func httpCall(w http.ResponseWriter, r *http.Request) {
 	cnt := 0
 	var err2 error
@@ -97,3 +89,6 @@ func ExampleNewIngressTimeoutIntermediary_100ms() {
 	//test: NewIngressTimeoutIntermediary() -> [status-code:504]
 
 }
+
+
+*/

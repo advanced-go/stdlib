@@ -4,13 +4,6 @@ import (
 	"fmt"
 )
 
-/*
-func proxyTestHttpHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusGatewayTimeout)
-}
-
-*/
-
 func ExampleProxy_Add() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
@@ -21,14 +14,14 @@ func ExampleProxy_Add() {
 	err = proxy.Register(path, nil)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
-	err = proxy.Register(path, appHttpHandler)
+	err = proxy.Register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
-	err = proxy.Register(path, appHttpHandler)
+	err = proxy.Register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = proxy.Register(path, appHttpHandler)
+	err = proxy.Register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	//Output:
@@ -50,14 +43,14 @@ func ExampleProxy_Get() {
 	p = proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [proxy:%v]\n", path, p != nil)
 
-	err := proxy.Register(path, appHttpHandler)
+	err := proxy.Register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	handler := proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = proxy.Register(path, appHttpHandler)
+	err = proxy.Register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 	handler = proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)

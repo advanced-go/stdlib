@@ -4,19 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/messaging"
 	"github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"time"
 )
 
 var (
-	exchangeProxy = NewProxy2()
+	exchangeProxy = NewProxy()
 	hostDuration  time.Duration
 	authExchange  core.HttpExchange
-	okFunc2       = func(code int) bool { return code == http.StatusOK }
+	okFunc        = func(code int) bool { return code == http.StatusOK }
 )
 
-func SetHostTimeout2(d time.Duration) {
+func SetHostTimeout(d time.Duration) {
 	hostDuration = d
 }
 
@@ -24,7 +25,7 @@ func SetAuthExchange(h core.HttpExchange, ok func(int) bool) {
 	if h != nil {
 		authExchange = h
 		if ok != nil {
-			okFunc2 = ok
+			okFunc = ok
 		}
 	}
 }
@@ -40,14 +41,14 @@ func RegisterExchange(path string, handler core.HttpExchange) error {
 	}
 	h := handler
 	if authExchange != nil {
-		h = NewConditionalIntermediary2(authExchange, handler, okFunc)
+		h = NewConditionalIntermediary(authExchange, handler, okFunc)
 	}
 	return exchangeProxy.Register(path, h)
 
 }
 
-// HttpHandler2 - process an HTTP request
-func HttpHandler2(w http.ResponseWriter, r *http.Request) {
+// HttpHandler - process an HTTP request
+func HttpHandler(w http.ResponseWriter, r *http.Request) {
 	if r == nil || w == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -65,4 +66,9 @@ func HttpHandler2(w http.ResponseWriter, r *http.Request) {
 	//resp, status := handler(r)
 	//httpx.WriteResponse[core.Log](w, resp.Header, status.HttpCode(), resp.Body)
 	hostExchange[core.Log](w, r, hostDuration, handler)
+}
+
+func shutdownHost(msg *messaging.Message) error {
+	//TO DO: authentication and implementation
+	return nil
 }

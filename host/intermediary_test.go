@@ -1,77 +1,89 @@
 package host
 
 import (
+	"bytes"
+	"context"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
-	"net/http/httptest"
+	"time"
 )
 
-func serviceTestHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Service OK")
+func serviceTestExchange(_ *http.Request) (*http.Response, *core.Status) {
+	//w.WriteHeader(http.StatusOK)
+	//fmt.Fprint(w, "Service OK")
+	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(bytes.NewReader([]byte("Service OK")))}, core.StatusOK()
 }
 
-func authTestHandler(w http.ResponseWriter, r *http.Request) {
+func authTestExchange(r *http.Request) (*http.Response, *core.Status) {
 	if r != nil {
 		tokenString := r.Header.Get(Authorization)
 		if tokenString == "" {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprint(w, "Missing authorization header")
+			//w.WriteHeader(http.StatusUnauthorized)
+			//fmt.Fprint(w, "Missing authorization header")
+			return &http.Response{StatusCode: http.StatusUnauthorized, Body: io.NopCloser(bytes.NewReader([]byte("Missing authorization header")))}, core.NewStatus(http.StatusUnauthorized)
 		}
 	}
+	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(bytes.NewReader([]byte("Authorized")))}, core.StatusOK()
 }
 
 func ExampleConditionalIntermediary_Nil() {
 	ic := NewConditionalIntermediary(nil, nil, nil)
-	rec := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
-	ic(rec, r)
-	buf, _ := io.ReadAll(rec.Result().Body)
-	fmt.Printf("test: ConditionalIntermediary()-nil-components -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
-	ic = NewConditionalIntermediary(nil, serviceTestHandler, nil)
-	rec = httptest.NewRecorder()
-	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
-	ic(rec, r)
-	buf, _ = io.ReadAll(rec.Result().Body)
-	fmt.Printf("test: ConditionalIntermediary()-service-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+	_, status := ic(r)
+	fmt.Printf("test: ConditionalIntermediary()-nil-auth -> [status:%v]\n", status)
 
-	ic = NewConditionalIntermediary(authTestHandler, serviceTestHandler, nil)
-	rec = httptest.NewRecorder()
-	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
-	r.Header.Add(Authorization, "token")
-	ic(rec, r)
-	buf, _ = io.ReadAll(rec.Result().Body)
-	fmt.Printf("test: ConditionalIntermediary()-auth-only -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+	ic = NewConditionalIntermediary(authTestExchange, nil, nil)
+	_, status = ic(r)
+	fmt.Printf("test: ConditionalIntermediary()-nil-service -> [status:%v]\n", status)
 
 	//Output:
-	//test: ConditionalIntermediary()-nil-components -> [status-code:500] [content:error: component 2 is nil]
-	//test: ConditionalIntermediary()-service-only -> [status-code:200] [content:Service OK]
-	//test: ConditionalIntermediary()-auth-only -> [status-code:200] [content:Service OK]
+	//test: ConditionalIntermediary()-nil-auth -> [status:Bad Request [error: Conditional Intermediary HttpExchange 1 is nil]]
+	//test: ConditionalIntermediary()-nil-service -> [status:Bad Request [error: Conditional Intermediary HttpExchange 2 is nil]]
 
 }
 
-func ExampleConditionalIntermediary_HttpHandler() {
-	ic := NewConditionalIntermediary(authTestHandler, serviceTestHandler, nil)
-
-	rec := httptest.NewRecorder()
+func ExampleConditionalIntermediary_AuthExchange() {
+	ic := NewConditionalIntermediary(authTestExchange, serviceTestExchange, nil)
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 
-	ic(rec, r)
-	buf, _ := io.ReadAll(rec.Result().Body)
-	fmt.Printf("test: ConditionalIntermediary()-auth-failure -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+	resp, status := ic(r)
+	buf, _ := io.ReadAll(resp.Body)
+	fmt.Printf("test: ConditionalIntermediary()-auth-failure -> [status:%v] [content:%v]\n", status, string(buf))
 
-	rec = httptest.NewRecorder()
-	r, _ = http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	r.Header.Add(Authorization, "token")
-
-	ic(rec, r)
-	buf, _ = io.ReadAll(rec.Result().Body)
-	fmt.Printf("test: ConditionalIntermediary()-auth-success -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
+	resp, status = ic(r)
+	buf, _ = io.ReadAll(resp.Body)
+	fmt.Printf("test: ConditionalIntermediary()-auth-success -> [status:%v] [content:%v]\n", status, string(buf))
 
 	//Output:
-	//test: ConditionalIntermediary()-auth-failure -> [status-code:401] [content:Missing authorization header]
-	//test: ConditionalIntermediary()-auth-success -> [status-code:200] [content:Service OK]
+	//test: ConditionalIntermediary()-auth-failure -> [status:Unauthorized] [content:Missing authorization header]
+	//test: ConditionalIntermediary()-auth-success -> [status:OK] [content:Service OK]
+
+}
+
+func ExampleAccessLogIntermediary() {
+	ic := NewAccessLogIntermediary("test-route", testDo)
+
+	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
+	resp, status := ic(r)
+	buf, _ := io.ReadAll(resp.Body)
+	fmt.Printf("test: AccessLogIntermediary()-OK -> [status:%v] [content:%v]\n", status, len(buf) > 0)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*5)
+	defer cancel()
+	r, _ = http.NewRequestWithContext(ctx, http.MethodGet, "https://www.google.com/search?q-golang", nil)
+	resp, status = ic(r)
+	buf = nil
+	if resp.Body != nil {
+		buf, _ = io.ReadAll(resp.Body)
+	}
+	fmt.Printf("test: AccessLogIntermediary()-Gateway-Timeout -> [status:%v] [content:%v]\n", status, string(buf))
+
+	//Output:
+	//test: AccessLogIntermediary()-OK -> [status:OK] [content:true]
+	//test: AccessLogIntermediary()-Gateway-Timeout -> [status:Timeout] [content:Timeout [Get "https://www.google.com/search?q=golang": context deadline exceeded]]
 
 }

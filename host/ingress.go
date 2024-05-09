@@ -1,19 +1,6 @@
 package host
 
-import (
-	"context"
-	"fmt"
-	"github.com/advanced-go/stdlib/access"
-	"github.com/advanced-go/stdlib/core"
-	"github.com/google/uuid"
-	"net/http"
-	"time"
-)
-
-const (
-	RouteName = "host"
-)
-
+/*
 func NewHostTimeoutIntermediary(d time.Duration, c2 core.HttpHandler) core.HttpHandler {
 	return newIngressTimeoutIntermediary(RouteName, d, c2, access.IngressTraffic)
 }

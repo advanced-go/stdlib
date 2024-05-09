@@ -41,14 +41,14 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 	}
 }
 
-func ExampleHttpHandler2() {
+func ExampleHttpHandler() {
 	pattern := "github/advanced-go/host/HttpHandler"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/HttpHandler:entry", nil)
 
 	RegisterExchange(pattern, appHttpExchange)
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 
 	fmt.Printf("test: HttpHandler() -> %v\n", rec.Result().StatusCode)
 
@@ -61,11 +61,11 @@ func ExampleHttpHandler_Host_OK() {
 	pattern := "github/advanced-go/host/ok"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/ok:entry", nil)
 
-	SetHostTimeout2(time.Second * 2)
+	SetHostTimeout(time.Second * 2)
 	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -78,11 +78,11 @@ func ExampleHttpHandler_Host_Timeout() {
 	pattern := "github/advanced-go/host/timeout"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/timeout:entry", nil)
 
-	SetHostTimeout2(time.Millisecond)
+	SetHostTimeout(time.Millisecond)
 	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -96,11 +96,11 @@ func ExampleHttpHandler_Auth_Authorized() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/authorized:entry", nil)
 
 	SetAuthExchange(testAuthExchangeOK, nil)
-	SetHostTimeout2(time.Second * 2)
+	SetHostTimeout(time.Second * 2)
 	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -114,11 +114,11 @@ func ExampleHttpHandler_Auth_Unauthorized() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/unauthorized:entry", nil)
 
 	SetAuthExchange(testAuthExchangeFail, nil)
-	SetHostTimeout2(time.Second * 2)
+	SetHostTimeout(time.Second * 2)
 	RegisterExchange(pattern, testDo)
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -132,11 +132,11 @@ func ExampleHttpHandler_AccessLog_Service_OK() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-ok:entry", nil)
 
 	SetAuthExchange(testAuthExchangeOK, nil)
-	SetHostTimeout2(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-ok", testDo))
+	SetHostTimeout(time.Second * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-ok", testDo))
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -150,11 +150,11 @@ func ExampleHttpHandler_AccessLog_Service_Timeout() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-timeout:entry", nil)
 
 	SetAuthExchange(testAuthExchangeOK, nil)
-	SetHostTimeout2(time.Millisecond * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-timeout", testDo))
+	SetHostTimeout(time.Millisecond * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-timeout", testDo))
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 
@@ -168,11 +168,11 @@ func ExampleHttpHandler_AccessLog_Service_Unauthorized() {
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/access-log-service-unauthorized:entry", nil)
 
 	SetAuthExchange(testAuthExchangeFail, nil)
-	SetHostTimeout2(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary2("log-route-unauthorized", testDo))
+	SetHostTimeout(time.Second * 4)
+	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-unauthorized", testDo))
 
 	rec := httptest.NewRecorder()
-	HttpHandler2(rec, r)
+	HttpHandler(rec, r)
 	buf, _ := io.ReadAll(rec.Result().Body)
 	fmt.Printf("test: HttpHandler() -> [status-code:%v] [content:%v]\n", rec.Result().StatusCode, string(buf))
 

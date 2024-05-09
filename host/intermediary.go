@@ -1,7 +1,7 @@
 package host
 
 import (
-	"fmt"
+	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
@@ -13,41 +13,45 @@ const (
 	XRequestId    = "X-Request-Id"
 )
 
-func NewConditionalIntermediary(c1 core.HttpHandler, c2 core.HttpHandler, ok func(int) bool) core.HttpHandler {
-	return func(w http.ResponseWriter, r *http.Request) {
+func badRequest(msg string) (*http.Response, *core.Status) {
+	return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(http.StatusBadRequest, errors.New(msg))
+}
+
+func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok func(int) bool) core.HttpExchange {
+	return func(r *http.Request) (resp *http.Response, status *core.Status) {
+		if c1 == nil {
+			return badRequest("error: Conditional Intermediary HttpExchange 1 is nil")
+		}
 		if c2 == nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "error: component 2 is nil")
-			return
+			return badRequest("error: Conditional Intermediary HttpExchange 2 is nil")
 		}
-		w2 := newWrapper(w)
-		if c1 != nil {
-			c1(w2, r)
+		resp, status = c1(r)
+		if resp == nil {
+			return badRequest("error: Conditional Intermediary HttpExchange 1 response is nil")
 		}
-		if (ok == nil && w2.statusCode == http.StatusOK) || (ok != nil && ok(w2.statusCode)) {
-			c2(w, r)
+		if (ok == nil && resp.StatusCode == http.StatusOK) || (ok != nil && ok(resp.StatusCode)) {
+			resp, status = c2(r)
 		}
+		return
 	}
 }
 
-func NewAccessLogIntermediary(routeName string, c2 core.HttpHandler) core.HttpHandler {
-	return func(w http.ResponseWriter, r *http.Request) {
+func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpExchange {
+	return func(r *http.Request) (resp *http.Response, status *core.Status) {
 		if c2 == nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "error: component 2 is nil")
-			return
+			return badRequest("error: AccessLog Intermediary HttpExchange is nil")
 		}
-		w2 := newWrapper(w)
 		flags := ""
 		var dur time.Duration
 		if ct, ok := r.Context().Deadline(); ok {
 			dur = time.Until(ct) * -1
 		}
 		start := time.Now().UTC()
-		c2(w2, r)
-		if w2.statusCode == http.StatusGatewayTimeout {
+		resp, status = c2(r)
+		if status.Code == http.StatusGatewayTimeout {
 			flags = access.TimeoutFlag
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, &http.Response{StatusCode: w2.statusCode, ContentLength: w2.written}, routeName, "", Milliseconds(dur), flags)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, routeName, "", access.Milliseconds(dur), flags)
+		return
 	}
 }
