@@ -48,15 +48,6 @@ func (a *Agent) Send(msg *Message) {
 	a.m.Send(msg)
 }
 
-// SendData - send a message to the data channel
-/*
-func (a *Agent) SendData(msg *Message) {
-	a.m.SendData(msg)
-}
-
-
-*/
-
 // Register - register an agent with a directory
 func (a *Agent) Register(e *Exchange) error {
 	return e.Add(a.m)

@@ -15,13 +15,13 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 
-	ContentType = "Content-Type"
-	XRelatesTo  = "x-relates-to"
-	XMessageId  = "x-message-id"
-	XTo         = "x-to"
-	XFrom       = "x-from"
-	XEvent      = "x-event"
-	//XDuration         = "x-duration"
+	ContentType       = "Content-Type"
+	XRelatesTo        = "x-relates-to"
+	XMessageId        = "x-message-id"
+	XTo               = "x-to"
+	XFrom             = "x-from"
+	XEvent            = "x-event"
+	XChannel          = "x-channel"
 	ContentTypeStatus = "application/status"
 	ContentTypeConfig = "application/config"
 	ChannelData       = "DATA"
@@ -40,7 +40,6 @@ type Map map[string]*Message
 
 // Message - message
 type Message struct {
-	Channel string
 	Header  http.Header
 	Body    any
 	ReplyTo Handler
@@ -51,8 +50,9 @@ func NewMessage(channel, to, from, event string) *Message {
 	if len(channel) == 0 {
 		channel = ChannelNone
 	}
-	m.Channel = channel
+	//m.Channel = channel
 	m.Header = make(http.Header)
+	m.Header.Add(XChannel, channel)
 	m.Header.Add(XTo, to)
 	m.Header.Add(XFrom, from)
 	m.Header.Add(XEvent, event)
@@ -92,6 +92,10 @@ func (m *Message) RelatesTo() string {
 	return m.Header.Get(XRelatesTo)
 }
 
+func (m *Message) Channel() string {
+	return m.Header.Get(XChannel)
+}
+
 func (m *Message) Status() *core.Status {
 	ct := m.Header.Get(ContentType)
 	if ct != ContentTypeStatus || m.Body == nil {
@@ -100,7 +104,7 @@ func (m *Message) Status() *core.Status {
 	if s, ok := m.Body.(*core.Status); ok {
 		return s
 	}
-	return nil //StatusOK()
+	return nil
 }
 
 func (m *Message) Config() map[string]string {
@@ -137,22 +141,6 @@ func (m *Message) SetContent(contentType string, content any) error {
 	return nil
 }
 
-/*
-func (m *Message) Duration() string {
-	ct := m.Header.Get(XDuration)
-	if len(ct) == 0 {
-		return fmt.Sprintf("%v", time.Second*0)
-	}
-	return ct
-}
-
-func (m *Message) SetDuration(d time.Duration) {
-	m.Header.Add(XDuration, fmt.Sprintf("%v", d))
-}
-
-
-*/
-
 // SendReply - function used by message recipient to reply with a Status
 func SendReply(msg *Message, status *core.Status) {
 	if msg == nil || msg.ReplyTo == nil {
@@ -160,6 +148,5 @@ func SendReply(msg *Message, status *core.Status) {
 	}
 	m := NewMessageWithStatus(ChannelNone, msg.From(), msg.To(), msg.Event(), status)
 	m.Header.Add(XRelatesTo, msg.RelatesTo())
-	//msg.SetDuration(duration)
 	msg.ReplyTo(m)
 }

@@ -52,7 +52,7 @@ func (d *Exchange) Send(msg *Message) error {
 		return nil
 	}
 	if msg == nil {
-		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as messag is nil"))
+		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as message is nil"))
 	}
 	mbox := d.get(msg.To())
 	if mbox == nil {
