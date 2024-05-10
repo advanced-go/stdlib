@@ -13,7 +13,9 @@ func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.
 	if cmd == nil {
 		cmd = make(chan *messaging.Message, 16)
 	}
-	return ex.Add(messaging.NewMailboxWithCtrl(uri, false, cmd, data))
+	a, _ := messaging.NewAgentWithChannel(uri, cmd, data, nil, nil)
+	ex.Register(a) //.NewMailboxWithCtrl(uri, false, cmd, data))
+	return nil
 }
 
 var start time.Time

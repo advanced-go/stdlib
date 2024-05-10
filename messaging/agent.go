@@ -25,7 +25,7 @@ type Agent interface {
 }
 
 // AgentFunc - agent function
-type AgentFunc func(uri string, ctrl <-chan *Message, data <-chan *Message, state any)
+type AgentFunc func(uri string, ctrl, data <-chan *Message, state any)
 
 type agent struct {
 	uri      string
@@ -40,11 +40,11 @@ func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
 }
 
-func NewAgentWithChannel(uri string, ctrl chan *Message, data chan *Message, run AgentFunc, state any) (Agent, error) {
+func NewAgentWithChannel(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, ctrl, data, run, state)
 }
 
-func newAgent(uri string, ctrl chan *Message, data chan *Message, run AgentFunc, state any) (Agent, error) {
+func newAgent(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
