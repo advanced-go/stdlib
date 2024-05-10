@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+var emptyRun = func(uri string, ctrl chan *Message, data chan *Message, state any) {
+
+}
+
 func ExampleRegister() {
 	testDir := NewExchange()
 
@@ -13,7 +17,7 @@ func ExampleRegister() {
 	a := testDir.Get(uri1)
 	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a)
 
-	a1, _ := NewAgent(uri1, func(agent any) {})
+	a1, _ := NewAgent(uri1, emptyRun, nil)
 	err := testDir.Register(a1)
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri1, err)
 
@@ -22,7 +26,7 @@ func ExampleRegister() {
 	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a1)
 
 	uri2 := "urn:test:two"
-	a2, _ := NewAgent(uri2, func(agent any) {})
+	a2, _ := NewAgent(uri2, emptyRun, nil)
 	err = testDir.Register(a2)
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri2, err)
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())

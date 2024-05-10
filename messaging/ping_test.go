@@ -19,7 +19,7 @@ func ExamplePing_Good() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri1, func(agent any) {})
+	a, _ := NewAgent(uri1, emptyRun, nil)
 	pingDir.Register(a)
 	go pingGood(c)
 	status := ping(nil, pingDir, uri1)
@@ -35,7 +35,7 @@ func ExamplePing_Timeout() {
 	c := make(chan *Message, 16)
 
 	pingDir := NewExchange()
-	a, _ := NewAgent(uri2, func(agent any) {})
+	a, _ := NewAgent(uri2, emptyRun, nil)
 	pingDir.Register(a)
 	go pingTimeout(c)
 	status := ping(nil, pingDir, uri2)
@@ -51,7 +51,7 @@ func ExamplePing_Error() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri3, func(agent any) {})
+	a, _ := NewAgent(uri3, emptyRun, nil)
 	pingDir.Register(a) //NewMailboxWithCtrl(uri3, false, c, nil))
 	go pingError(c, errors.New("ping response error"))
 	status := ping(nil, pingDir, uri3)
@@ -68,7 +68,7 @@ func ExamplePing_Delay() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri4, func(agent any) {})
+	a, _ := NewAgent(uri4, emptyRun, nil)
 	pingDir.Register(a) //NewMailboxWithCtrl(uri4, false, c, nil))
 	go pingDelay(c)
 	status := ping(nil, pingDir, uri4)
