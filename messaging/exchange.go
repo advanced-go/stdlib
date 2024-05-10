@@ -62,20 +62,6 @@ func (d *Exchange) Send(msg *Message) error {
 	return nil
 }
 
-// SendData - send a message to the item's data channel
-/*
-func (d *Exchange) SendData(msg *Message) error {
-	mbox := d.get(msg.To())
-	if mbox == nil {
-		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To()))
-	}
-	mbox.SendData(msg)
-	return nil
-}
-
-
-*/
-
 // Add - add a mailbox
 func (d *Exchange) Add(m *Mailbox) error {
 	if m == nil {

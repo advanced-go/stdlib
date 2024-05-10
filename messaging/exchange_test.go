@@ -117,7 +117,7 @@ func Example_Remove() {
 	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
 	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)
 
-	m.Close()
+	m.close()
 
 	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
 	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)

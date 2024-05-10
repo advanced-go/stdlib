@@ -64,7 +64,7 @@ func DefaultRun(m *Mailbox, ctrlHandler Handler) {
 			switch msg.Event() {
 			case ShutdownEvent:
 				ctrlHandler(NewMessageWithStatus(ChannelControl, "", "", msg.Event(), core.StatusOK()))
-				m.Close()
+				m.close()
 				return
 			default:
 				ctrlHandler(msg)

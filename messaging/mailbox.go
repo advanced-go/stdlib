@@ -61,7 +61,7 @@ func (m *Mailbox) Send(msg *Message) {
 }
 
 // Close - close the mailbox channels and unregister the mailbox with a Directory
-func (m *Mailbox) Close() {
+func (m *Mailbox) close() {
 	if m.unregister != nil {
 		m.unregister()
 	}
