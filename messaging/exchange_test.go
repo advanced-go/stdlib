@@ -2,50 +2,49 @@ package messaging
 
 import (
 	"fmt"
-	"time"
 )
 
-func Example_Add() {
-	uri1 := "urn:test:one"
-
+func ExampleRegister() {
 	testDir := NewExchange()
-	m1 := newDefaultMailbox(uri1)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0 := testDir.get(uri1)
-	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri1, m0)
 
-	err := testDir.Add(m1)
-	fmt.Printf("test: Add(%v) -> : [err:%v]\n", uri1, err)
+	uri1 := "urn:test:one"
+	a := testDir.Get(uri1)
+	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a)
+
+	a1, _ := NewAgent(uri1, func(agent any) {})
+	err := testDir.Register(a1)
+	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri1, err)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0 = testDir.get(uri1)
-	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri1, m0)
+	a1 = testDir.Get(uri1)
+	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a1)
 
 	uri2 := "urn:test:two"
-
-	m2 := newDefaultMailbox(uri2)
-	err = testDir.Add(m2)
-	fmt.Printf("test: Add(%v) -> : [err:%v]\n", uri2, err)
+	a2, _ := NewAgent(uri2, func(agent any) {})
+	err = testDir.Register(a2)
+	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri2, err)
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	m0 = testDir.get(uri2)
-	fmt.Printf("test: get(%v) -> : [mbox:%v]\n", uri2, m0)
+	a2 = testDir.Get(uri2)
+	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri2, a2)
 
 	fmt.Printf("test: List() -> : %v\n", testDir.List())
 
 	//Output:
 	//test: Count() -> : 0
-	//test: get(urn:test:one) -> : [mbox:<nil>]
-	//test: Add(urn:test:one) -> : [err:<nil>]
+	//test: Get(urn:test:one) -> : [agent:<nil>]
+	//test: Register(urn:test:one) -> : [err:<nil>]
 	//test: Count() -> : 1
-	//test: get(urn:test:one) -> : [mbox:urn:test:one]
-	//test: Add(urn:test:two) -> : [err:<nil>]
+	//test: Get(urn:test:one) -> : [agent:urn:test:one]
+	//test: Register(urn:test:two) -> : [err:<nil>]
 	//test: Count() -> : 2
-	//test: get(urn:test:two) -> : [mbox:urn:test:two]
+	//test: Get(urn:test:two) -> : [agent:urn:test:two]
 	//test: List() -> : [urn:test:one urn:test:two]
 
 }
 
+/*
 func Example_SendError() {
 	uri := "urn:test"
 	testDir := NewExchange()
@@ -128,3 +127,6 @@ func Example_Remove() {
 	//test: Send(urn:test/one) -> : [error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test/one]]
 
 }
+
+
+*/

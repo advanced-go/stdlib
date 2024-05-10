@@ -22,7 +22,7 @@ func NewExchange() *Exchange {
 	return e
 }
 
-// Count - number of items in the sync map
+// Count - number of agents
 func (d *Exchange) Count() int {
 	count := 0
 	d.m.Range(func(key, value any) bool {
@@ -32,7 +32,7 @@ func (d *Exchange) Count() int {
 	return count
 }
 
-// List - a list of item uri's
+// List - a list of agent uri's
 func (d *Exchange) List() []string {
 	var uri []string
 	d.m.Range(func(key, value any) bool {
@@ -52,39 +52,39 @@ func (d *Exchange) Send(msg *Message) error {
 		return nil
 	}
 	if msg == nil {
-		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as message is nil"))
+		return errors.New(fmt.Sprintf("error: exchange.Send() failed as message is nil"))
 	}
-	mbox := d.get(msg.To())
-	if mbox == nil {
-		return errors.New(fmt.Sprintf("error: exchange.SendCtrl() failed as the message To is empty or invalid [%v]", msg.To()))
+	a := d.Get(msg.To())
+	if a == nil {
+		return errors.New(fmt.Sprintf("error: exchange.Send() failed as the message To is empty or invalid [%v]", msg.To()))
 	}
-	mbox.Send(msg)
+	a.Message(msg)
 	return nil
 }
 
-// Add - add a mailbox
-func (d *Exchange) Add(m *Mailbox) error {
-	if m == nil {
-		return errors.New("error: exchange.Add() mailbox is nil")
+// Register - register an agent
+func (d *Exchange) Register(agent Agent) error {
+	if agent == nil {
+		return errors.New("error: exchange.Register() agent is nil")
 	}
-	if len(m.uri) == 0 {
-		return errors.New("error: exchange.Add() mailbox uri is empty")
-	}
-	if m.ctrl == nil {
-		return errors.New("error: exchange.Add() mailbox command channel is nil")
-	}
-	_, ok := d.m.Load(m.uri)
+	//if len(m.uri) == 0 {
+	//	return errors.New("error: exchange.Add() mailbox uri is empty")
+	//}
+	//if m.ctrl == nil {
+	//	return errors.New("error: exchange.Add() mailbox command channel is nil")
+	//}
+	_, ok := d.m.Load(agent.Uri())
 	if ok {
-		return errors.New(fmt.Sprintf("error: exchange.Add() mailbox already exists: [%v]", m.uri))
+		return errors.New(fmt.Sprintf("error: exchange.Register() agent already exists: [%v]", agent.Uri()))
 	}
-	d.m.Store(m.uri, m)
-	m.unregister = func() {
-		d.m.Delete(m.uri)
-	}
+	d.m.Store(agent.Uri(), agent)
+	//m.unregister = func() {
+	//	d.m.Delete(m.uri)
+	//}
 	return nil
 }
 
-func (d *Exchange) get(uri string) *Mailbox {
+func (d *Exchange) Get(uri string) Agent {
 	if len(uri) == 0 {
 		return nil
 	}
@@ -92,17 +92,21 @@ func (d *Exchange) get(uri string) *Mailbox {
 	if !ok1 {
 		return nil
 	}
-	if mbox, ok2 := v.(*Mailbox); ok2 {
-		return mbox
+	if a, ok2 := v.(Agent); ok2 {
+		return a
 	}
 	return nil
 }
 
 // Shutdown - close an item's mailbox
+/*
 func (d *Exchange) shutdown(msg Message) error {
 	// TO DO: add authentication
 	return nil
 }
+
+
+*/
 
 /*
 func (d *exchange) shutdown(uri string) runtime.Status {

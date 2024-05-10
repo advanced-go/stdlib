@@ -2,74 +2,94 @@ package messaging
 
 import (
 	"errors"
-	"github.com/advanced-go/stdlib/core"
 )
 
-// Agent - AI Agent
-type Agent struct {
-	m   *Mailbox
-	run func(m *Mailbox)
+const (
+	ChannelSize = 16
+)
+
+// Agent - Intelligent Agent
+// TODO : Track agent assignment as part of the URI or separate identifier??
+//
+//	Track agent NID or class/type?
+type Agent interface {
+	Uri() string
+	Message(m *Message)
+	Run()
+	Shutdown()
 }
 
-// NewDefaultAgent - create an agent with only a control channel, registered with the HostDirectory,
-// and using the default run function.
-func NewDefaultAgent(uri string, ctrlHandler Handler, public bool) (*Agent, error) {
-	return newDefaultAgent(uri, ctrlHandler, HostExchange, public)
+type RunFunc func(agent any)
+
+type agent struct {
+	uri  string
+	ctrl chan *Message
+	data chan *Message
+	run  RunFunc
 }
 
-func newDefaultAgent(uri string, ctrlHandler Handler, e *Exchange, public bool) (*Agent, error) {
+func NewAgent(uri string, run RunFunc) (Agent, error) {
+	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run)
+}
+
+func NewAgentWithChannel(uri string, ctrl chan *Message, data chan *Message, run RunFunc) (Agent, error) {
+	if ctrl == nil {
+		ctrl = make(chan *Message, ChannelSize)
+	}
+	if data == nil {
+		data = make(chan *Message, ChannelSize)
+	}
+	return newAgent(uri, ctrl, data, run)
+}
+
+func newAgent(uri string, ctrl chan *Message, data chan *Message, run RunFunc) (Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
-	if ctrlHandler == nil {
-		return nil, errors.New("error: agent controller message handler is nil")
+	if ctrl == nil {
+		return nil, errors.New("error: agent control channel is nil")
 	}
-	a := new(Agent)
-	a.m = NewMailbox(uri, nil)
-	a.m.public = public
-	a.run = func(m *Mailbox) {
-		DefaultRun(m, ctrlHandler)
+	if run == nil {
+		return nil, errors.New("error: agent RunFunc is nil")
 	}
-	return a, a.Register(e)
+	a := new(agent)
+	a.uri = uri
+	a.ctrl = ctrl
+	a.data = data
+	a.run = run
+	return a, nil
+}
+
+// Uri - identity
+func (a *agent) Uri() string {
+	return a.uri
+}
+
+// String - identity
+func (a *agent) String() string {
+	return a.uri
+}
+
+// Message - message an agent
+func (a *agent) Message(msg *Message) {
+	if msg == nil {
+		return
+	}
+	if msg.Channel() == ChannelControl && a.ctrl != nil {
+		a.ctrl <- msg
+	} else {
+		if msg.Channel() == ChannelData && a.data != nil {
+			a.data <- msg
+		}
+	}
 }
 
 // Run - run the agent
-func (a *Agent) Run() {
-	go a.run(a.m)
+func (a *agent) Run() {
+	go a.run(a)
 }
 
 // Shutdown - shutdown the agent
-func (a *Agent) Shutdown() {
-	a.m.Send(NewControlMessage("", "", ShutdownEvent))
-}
-
-// Send - send a message
-func (a *Agent) Send(msg *Message) {
-	a.m.Send(msg)
-}
-
-// Register - register an agent with a directory
-func (a *Agent) Register(e *Exchange) error {
-	return e.Add(a.m)
-}
-
-// DefaultRun - a simple run function that only handles control messages, and dispatches via a message handler
-func DefaultRun(m *Mailbox, ctrlHandler Handler) {
-	for {
-		select {
-		case msg, open := <-m.ctrl:
-			if !open {
-				return
-			}
-			switch msg.Event() {
-			case ShutdownEvent:
-				ctrlHandler(NewMessageWithStatus(ChannelControl, "", "", msg.Event(), core.StatusOK()))
-				m.close()
-				return
-			default:
-				ctrlHandler(msg)
-			}
-		default:
-		}
-	}
+func (a *agent) Shutdown() {
+	a.Message(NewControlMessage("", "", ShutdownEvent))
 }

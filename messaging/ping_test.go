@@ -19,7 +19,8 @@ func ExamplePing_Good() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
+	a, _ := NewAgent(uri1, func(agent any) {})
+	pingDir.Register(a)
 	go pingGood(c)
 	status := ping(nil, pingDir, uri1)
 	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
@@ -34,7 +35,8 @@ func ExamplePing_Timeout() {
 	c := make(chan *Message, 16)
 
 	pingDir := NewExchange()
-	pingDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
+	a, _ := NewAgent(uri2, func(agent any) {})
+	pingDir.Register(a)
 	go pingTimeout(c)
 	status := ping(nil, pingDir, uri2)
 	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
@@ -49,7 +51,8 @@ func ExamplePing_Error() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
+	a, _ := NewAgent(uri3, func(agent any) {})
+	pingDir.Register(a) //NewMailboxWithCtrl(uri3, false, c, nil))
 	go pingError(c, errors.New("ping response error"))
 	status := ping(nil, pingDir, uri3)
 	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Err, timeout, status.Duration)
@@ -65,7 +68,8 @@ func ExamplePing_Delay() {
 	pingDir := NewExchange()
 
 	c := make(chan *Message, 16)
-	pingDir.Add(NewMailboxWithCtrl(uri4, false, c, nil))
+	a, _ := NewAgent(uri4, func(agent any) {})
+	pingDir.Register(a) //NewMailboxWithCtrl(uri4, false, c, nil))
 	go pingDelay(c)
 	status := ping(nil, pingDir, uri4)
 	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
