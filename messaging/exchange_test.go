@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-var emptyRun = func(uri string, ctrl chan *Message, data chan *Message, state any) {
+var emptyRun = func(uri string, ctrl, data <-chan *Message, state any) {
 
 }
 

@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"errors"
+	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 )
@@ -74,6 +75,10 @@ func NewMessageWithStatus(channel, to, from, event string, status *core.Status) 
 	m.SetContent(ContentTypeStatus, status)
 	m.Body = status
 	return m
+}
+
+func (m *Message) String() string {
+	return fmt.Sprintf("[from:%v] [to:%v] [%v]", m.From(), m.To(), m.Event())
 }
 
 func (m *Message) To() string {

@@ -40,7 +40,7 @@ func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
 }
 
-func NewAgentWithChannel(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
+func NewAgentWithChannels(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, ctrl, data, run, state)
 }
 
@@ -48,11 +48,11 @@ func newAgent(uri string, ctrl, data chan *Message, run AgentFunc, state any) (A
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
-	if ctrl == nil {
-		return nil, errors.New("error: agent control channel is nil")
-	}
 	if run == nil {
 		return nil, errors.New("error: agent AgentFunc is nil")
+	}
+	if ctrl == nil {
+		ctrl = make(chan *Message, ChannelSize)
 	}
 	a := new(agent)
 	a.uri = uri
@@ -116,8 +116,9 @@ func (a *agent) Add(f func()) {
 	if a.shutdown == nil {
 		a.shutdown = f
 	} else {
+		prev := a.shutdown
 		a.shutdown = func() {
-			a.shutdown()
+			prev()
 			f()
 		}
 	}
