@@ -18,6 +18,14 @@ var Exchange = messaging.NewExchange()
 // ContentMap - slice of any content to be included in a message
 type ContentMap map[string]map[string]string
 
+func RegisterControlAgent(uri string, handler messaging.Handler) (messaging.Agent, error) {
+	a, err := messaging.NewControlAgent(uri, handler)
+	if err != nil {
+		return a, err
+	}
+	return a, Exchange.Register(a)
+}
+
 // Startup - templated function to start all registered resources.
 func Startup(duration time.Duration, content ContentMap) bool {
 	return startup(Exchange, duration, content)
