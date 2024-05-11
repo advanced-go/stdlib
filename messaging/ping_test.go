@@ -22,7 +22,7 @@ func ExamplePing_Good() {
 	a, _ := NewAgentWithChannels(uri1, c, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingGood(c)
-	status := ping(nil, ex, uri1)
+	status := Ping(ex, uri1)
 	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration<3:%v]\n", status, timeout, status.Duration < time.Second*3)
 
 	//Output:
@@ -38,7 +38,7 @@ func ExamplePing_Timeout() {
 	a, _ := NewAgentWithChannels(uri2, c, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingTimeout(c)
-	status := ping(nil, ex, uri2)
+	status := Ping(ex, uri2)
 	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration>3:%v]\n", status, timeout, status.Duration > time.Second*3)
 
 	//Output:
@@ -54,7 +54,7 @@ func ExamplePing_Error() {
 	a, _ := NewAgentWithChannels(uri3, c, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingError(c, errors.New("ping response error"))
-	status := ping(nil, ex, uri3)
+	status := Ping(ex, uri3)
 	fmt.Printf("test: Ping(error) -> [status:%v] [timeout:%v] [duration<3:%v]\n", status, timeout, status.Duration < time.Second*3)
 
 	//Output:
@@ -71,7 +71,7 @@ func ExamplePing_Delay() {
 	a, _ := NewAgentWithChannels(uri4, c, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingDelay(c)
-	status := ping(nil, ex, uri4)
+	status := Ping(ex, uri4)
 	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration>timeout/2:%v]\n", status, timeout, status.Duration > timeout/2)
 
 	//Output:

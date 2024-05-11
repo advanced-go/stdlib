@@ -12,12 +12,15 @@ const (
 	startupLocation = PkgPath + ":Startup"
 )
 
+// Exchange - host package exchange
+var Exchange = messaging.NewExchange()
+
 // ContentMap - slice of any content to be included in a message
 type ContentMap map[string]map[string]string
 
 // Startup - templated function to start all registered resources.
 func Startup(duration time.Duration, content ContentMap) bool {
-	return startup(messaging.HostExchange, duration, content)
+	return startup(Exchange, duration, content)
 }
 
 func startup(ex *messaging.Exchange, duration time.Duration, content ContentMap) bool {

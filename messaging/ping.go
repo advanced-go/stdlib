@@ -1,7 +1,6 @@
 package messaging
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
@@ -16,12 +15,8 @@ const (
 	timeout = time.Second * 3
 )
 
-// Ping - function to "ping" a resource
-func Ping(ctx context.Context, uri any) *core.Status {
-	return ping(ctx, HostExchange, uri)
-}
-
-func ping(ctx context.Context, ex *Exchange, uri any) *core.Status {
+// Ping - function to "ping" an agent
+func Ping(ex *Exchange, uri any) *core.Status {
 	to, status := createTo(uri)
 	if !status.OK() {
 		return status

@@ -9,11 +9,10 @@ import (
 	"time"
 )
 
+func emptyRun(uri string, ctrl, data <-chan *messaging.Message, state any) {
+}
 func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.Message) error {
-	if cmd == nil {
-		cmd = make(chan *messaging.Message, 16)
-	}
-	a, _ := messaging.NewAgentWithChannel(uri, cmd, data, nil, nil)
+	a, _ := messaging.NewAgentWithChannels(uri, cmd, data, emptyRun, nil)
 	ex.Register(a) //.NewMailboxWithCtrl(uri, false, cmd, data))
 	return nil
 }
@@ -21,20 +20,23 @@ func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.
 var start time.Time
 
 func ExampleCreateToSend() {
-	none := "startup/none"
-	one := "startup/one"
+	uriNone := "startup/none"
+	uriOne := "startup/one"
+	ex := messaging.NewExchange()
 
-	startupDir := messaging.NewExchange() //any(messaging.NewExchange()).(*exchange)
-	err := testRegister(startupDir, none, nil, nil)
+	a, _ := messaging.NewAgent(uriNone, emptyRun, nil)
+	err := ex.Register(a)
 	if err != nil {
-		fmt.Printf("test: testRegister() -> [err:%v]\n", err)
+		fmt.Printf("test: NewAgent(%v) -> [err:%v]\n", uriNone, err)
 	}
-	err = testRegister(startupDir, one, nil, nil)
+
+	a, _ = messaging.NewAgent(uriOne, emptyRun, nil)
+	err = ex.Register(a)
 	if err != nil {
-		fmt.Printf("test: testRegister() -> [err:%v]\n", err)
+		fmt.Printf("test: NewAgent(%v) -> [err:%v]\n", uriOne, err)
 	}
-	m := createToSend(startupDir, nil, nil)
-	msg := m[none]
+	m := createToSend(ex, nil, nil)
+	msg := m[uriNone]
 	fmt.Printf("test: createToSend(nil,nil) -> [to:%v] [from:%v]\n", msg.To(), msg.From())
 
 	//Output:
@@ -47,22 +49,22 @@ func ExampleStartup_Success() {
 	uri2 := "github/startup/bad"
 	uri3 := "github/startup/depends"
 
-	startupDir := messaging.NewExchange()
+	ex := messaging.NewExchange()
 	start = time.Now()
 
 	c := make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri1, c, nil)
+	testRegister(ex, uri1, c, nil)
 	go startupGood(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri2, c, nil)
+	testRegister(ex, uri2, c, nil)
 	go startupBad(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri3, c, nil)
+	testRegister(ex, uri3, c, nil)
 	go startupDepends(c, nil)
 
-	status := startup(startupDir, time.Second*2, nil)
+	status := startup(ex, time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 
@@ -78,23 +80,23 @@ func ExampleStartup_Failure() {
 	uri1 := "github/startup/good"
 	uri2 := "github/startup/bad"
 	uri3 := "github/startup/depends"
-	startupDir := messaging.NewExchange()
+	ex := messaging.NewExchange()
 
 	start = time.Now()
 
 	c := make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri1, c, nil)
+	testRegister(ex, uri1, c, nil)
 	go startupGood(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri2, c, nil)
+	testRegister(ex, uri2, c, nil)
 	go startupBad(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(startupDir, uri3, c, nil)
+	testRegister(ex, uri3, c, nil)
 	go startupDepends(c, errors.New("startup failure error message"))
 
-	status := startup(startupDir, time.Second*2, nil)
+	status := startup(ex, time.Second*2, nil)
 
 	fmt.Printf("test: Startup() -> [%v]\n", status)
 

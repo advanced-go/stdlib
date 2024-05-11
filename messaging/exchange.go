@@ -7,9 +7,6 @@ import (
 	"sync"
 )
 
-// HostExchange - main exchange
-var HostExchange = NewExchange()
-
 // Exchange - exchange directory
 type Exchange struct {
 	m *sync.Map
