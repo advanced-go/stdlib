@@ -67,12 +67,6 @@ func (d *Exchange) Register(agent Agent) error {
 	if agent == nil {
 		return errors.New("error: exchange.Register() agent is nil")
 	}
-	//if len(m.uri) == 0 {
-	//	return errors.New("error: exchange.Add() mailbox uri is empty")
-	//}
-	//if m.ctrl == nil {
-	//	return errors.New("error: exchange.Add() mailbox command channel is nil")
-	//}
 	_, ok := d.m.Load(agent.Uri())
 	if ok {
 		return errors.New(fmt.Sprintf("error: exchange.Register() agent already exists: [%v]", agent.Uri()))
@@ -100,7 +94,7 @@ func (d *Exchange) Get(uri string) Agent {
 	return nil
 }
 
-// Shutdown - close an item's mailbox
+// Shutdown - shutdown an agent
 /*
 func (d *Exchange) shutdown(msg Message) error {
 	// TO DO: add authentication

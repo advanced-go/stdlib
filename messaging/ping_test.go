@@ -12,21 +12,21 @@ const (
 	maxWait = timeout + time.Millisecond*100
 )
 
-var pingStart = time.Now()
+//var pingStart = time.Now()
 
 func ExamplePing_Good() {
 	uri1 := "urn:ping:good"
-	pingDir := NewExchange()
+	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri1, emptyRun, nil)
-	pingDir.Register(a)
+	a, _ := NewAgentWithChannels(uri1, c, nil, emptyRun, nil)
+	ex.Register(a)
 	go pingGood(c)
-	status := ping(nil, pingDir, uri1)
-	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
+	status := ping(nil, ex, uri1)
+	fmt.Printf("test: Ping(good) -> [%v] [timeout:%v] [duration<3:%v]\n", status, timeout, status.Duration < time.Second*3)
 
 	//Output:
-	//test: Ping(good) -> [OK] [timeout:3s] [duration:0s]
+	//test: Ping(good) -> [OK] [timeout:3s] [duration<3:true]
 
 }
 
@@ -34,48 +34,48 @@ func ExamplePing_Timeout() {
 	uri2 := "urn:ping:timeout"
 	c := make(chan *Message, 16)
 
-	pingDir := NewExchange()
-	a, _ := NewAgent(uri2, emptyRun, nil)
-	pingDir.Register(a)
+	ex := NewExchange()
+	a, _ := NewAgentWithChannels(uri2, c, nil, emptyRun, nil)
+	ex.Register(a)
 	go pingTimeout(c)
-	status := ping(nil, pingDir, uri2)
-	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
+	status := ping(nil, ex, uri2)
+	fmt.Printf("test: Ping(timeout) -> [%v] [timeout:%v] [duration>3:%v]\n", status, timeout, status.Duration > time.Second*3)
 
 	//Output:
-	//test: Ping(timeout) -> [Timeout] [timeout:3s]
+	//test: Ping(timeout) -> [Timeout] [timeout:3s] [duration>3:true]
 
 }
 
 func ExamplePing_Error() {
 	uri3 := "urn:ping:error"
-	pingDir := NewExchange()
+	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri3, emptyRun, nil)
-	pingDir.Register(a) //NewMailboxWithCtrl(uri3, false, c, nil))
+	a, _ := NewAgentWithChannels(uri3, c, nil, emptyRun, nil)
+	ex.Register(a)
 	go pingError(c, errors.New("ping response error"))
-	status := ping(nil, pingDir, uri3)
-	fmt.Printf("test: Ping(error) -> [%v] [error:%v] [timeout:%v] [duration:%v]\n", status.Code, status.Err, timeout, status.Duration)
+	status := ping(nil, ex, uri3)
+	fmt.Printf("test: Ping(error) -> [status:%v] [timeout:%v] [duration<3:%v]\n", status, timeout, status.Duration < time.Second*3)
 
 	//Output:
 	//recovered in messaging.NewReceiverReplyTo() : send on closed channel
-	//test: Ping(error) -> [418] [error:ping response error] [timeout:3s] [duration:1.0151556s]
+	//test: Ping(error) -> [status:I'm A Teapot [ping response error]] [timeout:3s] [duration<3:true]
 
 }
 
 func ExamplePing_Delay() {
 	uri4 := "urn:ping:delay"
-	pingDir := NewExchange()
+	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgent(uri4, emptyRun, nil)
-	pingDir.Register(a) //NewMailboxWithCtrl(uri4, false, c, nil))
+	a, _ := NewAgentWithChannels(uri4, c, nil, emptyRun, nil)
+	ex.Register(a)
 	go pingDelay(c)
-	status := ping(nil, pingDir, uri4)
-	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration:%v]\n", status, timeout, status.Duration)
+	status := ping(nil, ex, uri4)
+	fmt.Printf("test: Ping(delay) -> [%v] [timeout:%v] [duration>timeout/2:%v]\n", status, timeout, status.Duration > timeout/2)
 
 	//Output:
-	//test: Ping(delay) -> [OK] [timeout:3s]
+	//test: Ping(delay) -> [OK] [timeout:3s] [duration>timeout/2:true]
 
 }
 
