@@ -10,7 +10,7 @@ func handler(msg *Message) {
 	fmt.Printf(msg.Event())
 }
 
-func Example_ReplyTo() {
+func ExampleReplyTo() {
 	msg := NewMessageWithReply(ChannelNone, "test", "", "startup", handler)
 	SendReply(msg, core.StatusOK())
 
@@ -82,23 +82,3 @@ func ExampleConfigContent() {
 	//test: Status() -> [body:map[uri:http://www.google/com]]
 
 }
-
-/*
-func ExampleDuration() {
-	msg := NewMessage(ChannelNone, "to", "from", StartupEvent)
-
-	duration := msg.Duration()
-	fmt.Printf("test: msg.Duration(0) -> [dur:%v]\n", duration)
-
-	msg.SetDuration(time.Millisecond * 555)
-	duration = msg.Duration()
-	fmt.Printf("test: msg.Duration(555ms) -> [dur:%v]\n", duration)
-
-	//Output:
-	//test: msg.Duration(0) -> [dur:0s]
-	//test: msg.Duration(555ms) -> [dur:555ms]
-
-}
-
-
-*/

@@ -4,8 +4,7 @@ import (
 	"fmt"
 )
 
-var emptyRun = func(uri string, ctrl, data <-chan *Message, state any) {
-
+func emptyRun(uri string, ctrl, data <-chan *Message, state any) {
 }
 
 func ExampleRegister() {
