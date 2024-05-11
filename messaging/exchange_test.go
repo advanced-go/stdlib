@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"time"
 )
 
 func emptyRun(uri string, ctrl, data <-chan *Message, state any) {
@@ -47,37 +48,55 @@ func ExampleRegister() {
 
 }
 
-/*
-func Example_SendError() {
-	uri := "urn:test"
-	testDir := NewExchange()
+func ExampleRegisterError() {
+	uri := "urn:agent007"
+	ex := NewExchange()
 
-	fmt.Printf("test: Send(%v) -> : %v\n", uri, testDir.Send(NewControlMessage(uri, "", "")))
+	a, _ := NewAgent(uri, emptyRun, nil)
+	err := ex.Register(a)
+	fmt.Printf("test: Register(%v) -> [%v]\n", uri, err)
 
-	m := NewMailboxWithCtrl(uri, false, nil, nil)
-	status := testDir.Add(m)
-	fmt.Printf("test: Add(%v) -> : [status:%v]\n", uri, status)
+	err = ex.Register(a)
+	fmt.Printf("test: Register(%v) -> [%v]\n", uri, err)
 
 	//Output:
-	//test: Send(urn:test) -> : error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test]
-	//test: Add(urn:test) -> : [status:error: exchange.Add() mailbox command channel is nil]
+	//test: Register(urn:agent007) -> [<nil>]
+	//test: Register(urn:agent007) -> [error: exchange.Register() agent already exists: [urn:agent007]]
 
 }
 
-func Example_Send() {
-	uri1 := "urn:test-1"
-	uri2 := "urn:test-2"
-	uri3 := "urn:test-3"
+func ExampleSendError() {
+	uri := "urn:test"
+	ex := NewExchange()
+
+	fmt.Printf("test: Send(%v) -> : %v\n", uri, ex.Send(nil))
+	fmt.Printf("test: Send(%v) -> : %v\n", uri, ex.Send(NewControlMessage("", "", "")))
+	fmt.Printf("test: Send(%v) -> : %v\n", uri, ex.Send(NewControlMessage(uri, "", "")))
+
+	//Output:
+	//test: Send(urn:test) -> : error: exchange.Send() failed as message is nil
+	//test: Send(urn:test) -> : error: exchange.Send() failed as the message To is empty or invalid : []
+	//test: Send(urn:test) -> : error: exchange.Send() failed as the message To is empty or invalid : [urn:test]
+
+}
+
+func ExampleSend() {
+	uri1 := "urn:agent-1"
+	uri2 := "urn:agent-2"
+	uri3 := "urn:agent-3"
 	c := make(chan *Message, 16)
-	testDir := NewExchange()
+	ex := NewExchange()
 
-	testDir.Add(NewMailboxWithCtrl(uri1, false, c, nil))
-	testDir.Add(NewMailboxWithCtrl(uri2, false, c, nil))
-	testDir.Add(NewMailboxWithCtrl(uri3, false, c, nil))
+	a1, _ := NewAgentWithChannels(uri1, c, nil, testAgentRun, nil)
+	ex.Register(a1)
+	a2, _ := NewAgentWithChannels(uri2, c, nil, testAgentRun, nil)
+	ex.Register(a2)
+	a3, _ := NewAgentWithChannels(uri3, c, nil, testAgentRun, nil)
+	ex.Register(a3)
 
-	testDir.Send(NewControlMessage(uri1, PkgPath, StartupEvent))
-	testDir.Send(NewControlMessage(uri2, PkgPath, StartupEvent))
-	testDir.Send(NewControlMessage(uri3, PkgPath, StartupEvent))
+	ex.Send(NewControlMessage(uri1, PkgPath, StartupEvent))
+	ex.Send(NewControlMessage(uri2, PkgPath, StartupEvent))
+	ex.Send(NewControlMessage(uri3, PkgPath, StartupEvent))
 
 	time.Sleep(time.Second * 1)
 	resp1 := <-c
@@ -87,49 +106,66 @@ func Example_Send() {
 	close(c)
 
 	//Output:
-	//test: <- c -> : [urn:test-1] [urn:test-2] [urn:test-3]
+	//test: <- c -> : [urn:agent-1] [urn:agent-2] [urn:agent-3]
 
 }
 
-func Example_ListCount() {
-	testDir := NewExchange()
+func ExampleListCount() {
+	uri1 := "urn:agent-1"
+	uri2 := "urn:agent-2"
+	ex := NewExchange()
 
-	testDir.Add(newDefaultMailbox("test:uri1"))
-	testDir.Add(newDefaultMailbox("test:uri2"))
+	a1, _ := NewAgent(uri1, testAgentRun, nil)
+	ex.Register(a1)
+	a2, _ := NewAgent(uri2, testAgentRun, nil)
+	ex.Register(a2)
 
-	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-
-	fmt.Printf("test: List() -> : %v\n", testDir.List())
+	fmt.Printf("test: Count() -> : %v\n", ex.Count())
+	fmt.Printf("test: List() -> : %v\n", ex.List())
 
 	//Output:
 	//test: Count() -> : 2
-	//test: List() -> : [test:uri1 test:uri2]
+	//test: List() -> : [urn:agent-1 urn:agent-2]
 
 }
 
-func Example_Remove() {
-	uri := "urn:test/one"
+func ExampleExchangeOnShutdown() {
+	uri1 := "urn:agent-1"
+	uri2 := "urn:agent-2"
+	ex := NewExchange()
 
-	m := newDefaultMailbox(uri)
-	testDir := NewExchange()
+	a1, _ := NewAgent(uri1, testAgentRun, nil)
+	ex.Register(a1)
+	a2, _ := NewAgent(uri2, testAgentRun, nil)
+	ex.Register(a2)
 
-	status := testDir.Add(m)
-	fmt.Printf("test: Add(%v) -> : [%v]\n", uri, status)
+	fmt.Printf("test: Get(%v) -> : %v\n", uri1, ex.Get(uri1))
+	fmt.Printf("test: Get(%v) -> : %v\n", uri2, ex.Get(uri2))
 
-	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
-	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)
+	a1.Shutdown()
+	a2.Shutdown()
 
-	m.close()
+	fmt.Printf("test: Get-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
+	fmt.Printf("test: Get-Shutdown(%v) -> : %v\n", uri2, ex.Get(uri2))
 
-	status = testDir.Send(NewControlMessage(uri, "", PingEvent))
-	fmt.Printf("test: Send(%v) -> : [%v]\n", uri, status)
+	ex2 := NewExchange()
+	ex.Register(a1)
+	ex2.Register(a1)
+
+	fmt.Printf("test: Get-Ex1(%v) -> : %v\n", uri1, ex.Get(uri1))
+	fmt.Printf("test: Get-Ex2(%v) -> : %v\n", uri1, ex.Get(uri1))
+	a1.Shutdown()
+	fmt.Printf("test: Get-Ex1-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
+	fmt.Printf("test: Get-Ex2-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
 
 	//Output:
-	//test: Add(urn:test/one) -> : [<nil>]
-	//test: Send(urn:test/one) -> : [<nil>]
-	//test: Send(urn:test/one) -> : [error: exchange.SendCtrl() failed as the message To is empty or invalid [urn:test/one]]
+	//test: Get(urn:agent-1) -> : urn:agent-1
+	//test: Get(urn:agent-2) -> : urn:agent-2
+	//test: Get-Shutdown(urn:agent-1) -> : <nil>
+	//test: Get-Shutdown(urn:agent-2) -> : <nil>
+	//test: Get-Ex1(urn:agent-1) -> : urn:agent-1
+	//test: Get-Ex2(urn:agent-1) -> : urn:agent-1
+	//test: Get-Ex1-Shutdown(urn:agent-1) -> : <nil>
+	//test: Get-Ex2-Shutdown(urn:agent-1) -> : <nil>
 
 }
-
-
-*/

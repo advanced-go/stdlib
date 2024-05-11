@@ -48,7 +48,7 @@ func (d *Exchange) List() []string {
 // Send - send a message
 func (d *Exchange) Send(msg *Message) error {
 	// TO DO : authenticate shutdown control message
-	if msg.Event() == ShutdownEvent {
+	if msg != nil && msg.Event() == ShutdownEvent {
 		return nil
 	}
 	if msg == nil {
@@ -56,7 +56,7 @@ func (d *Exchange) Send(msg *Message) error {
 	}
 	a := d.Get(msg.To())
 	if a == nil {
-		return errors.New(fmt.Sprintf("error: exchange.Send() failed as the message To is empty or invalid [%v]", msg.To()))
+		return errors.New(fmt.Sprintf("error: exchange.Send() failed as the message To is empty or invalid : [%v]", msg.To()))
 	}
 	a.Message(msg)
 	return nil

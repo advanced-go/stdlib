@@ -105,7 +105,7 @@ func (a *agent) Shutdown() {
 	if a.shutdown != nil {
 		a.shutdown()
 	}
-	a.Message(NewControlMessage("", "", ShutdownEvent))
+	a.Message(NewControlMessage(a.uri, a.uri, ShutdownEvent))
 }
 
 // Add - add a shutdown function

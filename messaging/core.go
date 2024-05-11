@@ -12,6 +12,7 @@ const (
 	ShutdownEvent    = "event:shutdown"
 	PingEvent        = "event:ping"
 	ReconfigureEvent = "event:reconfigure"
+	DataEvent        = "event:data"
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
@@ -64,6 +65,10 @@ func NewControlMessage(to, from, event string) *Message {
 	return NewMessage(ChannelControl, to, from, event)
 }
 
+func NewDataMessage(to, from, event string) *Message {
+	return NewMessage(ChannelData, to, from, event)
+}
+
 func NewMessageWithReply(channel, to, from, event string, replyTo Handler) *Message {
 	m := NewMessage(channel, to, from, event)
 	m.ReplyTo = replyTo
@@ -78,7 +83,7 @@ func NewMessageWithStatus(channel, to, from, event string, status *core.Status) 
 }
 
 func (m *Message) String() string {
-	return fmt.Sprintf("[from:%v] [to:%v] [%v]", m.From(), m.To(), m.Event())
+	return fmt.Sprintf("[chan:%v] [from:%v] [to:%v] [%v]", m.Channel(), m.From(), m.To(), m.Event())
 }
 
 func (m *Message) To() string {

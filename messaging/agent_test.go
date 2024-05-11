@@ -9,7 +9,7 @@ func printAgentRun(uri string, ctrl, data <-chan *Message, state any) {
 	fmt.Printf("test: AgentRun() -> [uri:%v] [ctrl:%v] [data:%v] [state:%v]\n", uri, ctrl != nil, data != nil, state != nil)
 }
 
-func testAgentRun(uri string, ctrl, _ <-chan *Message, _ any) {
+func testAgentRun(uri string, ctrl, data <-chan *Message, _ any) {
 	for {
 		select {
 		case msg, open := <-ctrl:
@@ -20,6 +20,14 @@ func testAgentRun(uri string, ctrl, _ <-chan *Message, _ any) {
 			if msg.Event() == ShutdownEvent {
 				return
 			}
+		default:
+		}
+		select {
+		case msg, open := <-data:
+			if !open {
+				return
+			}
+			fmt.Printf("test: AgentRun() -> %v\n", msg)
 		default:
 		}
 	}
@@ -82,12 +90,14 @@ func ExampleAgentRun() {
 	a, _ := NewAgent(uri, testAgentRun, nil)
 	a.Run()
 	a.Message(NewControlMessage(uri, "ExampleAgentRun()", StartupEvent))
+	a.Message(NewDataMessage(uri, "ExampleAgentRun()", DataEvent))
 	time.Sleep(time.Second)
 	a.Shutdown()
 	time.Sleep(time.Second)
 
 	//Output:
-	//test: AgentRun() -> [from:ExampleAgentRun()] [to:urn:agent007] [event:startup]
-	//test: AgentRun() -> [from:] [to:] [event:shutdown]
+	//test: AgentRun() -> [chan:CTRL] [from:ExampleAgentRun()] [to:urn:agent007] [event:startup]
+	//test: AgentRun() -> [chan:DATA] [from:ExampleAgentRun()] [to:urn:agent007] [event:data]
+	//test: AgentRun() -> [chan:CTRL] [from:urn:agent007] [to:urn:agent007] [event:shutdown]
 
 }
