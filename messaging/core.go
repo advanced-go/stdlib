@@ -52,7 +52,6 @@ func NewMessage(channel, to, from, event string) *Message {
 	if len(channel) == 0 {
 		channel = ChannelNone
 	}
-	//m.Channel = channel
 	m.Header = make(http.Header)
 	m.Header.Add(XChannel, channel)
 	m.Header.Add(XTo, to)
