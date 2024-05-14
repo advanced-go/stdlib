@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+// PathHandler - struct of path and associated Exchange handler
+type PathHandler struct {
+	Path    string
+	Handler core.HttpExchange
+}
+
 var (
 	exchangeProxy = NewProxy()
 	hostDuration  time.Duration
@@ -37,14 +43,27 @@ func RegisterExchange(path string, handler core.HttpExchange) error {
 		return errors.New("error: path is empty")
 	}
 	if handler == nil {
-		return errors.New(fmt.Sprintf("error: handler for path %v is nil", path))
+		return errors.New(fmt.Sprintf("error: handler for path [%v] is nil", path))
 	}
 	h := handler
 	if authExchange != nil {
 		h = NewConditionalIntermediary(authExchange, handler, okFunc)
 	}
 	return exchangeProxy.Register(path, h)
+}
 
+// RegisterAuthority - add an authority the proxy
+func RegisterAuthority(authority []PathHandler) error {
+	if len(authority) == 0 {
+		return errors.New("error: authority configuration list is empty")
+	}
+	for _, config := range authority {
+		err := RegisterExchange(config.Path, config.Handler)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // HttpHandler - process an HTTP request
@@ -63,8 +82,6 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	//resp, status := handler(r)
-	//httpx.WriteResponse[core.Log](w, resp.Header, status.HttpCode(), resp.Body)
 	hostExchange[core.Log](w, r, hostDuration, handler)
 }
 
