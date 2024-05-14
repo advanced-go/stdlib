@@ -60,9 +60,9 @@ func createTo(uri any) (string, *core.Status) {
 			return "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is invalid type: %v", reflect.TypeOf(uri).String())))
 		}
 	}
-	nid, _, ok := uri2.UprootUrn(path)
-	if !ok {
+	p := uri2.Uproot(path)
+	if !p.Valid {
 		return "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: Ping() uri is not a valid URN %v", path)))
 	}
-	return nid, core.StatusOK()
+	return p.Authority, core.StatusOK()
 }

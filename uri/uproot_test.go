@@ -82,7 +82,7 @@ func ExampleUproot_Validate() {
 
 	//Output:
 	//test: Uproot-Empty() -> [ok:false] [auth:] [vers:] [path:] [err:error: invalid input, URI is empty]
-	//test: Uproot-URN(urn:github.resource) -> [ok:true] [auth:] [vers:] [path:urn:github.resource] [err:<nil>]
+	//test: Uproot-URN(urn:github.resource) -> [ok:true] [auth:urn:github.resource] [vers:] [path:urn:github.resource] [err:<nil>]
 	//test: Uproot-Authority-Only(http://localhost:8080/github/advanced-go/search/query?term=golang) -> [ok:true] [auth:github/advanced-go/search/query] [vers:] [path:] [err:<nil>]
 	//test: Uproot-Authority+Path(http://localhost:8080/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [err:<nil>]
 	//test: Uproot->1 URN(http://localhost:8080/github/advanced-go/:search:/query?term=golang) -> [ok:false] [auth:] [vers:] [path:] [err:error: path has multiple URN separators [/github/advanced-go/:search:/query]]
@@ -118,29 +118,29 @@ func ExampleUproot() {
 
 	// valid path only and an empty nss
 	uri = "/valid-empty-nss?q=golang"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	// valid embedded path only
 	uri = "/github/valid-leading-slash/example-domain/activity:entry"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	// valid URN
 	uri = "github.com/valid-no-leading-slash/example-domain/activity:entry"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	uri = "https://www.google.com/valid-uri?q=golang"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	uri = "https://www.google.com/github.com/valid-uri-nss/search?q=golang"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 	uri = "https://www.google.com/github.com/valid-uri-with-nss:search?q=golang"
-	nid, nss, ok = UprootUrn(uri)
+	nid, nss, ok = Uproot(uri)
 	fmt.Printf("test: Uproot(%v) -> [nid:%v] [nss:%v] [ok:%v]\n", uri, nid, nss, ok)
 
 

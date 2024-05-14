@@ -25,28 +25,28 @@ func (p *Proxy) Register(uri string, handler core.HttpExchange) error {
 	if len(uri) == 0 {
 		return errors.New("error: proxy.Register() path is empty")
 	}
-	nid, _, ok := uri2.UprootUrn(uri)
-	if !ok {
+	parsed := uri2.Uproot(uri)
+	if !parsed.Valid {
 		return errors.New(fmt.Sprintf("error: proxy.Register() path is invalid: [%v]", uri))
 	}
 	if handler == nil {
 		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler is nil: [%v]", uri))
 	}
-	_, ok1 := p.m.Load(nid)
+	_, ok1 := p.m.Load(parsed.Authority)
 	if ok1 {
 		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler already exists: [%v]", uri))
 	}
-	p.m.Store(nid, handler)
+	p.m.Store(parsed.Authority, handler)
 	return nil
 }
 
 // Lookup - get an HttpExchange from the proxy, using a URI as the key
 func (p *Proxy) Lookup(uri string) core.HttpExchange {
-	nid, _, ok := uri2.UprootUrn(uri)
-	if !ok {
+	parsed := uri2.Uproot(uri)
+	if !parsed.Valid {
 		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
 	}
-	return p.LookupByNID(nid)
+	return p.LookupByNID(parsed.Authority)
 }
 
 // LookupByNID - get an HttpExchange from the proxy, using an NID as a key

@@ -53,12 +53,12 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	nid, _, ok := uri.UprootUrn(r.URL.Path)
-	if !ok {
+	p := uri.Uproot(r.URL.Path)
+	if !p.Valid {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	handler := exchangeProxy.LookupByNID(nid)
+	handler := exchangeProxy.LookupByNID(p.Authority)
 	if handler == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

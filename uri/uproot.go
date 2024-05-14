@@ -27,7 +27,7 @@ func Uproot(in string) Parsed {
 		return Parsed{Valid: false, Err: errors.New("error: invalid input, URI is empty")}
 	}
 	if strings.HasPrefix(in, UrnScheme) {
-		return Parsed{Valid: true, Path: in}
+		return Parsed{Valid: true, Authority: in, Path: in}
 	}
 	u, err := url.Parse(in)
 	if err != nil {
