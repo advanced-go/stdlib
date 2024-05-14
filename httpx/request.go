@@ -28,7 +28,7 @@ func ValidateRequestURL(req *http.Request, authority string) (ver string, path s
 		return "", "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid URI, authority does not match: \"%v\" \"%v\"", req.URL.Path, authority)))
 	}
 	if len(p.Path) == 0 {
-		return "", "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid URI, path is empty: \"%v\"", req.URL.Path)))
+		return "", "", core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("error: invalid URI, path only contains an authority: \"%v\"", req.URL.Path)))
 	}
 	return p.Version, p.Path, core.StatusOK()
 }

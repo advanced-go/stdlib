@@ -5,13 +5,17 @@ import (
 	"net/http"
 )
 
-func ExampleValidateRequestURL() {
+func ExampleValidateRequestURL_Invalid() {
 	_, _, status := ValidateRequestURL(nil, "")
 	fmt.Printf("test: ValidateRequestURL(nil,\"\") -> [status:%v]\n", status)
 
 	path := "test"
 	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
 	_, _, status = ValidateRequestURL(req, path)
+	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v]\n", req.URL.Path, path, status)
+
+	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com", nil)
+	_, _, status = ValidateRequestURL(req, "")
 	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v]\n", req.URL.Path, path, status)
 
 	path = "github/advanced-go/http2"
@@ -22,17 +26,18 @@ func ExampleValidateRequestURL() {
 	path = "github/advanced-go/http2"
 	req, _ = http.NewRequest(http.MethodGet, "https://www.google.com/github/advanced-go/http2", nil)
 	_, _, status = ValidateRequestURL(req, path)
-	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v] [%v]\n", req.URL.Path, path, status, status.Err)
+	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v]\n", req.URL.Path, path, status)
 
 	//Output:
 	//test: ValidateRequestURL(nil,"") -> [status:Invalid Argument [error: request is nil]]
-	//test: ValidateRequestURL("","test") -> [status:Bad Request [error: invalid URI, path is not valid: ""]]
+	//test: ValidateRequestURL("","test") -> [status:Bad Request [error: invalid input, URI is empty]]
+	//test: ValidateRequestURL("","test") -> [status:Invalid Argument [error: authority is empty]]
 	//test: ValidateRequestURL("/search","github/advanced-go/http2") -> [status:Bad Request [error: invalid URI, authority does not match: "/search" "github/advanced-go/http2"]]
-	//test: ValidateRequestURL("/github/advanced-go/http2","github/advanced-go/http2") -> [status:OK] [<nil>]
+	//test: ValidateRequestURL("/github/advanced-go/http2","github/advanced-go/http2") -> [status:Bad Request [error: invalid URI, path only contains an authority: "/github/advanced-go/http2"]]
 
 }
 
-func _ExampleValidateRequest_Version() {
+func ExampleValidateRequest() {
 	auth := "github/advanced-go/httpx"
 	rsc := ":search?q=golang"
 	uri := "https://www.google.com/" + auth + rsc

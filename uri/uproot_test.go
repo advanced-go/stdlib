@@ -81,7 +81,7 @@ func ExampleUproot_Validate() {
 	fmt.Printf("test: Uproot->1 URN(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Err)
 
 	//Output:
-	//test: Uproot-Empty() -> [ok:false] [auth:] [vers:] [path:] [err:error: input is empty]
+	//test: Uproot-Empty() -> [ok:false] [auth:] [vers:] [path:] [err:error: invalid input, URI is empty]
 	//test: Uproot-URN(urn:github.resource) -> [ok:true] [auth:] [vers:] [path:urn:github.resource] [err:<nil>]
 	//test: Uproot-Authority-Only(http://localhost:8080/github/advanced-go/search/query?term=golang) -> [ok:true] [auth:github/advanced-go/search/query] [vers:] [path:] [err:<nil>]
 	//test: Uproot-Authority+Path(http://localhost:8080/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [err:<nil>]

@@ -24,7 +24,7 @@ type Parsed struct {
 // Uproot - uproot an embedded uri in a URI or a URI path
 func Uproot(in string) Parsed {
 	if in == "" {
-		return Parsed{Valid: false, Err: errors.New("error: input is empty")}
+		return Parsed{Valid: false, Err: errors.New("error: invalid input, URI is empty")}
 	}
 	if strings.HasPrefix(in, UrnScheme) {
 		return Parsed{Valid: true, Path: in}
