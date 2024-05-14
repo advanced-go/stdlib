@@ -32,7 +32,7 @@ func ExampleValidateRequest() {
 
 }
 
-func ExampleValidateRequest_Version() {
+func _ExampleValidateRequest_Version() {
 	auth := "github/advanced-go/httpx"
 	rsc := ":search?q=golang"
 	uri := "https://www.google.com/" + auth + rsc

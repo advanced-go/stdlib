@@ -18,11 +18,11 @@ func RegisterController(uri string, ctrl *Controller) *core.Status {
 }
 
 func Lookup(uri string) (*Controller, *core.Status) {
-	nid, _, ok := uri2.UprootUrn(uri)
-	if !ok {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+	p := uri2.Uproot(uri)
+	if !p.Valid {
+		return nil, core.NewStatusError(core.StatusInvalidArgument, p.Err) //errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
-	return ctrlMap.lookupByNID(nid)
+	return ctrlMap.lookupByNID(p.Authority)
 }
 
 // controls - key value pairs of a URI -> *Controller
@@ -42,28 +42,28 @@ func (p *controls) register(uri string, ctrl *Controller) *core.Status {
 	if len(uri) == 0 {
 		return core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument: path is empty"))
 	}
-	nid, _, ok := uri2.UprootUrn(uri)
-	if !ok {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+	parsed := uri2.Uproot(uri)
+	if !parsed.Valid {
+		return core.NewStatusError(core.StatusInvalidArgument, parsed.Err) // errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
 	if ctrl == nil {
 		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller is nil: [%v]", uri)))
 	}
-	_, ok1 := p.m.Load(nid)
+	_, ok1 := p.m.Load(parsed.Authority)
 	if ok1 {
 		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller already exists: [%v]", uri)))
 	}
-	p.m.Store(nid, ctrl)
+	p.m.Store(parsed.Authority, ctrl)
 	return core.StatusOK()
 }
 
 // Lookup - get a Controller using a URI as the key
 func (p *controls) lookup(uri string) (*Controller, *core.Status) {
-	nid, _, ok := uri2.UprootUrn(uri)
-	if !ok {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+	parsed := uri2.Uproot(uri)
+	if parsed.Valid {
+		return nil, core.NewStatusError(core.StatusInvalidArgument, parsed.Err) //errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
 	}
-	return p.lookupByNID(nid)
+	return p.lookupByNID(parsed.Authority)
 }
 
 // LookupByNID - get a Controller using an NID as a key

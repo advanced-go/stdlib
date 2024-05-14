@@ -1,26 +1,37 @@
 package uri
 
 import (
+	"errors"
+	"fmt"
 	"net/url"
 	"strings"
 )
 
 const (
-	UrnScheme    = "urn"
-	UrnSeparator = ":"
+	UrnScheme     = "urn"
+	UrnSeparator  = ":"
+	VersionPrefix = "v"
 )
 
-// UprootUrn - uproot an embedded urn in a uri
-func UprootUrn(uri string) (nid, nss string, ok bool) {
-	if uri == "" {
-		return
+type Parsed struct {
+	Valid     bool
+	Authority string
+	Version   string
+	Path      string
+	Err       error
+}
+
+// Uproot - uproot an embedded uri in a URI or a URI path
+func Uproot(in string) Parsed {
+	if in == "" {
+		return Parsed{Valid: false, Err: errors.New("error: input is empty")}
 	}
-	if strings.HasPrefix(uri, UrnScheme) {
-		return uri, "", true
+	if strings.HasPrefix(in, UrnScheme) {
+		return Parsed{Valid: true, Path: in}
 	}
-	u, err := url.Parse(uri)
+	u, err := url.Parse(in)
 	if err != nil {
-		return err.Error(), "", false
+		return Parsed{Valid: false, Err: err}
 	}
 	var str []string
 	if u.Path[0] == '/' {
@@ -30,12 +41,27 @@ func UprootUrn(uri string) (nid, nss string, ok bool) {
 	}
 	switch len(str) {
 	case 0:
-		return
+		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has no URN separator [%v]", u.Path))}
 	case 1:
-		return str[0], "", true
+		return Parsed{Valid: true, Authority: str[0]}
 	case 2:
-		nid = str[0]
-		nss = str[1]
+		p := Parsed{Valid: true, Authority: str[0], Path: str[1]}
+		parseVersion(&p)
+		return p
+	default:
+		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has multiple URN separators [%v]", u.Path))}
 	}
-	return nid, nss, true
+}
+
+func parseVersion(p *Parsed) {
+	if p == nil {
+		return
+	}
+	if strings.HasPrefix(p.Path, VersionPrefix) {
+		i := strings.Index(p.Path, "/")
+		if i != -1 {
+			p.Version = p.Path[:i]
+			p.Path = p.Path[i+1:]
+		}
+	}
 }
