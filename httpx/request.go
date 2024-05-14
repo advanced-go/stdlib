@@ -12,8 +12,8 @@ const (
 	VersionPrefix = "v"
 )
 
-// ValidateRequest - validate the request URL path
-func ValidateRequest(req *http.Request, authority string) (ver string, path string, status *core.Status) {
+// ValidateRequestURL - validate the request URL path
+func ValidateRequestURL(req *http.Request, authority string) (ver string, path string, status *core.Status) {
 	if req == nil {
 		return "", "", core.NewStatusError(core.StatusInvalidArgument, errors.New("error: request is nil"))
 	}
