@@ -17,6 +17,9 @@ func AddRequestId(t any) http.Header {
 		return addRequestId(h)
 	}
 	if req, ok := t.(*http.Request); ok {
+		if req.Header == nil {
+			req.Header = make(http.Header)
+		}
 		req.Header = addRequestId(req.Header)
 		return req.Header
 	}
