@@ -14,8 +14,8 @@ type RouteNameMap struct {
 }
 
 type Controller struct {
-	Name   string
-	Map    RouteNameMap
+	Name string
+	//Map    RouteNameMap
 	Router *Router
 }
 
