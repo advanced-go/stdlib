@@ -108,3 +108,7 @@ func handleStatus(cache *messaging.Cache) {
 		}
 	}
 }
+
+func shutdownHost(m *messaging.Message) {
+
+}

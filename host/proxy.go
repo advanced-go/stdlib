@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-// Proxy - key value pairs of a URI -> HttpHandler
+// Proxy - key value pairs of an authority -> HttpExchange
 type Proxy struct {
 	m *sync.Map
 }
@@ -19,13 +19,12 @@ func NewProxy() *Proxy {
 	return p
 }
 
-// Register - add an HttpExchange to the proxy
 func (p *Proxy) register(authority string, handler core.HttpExchange) error {
 	if len(authority) == 0 {
-		return errors.New("error: proxy.register() authority is empty")
+		return errors.New("error: authority is empty")
 	}
 	if handler == nil {
-		return errors.New(fmt.Sprintf("error: proxy.register() HTTP Exchange is nil: [%v]", authority))
+		return errors.New(fmt.Sprintf("error: HTTP Exchange is nil for authority : [%v]", authority))
 	}
 	//parsed := uri2.Uproot(authority)
 	//if !parsed.Valid {
@@ -33,7 +32,7 @@ func (p *Proxy) register(authority string, handler core.HttpExchange) error {
 	//}
 	_, ok1 := p.m.Load(authority)
 	if ok1 {
-		return errors.New(fmt.Sprintf("error: proxy.register() HTTP Exchange already exists: [%v]", authority))
+		return errors.New(fmt.Sprintf("error: HTTP Exchange already exists for authority : [%v]", authority))
 	}
 	p.m.Store(authority, handler)
 	return nil
@@ -53,7 +52,7 @@ func (p *Proxy) Lookup(authority string) core.HttpExchange {
 */
 
 // Lookup - get an HttpExchange from the proxy, using an authority as a key
-func (p *Proxy) Lookup(authority string) core.HttpExchange {
+func (p *Proxy) lookup(authority string) core.HttpExchange {
 	v, ok := p.m.Load(authority)
 	if !ok {
 		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByauthority() HTTP handler does not exist: [%v]", authority))
