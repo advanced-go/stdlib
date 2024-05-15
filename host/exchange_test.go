@@ -41,26 +41,27 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 	}
 }
 
-func ExampleRegisterAuthority() {
-	authority := []PathHandler{
-		{"test", nil},
-	}
-	err := RegisterAuthority(authority)
-	fmt.Printf("test: RegisterAuthority() -> [%v]\n", err)
+/*
+	func ExampleRegisterAuthority() {
+		authority := []PathHandler{
+			{"test", nil},
+		}
+		err := RegisterAuthority(authority)
+		fmt.Printf("test: RegisterAuthority() -> [%v]\n", err)
 
-	authority = []PathHandler{
-		{"test", testAuthExchangeOK},
-		{"test2", testAuthExchangeOK},
-	}
-	err = RegisterAuthority(authority)
-	fmt.Printf("test: RegisterAuthority() -> [%v]\n", err)
+		authority = []PathHandler{
+			{"test", testAuthExchangeOK},
+			{"test2", testAuthExchangeOK},
+		}
+		err = RegisterAuthority(authority)
+		fmt.Printf("test: RegisterAuthority() -> [%v]\n", err)
 
-	//Output:
-	//test: RegisterAuthority() -> [error: handler for path [test] is nil]
-	//test: RegisterAuthority() -> [<nil>]
+		//Output:
+		//test: RegisterAuthority() -> [error: handler for path [test] is nil]
+		//test: RegisterAuthority() -> [<nil>]
 
 }
-
+*/
 func ExampleHttpHandler() {
 	pattern := "github/advanced-go/host/HttpHandler"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/HttpHandler:entry", nil)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	uri2 "github.com/advanced-go/stdlib/uri"
+	"net/http"
 	"sync"
 )
 
@@ -12,20 +13,37 @@ var (
 	ctrlMap = NewControls()
 )
 
-// RegisterController - add a controller for a URI
-func RegisterController(uri string, ctrl *Controller) *core.Status {
-	return ctrlMap.register(uri, ctrl)
+// RegisterController - add a controller for a host authority
+func RegisterController(ctrl *Controller) *core.Status {
+	return ctrlMap.register(ctrl)
 }
 
-func Lookup(uri string) (*Controller, *core.Status) {
-	p := uri2.Uproot(uri)
-	if !p.Valid {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, p.Err) //errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+// RegisterControllerWithAuthority - add a controller for an embedded authority
+func RegisterControllerWithAuthority(authority string, ctrl *Controller) *core.Status {
+	return ctrlMap.registerWithAuthority(authority, ctrl)
+}
+
+func Lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
+	if req == nil || req.URL == nil {
+		return nil, core.NewStatus(http.StatusNotFound)
 	}
-	return ctrlMap.lookupByNID(p.Authority)
+	// Try host authority first
+	ctrl, status = ctrlMap.lookupByAuthority(req.Host)
+	if status.OK() {
+		return
+	}
+	// Default to embedded authority
+	p := uri2.Uproot(req.URL.Path)
+	if p.Valid {
+		ctrl, status = ctrlMap.lookupByAuthority(p.Authority)
+		if status.OK() {
+			return
+		}
+	}
+	return nil, core.NewStatus(http.StatusNotFound)
 }
 
-// controls - key value pairs of a URI -> *Controller
+// controls - key value pairs of an authority -> *Controller
 type controls struct {
 	m *sync.Map
 }
@@ -37,40 +55,58 @@ func NewControls() *controls {
 	return p
 }
 
-// Register - add a controller
-func (p *controls) register(uri string, ctrl *Controller) *core.Status {
-	if len(uri) == 0 {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument: path is empty"))
-	}
-	parsed := uri2.Uproot(uri)
-	if !parsed.Valid {
-		return core.NewStatusError(core.StatusInvalidArgument, parsed.Err) // errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+func (p *controls) registerWithAuthority(authority string, ctrl *Controller) *core.Status {
+	if len(authority) == 0 {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument: authority is empty"))
 	}
 	if ctrl == nil {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller is nil: [%v]", uri)))
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller is nil: [%v]", authority)))
+	}
+	parsed := uri2.Uproot(authority)
+	if !parsed.Valid {
+		return core.NewStatusError(core.StatusInvalidArgument, parsed.Err)
 	}
 	_, ok1 := p.m.Load(parsed.Authority)
 	if ok1 {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller already exists: [%v]", uri)))
+		//return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: controller already exists: [%v]", authority)))
+		return core.StatusOK() //NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: controller already exists: [%v]", authority)))
 	}
 	p.m.Store(parsed.Authority, ctrl)
+	return core.StatusOK()
+}
+
+func (p *controls) register(ctrl *Controller) *core.Status {
+	if ctrl == nil {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller is nil")))
+	}
+	if ctrl.Router == nil {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller Router is nil")))
+	}
+	if ctrl.Router.primary == nil {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller Router primary resource is nil")))
+	}
+	_, ok1 := p.m.Load(ctrl.Router.primary.Authority)
+	if ok1 {
+		return core.StatusOK() //core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: controller already exists: [%v]", authority)))
+	}
+	p.m.Store(ctrl.Router.primary.Authority, ctrl)
 	return core.StatusOK()
 }
 
 // Lookup - get a Controller using a URI as the key
 func (p *controls) lookup(uri string) (*Controller, *core.Status) {
 	parsed := uri2.Uproot(uri)
-	if parsed.Valid {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, parsed.Err) //errors.New(fmt.Sprintf("invalid argument: path is invalid: [%v]", uri)))
+	if !parsed.Valid {
+		return nil, core.NewStatusError(core.StatusInvalidArgument, parsed.Err)
 	}
-	return p.lookupByNID(parsed.Authority)
+	return p.lookupByAuthority(parsed.Authority)
 }
 
-// LookupByNID - get a Controller using an NID as a key
-func (p *controls) lookupByNID(nid string) (*Controller, *core.Status) {
-	v, ok := p.m.Load(nid)
+// LookupByAuthority - get a Controller using an authority
+func (p *controls) lookupByAuthority(authority string) (*Controller, *core.Status) {
+	v, ok := p.m.Load(authority)
 	if !ok {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller does not exist: [%v]", nid)))
+		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: Controller does not exist: [%v]", authority)))
 	}
 	if ctrl, ok1 := v.(*Controller); ok1 {
 		return ctrl, core.StatusOK()

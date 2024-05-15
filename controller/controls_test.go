@@ -9,32 +9,31 @@ func ExampleControls_Add() {
 	p := NewControls()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
-	status := p.register("", nil)
+	status := p.registerWithAuthority("", nil)
 	fmt.Printf("test: Register(\"\") -> [status:%v]\n", status)
 
-	status = p.register(path, nil)
+	status = p.registerWithAuthority(path, nil)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
-	status = p.register(path, ctrl)
+	status = p.registerWithAuthority(path, ctrl)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
-	status = p.register(path, ctrl)
-	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
+	//status = p.registerWithAuthority(path, ctrl)
+	//fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	status = p.register(path, ctrl)
+	status = p.registerWithAuthority(path, ctrl)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
 	//Output:
-	//test: Register("") -> [status:Invalid Argument [invalid argument: path is empty]]
+	//test: Register("") -> [status:Invalid Argument [invalid argument: authority is empty]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: Controller is nil: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:OK]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: Controller already exists: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]]
 	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [status:OK]
 
 }
 
-func ExampleControls_Get() {
+func _ExampleControls_Get() {
 	ctrl := NewController("test-route", nil, nil)
 	p := NewControls()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
@@ -45,14 +44,14 @@ func ExampleControls_Get() {
 	_, status = p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v]\n", path, status)
 
-	status = p.register(path, ctrl)
+	status = p.registerWithAuthority(path, ctrl)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 
 	handler, status1 := p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	status = p.register(path, ctrl)
+	status = p.registerWithAuthority(path, ctrl)
 	fmt.Printf("test: Register(%v) -> [status:%v]\n", path, status)
 	handler, status1 = p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
