@@ -4,36 +4,36 @@ import (
 	"fmt"
 )
 
-func ExampleRegister() {
+func ExampleProxyRegister() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
 	err := proxy.register("", nil)
-	fmt.Printf("test: Register(\"\") -> [%v]\n", err)
+	fmt.Printf("test: Register(\"\") -> [err:%v]\n", err)
 
 	err = proxy.register(path, nil)
-	fmt.Printf("test: Register(%v) -> [%v]\n", path, err)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	err = proxy.register(path, appHttpExchange)
-	fmt.Printf("test: Register(%v) -> [%v]\n", path, err)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	err = proxy.register(path, appHttpExchange)
-	fmt.Printf("test: Register(%v) -> [%v]\n", path, err)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
 	err = proxy.register(path, appHttpExchange)
-	fmt.Printf("test: Register(%v) -> [%v]\n", path, err)
+	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	//Output:
-	//test: Register("") -> [error: authority is empty]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [error: HTTP Exchange is nil for authority : [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [<nil>]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [error: HTTP Exchange already exists for authority : [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
-	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [<nil>]
+	//test: Register("") -> [err:invalid argument: authority is empty]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:invalid argument: HTTP Exchange is nil for authority : [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:invalid argument: HTTP Exchange already exists for authority : [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
 
 }
 
-func ExampleLookup() {
+func ExampleProxyLookup() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 

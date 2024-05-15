@@ -21,10 +21,10 @@ func NewProxy() *Proxy {
 
 func (p *Proxy) register(authority string, handler core.HttpExchange) error {
 	if len(authority) == 0 {
-		return errors.New("error: authority is empty")
+		return errors.New("invalid argument: authority is empty")
 	}
 	if handler == nil {
-		return errors.New(fmt.Sprintf("error: HTTP Exchange is nil for authority : [%v]", authority))
+		return errors.New(fmt.Sprintf("invalid argument: HTTP Exchange is nil for authority : [%v]", authority))
 	}
 	//parsed := uri2.Uproot(authority)
 	//if !parsed.Valid {
@@ -32,7 +32,7 @@ func (p *Proxy) register(authority string, handler core.HttpExchange) error {
 	//}
 	_, ok1 := p.m.Load(authority)
 	if ok1 {
-		return errors.New(fmt.Sprintf("error: HTTP Exchange already exists for authority : [%v]", authority))
+		return errors.New(fmt.Sprintf("invalid argument: HTTP Exchange already exists for authority : [%v]", authority))
 	}
 	p.m.Store(authority, handler)
 	return nil

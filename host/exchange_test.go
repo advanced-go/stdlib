@@ -67,26 +67,26 @@ func ExampleRegisterExchange() {
 	a := "github/advanced-go/stdlib"
 
 	err := RegisterExchange("", nil)
-	fmt.Printf("test: RegisterExchange(_,nil) -> [%v]\n", err)
+	fmt.Printf("test: RegisterExchange(_,nil) -> [err:%v]\n", err)
 
 	err = RegisterExchange(a, nil)
-	fmt.Printf("test: RegisterExchange(\"%v\",nil) -> [%v]\n", a, err)
+	fmt.Printf("test: RegisterExchange(\"%v\",nil) -> [err:%v]\n", a, err)
 
 	err = RegisterExchange(a, appHttpExchange)
-	fmt.Printf("test: RegisterExchange(\"%v\",appHttpExchange) -> [%v]\n", a, err)
+	fmt.Printf("test: RegisterExchange(\"%v\",appHttpExchange) -> [err:%v]\n", a, err)
 
 	h := exchangeProxy.lookup(a)
 	fmt.Printf("test: Lookup(\"%v\") -> [ok:%v]\n", a, h != nil)
 
 	err = RegisterExchange(a, appHttpExchange)
-	fmt.Printf("test: RegisterExchange(\"%v\",appHttpExchange) -> [%v]\n", a, err)
+	fmt.Printf("test: RegisterExchange(\"%v\",appHttpExchange) -> [err:%v]\n", a, err)
 
 	//Output:
-	//test: RegisterExchange(_,nil) -> [error: authority is empty]
-	//test: RegisterExchange("github/advanced-go/stdlib",nil) -> [error: HTTP Exchange is nil for authority : [github/advanced-go/stdlib]]
-	//test: RegisterExchange("github/advanced-go/stdlib",appHttpExchange) -> [<nil>]
+	//test: RegisterExchange(_,nil) -> [err:invalid argument: authority is empty]
+	//test: RegisterExchange("github/advanced-go/stdlib",nil) -> [err:invalid argument: HTTP Exchange is nil for authority : [github/advanced-go/stdlib]]
+	//test: RegisterExchange("github/advanced-go/stdlib",appHttpExchange) -> [err:<nil>]
 	//test: Lookup("github/advanced-go/stdlib") -> [ok:true]
-	//test: RegisterExchange("github/advanced-go/stdlib",appHttpExchange) -> [error: HTTP Exchange already exists for authority : [github/advanced-go/stdlib]]
+	//test: RegisterExchange("github/advanced-go/stdlib",appHttpExchange) -> [err:invalid argument: HTTP Exchange already exists for authority : [github/advanced-go/stdlib]]
 
 }
 
