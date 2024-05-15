@@ -10,12 +10,6 @@ import (
 	"time"
 )
 
-// PathHandler - struct of path and associated Exchange handler
-type PathHandler struct {
-	Path    string
-	Handler core.HttpExchange
-}
-
 var (
 	exchangeProxy = NewProxy()
 	hostDuration  time.Duration
@@ -36,23 +30,24 @@ func SetAuthExchange(h core.HttpExchange, ok func(int) bool) {
 	}
 }
 
-// RegisterExchange - add a path and Http handler to the proxy
+// RegisterExchange - add an authority and Http Exchange handler to the proxy
 // TO DO : panic on duplicate handler and pattern combination
-func RegisterExchange(path string, handler core.HttpExchange) error {
-	if len(path) == 0 {
-		return errors.New("error: path is empty")
+func RegisterExchange(authority string, handler core.HttpExchange) error {
+	if len(authority) == 0 {
+		return errors.New("error: authority is empty")
 	}
 	if handler == nil {
-		return errors.New(fmt.Sprintf("error: handler for path [%v] is nil", path))
+		return errors.New(fmt.Sprintf("error: HTTP Exchange for authorityh [%v] is nil", authority))
 	}
 	h := handler
 	if authExchange != nil {
 		h = NewConditionalIntermediary(authExchange, handler, okFunc)
 	}
-	return exchangeProxy.Register(path, h)
+	return exchangeProxy.register(authority, h)
 }
 
 // RegisterAuthority - add an authority the proxy
+/*
 func RegisterAuthority(authority []PathHandler) error {
 	if len(authority) == 0 {
 		return errors.New("error: authority configuration list is empty")
@@ -66,18 +61,20 @@ func RegisterAuthority(authority []PathHandler) error {
 	return nil
 }
 
+*/
+
 // HttpHandler - process an HTTP request
 func HttpHandler(w http.ResponseWriter, r *http.Request) {
-	if r == nil || w == nil {
-		w.WriteHeader(http.StatusNotFound)
+	if r == nil || w == nil || r.URL == nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	p := uri.Uproot(r.URL.Path)
 	if !p.Valid {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	handler := exchangeProxy.LookupByNID(p.Authority)
+	handler := exchangeProxy.Lookup(p.Authority)
 	if handler == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

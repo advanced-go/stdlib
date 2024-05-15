@@ -62,6 +62,7 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 
 }
 */
+
 func ExampleHttpHandler() {
 	pattern := "github/advanced-go/host/HttpHandler"
 	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/HttpHandler:entry", nil)

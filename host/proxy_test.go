@@ -8,27 +8,27 @@ func ExampleProxy_Add() {
 	proxy := NewProxy()
 	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
 
-	err := proxy.Register("", nil)
+	err := proxy.register("", nil)
 	fmt.Printf("test: Register(\"\") -> [err:%v]\n", err)
 
-	err = proxy.Register(path, nil)
+	err = proxy.register(path, nil)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
-	err = proxy.Register(path, appHttpExchange)
+	err = proxy.register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
-	err = proxy.Register(path, appHttpExchange)
+	err = proxy.register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = proxy.Register(path, appHttpExchange)
+	err = proxy.register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	//Output:
-	//test: Register("") -> [err:error: proxy.Register() path is empty]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.Register() HTTP handler is nil: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register("") -> [err:error: proxy.register() authority is empty]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.register() HTTP Exchange is nil: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
 	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.Register() HTTP handler already exists: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
+	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:error: proxy.register() HTTP Exchange already exists: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
 	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
 
 }
@@ -43,14 +43,14 @@ func ExampleProxy_Get() {
 	p = proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [proxy:%v]\n", path, p != nil)
 
-	err := proxy.Register(path, appHttpExchange)
+	err := proxy.register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	handler := proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = proxy.Register(path, appHttpExchange)
+	err = proxy.register(path, appHttpExchange)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 	handler = proxy.Lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [handler:%v]\n", path, handler != nil)

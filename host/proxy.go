@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
-	uri2 "github.com/advanced-go/stdlib/uri"
 	"sync"
 )
 
@@ -21,39 +20,43 @@ func NewProxy() *Proxy {
 }
 
 // Register - add an HttpExchange to the proxy
-func (p *Proxy) Register(uri string, handler core.HttpExchange) error {
-	if len(uri) == 0 {
-		return errors.New("error: proxy.Register() path is empty")
-	}
-	parsed := uri2.Uproot(uri)
-	if !parsed.Valid {
-		return errors.New(fmt.Sprintf("error: proxy.Register() path is invalid: [%v]", uri))
+func (p *Proxy) register(authority string, handler core.HttpExchange) error {
+	if len(authority) == 0 {
+		return errors.New("error: proxy.register() authority is empty")
 	}
 	if handler == nil {
-		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler is nil: [%v]", uri))
+		return errors.New(fmt.Sprintf("error: proxy.register() HTTP Exchange is nil: [%v]", authority))
 	}
-	_, ok1 := p.m.Load(parsed.Authority)
+	//parsed := uri2.Uproot(authority)
+	//if !parsed.Valid {
+	//	return errors.New(fmt.Sprintf("error: proxy.register() authority is invalid: [%v] [%v]", authority, parsed.Err))
+	//}
+	_, ok1 := p.m.Load(authority)
 	if ok1 {
-		return errors.New(fmt.Sprintf("error: proxy.Register() HTTP handler already exists: [%v]", uri))
+		return errors.New(fmt.Sprintf("error: proxy.register() HTTP Exchange already exists: [%v]", authority))
 	}
-	p.m.Store(parsed.Authority, handler)
+	p.m.Store(authority, handler)
 	return nil
 }
 
 // Lookup - get an HttpExchange from the proxy, using a URI as the key
-func (p *Proxy) Lookup(uri string) core.HttpExchange {
-	parsed := uri2.Uproot(uri)
+/*
+func (p *Proxy) Lookup(authority string) core.HttpExchange {
+	parsed := uri2.Uproot(authority)
 	if !parsed.Valid {
-		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", uri))
+		return nil //, errors.New(fmt.Sprintf("error: proxy.Lookup() URI is invalid: [%v]", authority))
 	}
-	return p.LookupByNID(parsed.Authority)
+	return p.LookupByAuthority(parsed.Authority)
 }
 
-// LookupByNID - get an HttpExchange from the proxy, using an NID as a key
-func (p *Proxy) LookupByNID(nid string) core.HttpExchange {
-	v, ok := p.m.Load(nid)
+
+*/
+
+// Lookup - get an HttpExchange from the proxy, using an authority as a key
+func (p *Proxy) Lookup(authority string) core.HttpExchange {
+	v, ok := p.m.Load(authority)
 	if !ok {
-		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByNID() HTTP handler does not exist: [%v]", nid))
+		return nil //, errors.New(fmt.Sprintf("error: proxyLookupByauthority() HTTP handler does not exist: [%v]", authority))
 	}
 	if handler, ok1 := v.(core.HttpExchange); ok1 {
 		return handler //, StatusOK()
