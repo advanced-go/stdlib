@@ -82,7 +82,7 @@ func DoExchange(req *http.Request) (*http.Response, *core.Status) {
 	//if h != nil {
 	//	req.Header = h
 	//}
-	ctrl, status := controller.Lookup(req.URL.String())
+	ctrl, status := controller.Lookup(req)
 	if status.OK() {
 		return ctrl.Do(Do, req)
 	}
