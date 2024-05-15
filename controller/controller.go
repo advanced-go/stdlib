@@ -8,14 +8,8 @@ import (
 	"time"
 )
 
-type RouteNameMap struct {
-	Host string
-	Name string
-}
-
 type Controller struct {
-	Name string
-	//Map    RouteNameMap
+	Name   string
 	Router *Router
 }
 
@@ -26,25 +20,8 @@ func NewController(routeName string, primary, secondary *Resource) *Controller {
 	return c
 }
 
-/*
-func NewControllerWithMap(m RouteNameMap, primary, secondary *Resource) *Controller {
-	c := new(Controller)
-	c.Map = m
-	c.Router = NewRouter(primary, secondary)
-	return c
-}
-
-
-*/
-
 func (c *Controller) RouteName() string {
-	if len(c.Name) > 0 {
-		return c.Name
-	}
-	//return c.Mapif c.NameFn != nil {
-	//	return c.NameFn(r)
-	//}
-	return ""
+	return c.Name
 }
 
 func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Response, status *core.Status) {

@@ -9,7 +9,7 @@ import (
 
 func ExampleNewResource() {
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", "/health/liveness", 0, httpCall)
+	rsc := NewPrimaryResource("http://localhost:8080", 0, "/health/liveness", httpCall)
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	url := rsc.BuildUri(req.URL)
@@ -23,7 +23,7 @@ func ExampleNewResource() {
 func ExampleTimeout() {
 	var dIn time.Duration = -1
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", "/health/liveness", dIn, httpCall)
+	rsc := NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
 
 	dOut := rsc.timeout(nil)
 	fmt.Printf("test: timeout(nil) -> [timeout:%v]\n", dOut)
@@ -33,7 +33,7 @@ func ExampleTimeout() {
 	fmt.Printf("test: timeout(req) -> [duration:%v] [timeout:%v]\n", dIn, dOut)
 
 	dIn = time.Millisecond * 100
-	rsc = NewPrimaryResource("http://localhost:8080", "/health/liveness", dIn, httpCall)
+	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [timeout:%v]\n", dIn, dOut)
 
@@ -48,7 +48,7 @@ func ExampleTimeout_Deadline() {
 	dIn := time.Millisecond * 200
 	deadline := time.Millisecond * 100
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", "/health/liveness", dIn, httpCall)
+	rsc := NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
 
 	ctx, cancel := context.WithTimeout(context.Background(), deadline)
 	defer cancel()
@@ -57,12 +57,12 @@ func ExampleTimeout_Deadline() {
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 
 	dIn = time.Millisecond * 100
-	rsc = NewPrimaryResource("http://localhost:8080", "/health/liveness", dIn, httpCall)
+	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 
 	dIn = time.Millisecond * 50
-	rsc = NewPrimaryResource("http://localhost:8080", "/health/liveness", dIn, httpCall)
+	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 

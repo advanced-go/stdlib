@@ -15,7 +15,7 @@ type Resource struct {
 	handler      core.HttpExchange
 }
 
-func newResource(name, authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
+func newResource(name, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
 	r := new(Resource)
 	r.Name = name
 	r.Authority = authority
@@ -27,12 +27,12 @@ func newResource(name, authority, livenessPath string, duration time.Duration, h
 	return r
 }
 
-func NewPrimaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
-	return newResource(PrimaryName, authority, livenessPath, duration, handler)
+func NewPrimaryResource(authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
+	return newResource(PrimaryName, authority, duration, livenessPath, handler)
 }
 
-func NewSecondaryResource(authority, livenessPath string, duration time.Duration, handler core.HttpExchange) *Resource {
-	return newResource(SecondaryName, authority, livenessPath, duration, handler)
+func NewSecondaryResource(authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
+	return newResource(SecondaryName, authority, duration, livenessPath, handler)
 }
 
 func (r *Resource) IsPrimary() bool {
