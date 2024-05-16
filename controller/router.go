@@ -12,29 +12,29 @@ const (
 )
 
 type Router struct {
-	primary   *Resource
-	secondary *Resource
+	Primary   *Resource
+	Secondary *Resource
 	active    atomic.Int64
 }
 
 func NewRouter(primary, secondary *Resource) *Router {
 	r := new(Router)
-	r.primary = primary
+	r.Primary = primary
 	if primary != nil {
-		r.primary.Name = PrimaryName
+		r.Primary.Name = PrimaryName
 	}
-	r.secondary = secondary
-	if r.secondary != nil {
-		r.secondary.Name = SecondaryName
+	r.Secondary = secondary
+	if r.Secondary != nil {
+		r.Secondary.Name = SecondaryName
 	}
 	return r
 }
 
 func (r *Router) RouteTo() *Resource {
 	if r.active.Load() == primary {
-		return r.primary
+		return r.Primary
 	}
-	return r.secondary
+	return r.Secondary
 }
 
 func (r *Router) UpdateStats(statusCode int, rsc *Resource) {

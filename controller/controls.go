@@ -84,14 +84,14 @@ func (p *controls) register(ctrl *Controller) error {
 	if ctrl.Router == nil {
 		return errors.New(fmt.Sprintf("invalid argument: Controller Router is nil"))
 	}
-	if ctrl.Router.primary == nil {
+	if ctrl.Router.Primary == nil {
 		return errors.New(fmt.Sprintf("invalid argument: Controller Router primary resource is nil"))
 	}
-	_, ok1 := p.m.Load(ctrl.Router.primary.Authority)
+	_, ok1 := p.m.Load(ctrl.Router.Primary.Authority)
 	if ok1 {
-		return errors.New(fmt.Sprintf("invalid argument: Controller already exists for authority: [%v]", ctrl.Router.primary))
+		return errors.New(fmt.Sprintf("invalid argument: Controller already exists for authority: [%v]", ctrl.Router.Primary))
 	}
-	p.m.Store(ctrl.Router.primary.Authority, ctrl)
+	p.m.Store(ctrl.Router.Primary.Authority, ctrl)
 	return nil
 }
 

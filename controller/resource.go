@@ -11,8 +11,8 @@ type Resource struct {
 	Name         string `json:"name"`
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
-	duration     time.Duration
-	handler      core.HttpExchange
+	Duration     time.Duration
+	Handler      core.HttpExchange
 }
 
 func newResource(name, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
@@ -20,9 +20,9 @@ func newResource(name, authority string, duration time.Duration, livenessPath st
 	r.Name = name
 	r.Authority = authority
 	r.LivenessPath = livenessPath
-	r.duration = duration
+	r.Duration = duration
 	if handler != nil {
-		r.handler = handler
+		r.Handler = handler
 	}
 	return r
 }
@@ -73,8 +73,8 @@ func (r *Resource) BuildUri(uri *url.URL) *url.URL {
 }
 
 func (r *Resource) timeout(req *http.Request) time.Duration {
-	duration := r.duration
-	if r.duration < 0 {
+	duration := r.Duration
+	if r.Duration < 0 {
 		duration = 0
 	}
 	if req == nil || req.Context() == nil {

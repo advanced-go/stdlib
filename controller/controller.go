@@ -30,9 +30,9 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	}
 	traffic := access.EgressTraffic
 	rsc := c.Router.RouteTo()
-	if rsc.handler != nil {
+	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
-		do = rsc.handler
+		do = rsc.Handler
 	} else {
 		if do == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))
@@ -55,7 +55,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	} else {
 		duration = outDuration
 		// Internal call
-		if rsc.handler != nil {
+		if rsc.Handler != nil {
 			//ctx, cancel := context.WithTimeout(req.Context(), outDuration)
 			//defer cancel()
 			//r2 := req.Clone(ctx)
@@ -82,8 +82,8 @@ func durations(rsc *Resource, req *http.Request) (in time.Duration, out time.Dur
 	if ok {
 		in = time.Until(deadline) // * -1
 	}
-	if rsc.duration > 0 {
-		out = rsc.duration
+	if rsc.Duration > 0 {
+		out = rsc.Duration
 	}
 	return
 }
