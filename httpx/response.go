@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	HealthResponse = NewResponse(core.StatusOK(), core.HealthContent("up"))
+	HealthResponseUp = NewResponse(core.StatusOK(), core.HealthContent("up"))
 )
 
 func NewErrorResponse(status *core.Status) *http.Response {
