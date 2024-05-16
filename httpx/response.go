@@ -11,5 +11,18 @@ func NewErrorResponse(status *core.Status) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
 	}
-	return &http.Response{StatusCode: status.HttpCode(), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}
+	if status.Err == nil {
+		return &http.Response{StatusCode: status.HttpCode()}
+	}
+	return NewResponse(status, status.Err.Error())
+}
+
+func NewResponse(status *core.Status, content string) *http.Response {
+	if status == nil {
+		return &http.Response{StatusCode: http.StatusBadRequest}
+	}
+	if len(content) == 0 {
+		return &http.Response{StatusCode: status.HttpCode()}
+	}
+	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Body: io.NopCloser(bytes.NewReader([]byte(content)))}
 }
