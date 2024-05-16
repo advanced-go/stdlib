@@ -1,10 +1,10 @@
 package core
 
-// Origin - log source location
+// Origin - location
 type Origin struct {
-	Region     string
-	Zone       string
-	SubZone    string
-	App        string
-	InstanceId string
+	Region     string `json:"region"`
+	Zone       string `json:"zone"`
+	SubZone    string `json:"sub-zone"`
+	App        string `json:"app"`
+	InstanceId string `json:"instance-id"`
 }
