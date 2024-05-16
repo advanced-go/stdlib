@@ -5,6 +5,24 @@ import (
 	"net/http"
 )
 
+func ExampleVersionContent() {
+	s := "1.2.34"
+	fmt.Printf("test: VersionContent() -> [%v]\n", VersionContent(s))
+
+	//Output:
+	//test: VersionContent() -> [{ "version": "1.2.34" }]
+
+}
+
+func ExampleHealthContent() {
+	s := "jacked up!!"
+	fmt.Printf("test: HealthContent() -> [%v]\n", HealthContent(s))
+
+	//Output:
+	//test: HealthContent() -> [{ "status": "jacked up!!" }]
+
+}
+
 func ExampleHttpHandler() {
 	ok := exchange(func(w http.ResponseWriter, r *http.Request) {})
 	fmt.Printf("test: HttpHandler(anonymous-function) -> [ok:%v|\n", ok)
