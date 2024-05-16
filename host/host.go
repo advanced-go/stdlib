@@ -19,6 +19,7 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	var resp *http.Response
 	var status *core.Status
 
+	core.AddRequestId(r)
 	if dur > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), dur)
 		defer cancel()
