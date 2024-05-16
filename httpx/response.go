@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+var (
+	HealthResponse = NewResponse(core.StatusOK(), core.HealthContent("up"))
+)
+
 func NewErrorResponse(status *core.Status) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
