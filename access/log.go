@@ -1,6 +1,7 @@
 package access
 
 import (
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -15,22 +16,13 @@ const (
 	TimeoutFlag     = "TO"
 )
 
-// Origin - log source location
-type Origin struct {
-	Region     string
-	Zone       string
-	SubZone    string
-	App        string
-	InstanceId string
-}
-
 // SetOrigin - initialize the origin
-func SetOrigin(o Origin) {
+func SetOrigin(o core.Origin) {
 	origin = o
 }
 
 // FormatFunc - formatting
-type FormatFunc func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
+type FormatFunc func(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string
 
 // SetFormatFunc - override formatting
 func SetFormatFunc(fn FormatFunc) {
@@ -40,7 +32,7 @@ func SetFormatFunc(fn FormatFunc) {
 }
 
 // LogFn - log function
-type LogFn func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
+type LogFn func(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold int, thresholdFlags string)
 
 // SetLogFn - override logging
 func SetLogFn(fn LogFn) {
@@ -50,7 +42,7 @@ func SetLogFn(fn LogFn) {
 }
 
 var (
-	origin    = Origin{}
+	origin    = core.Origin{}
 	formatter = DefaultFormat
 	logger    = defaultLog
 )

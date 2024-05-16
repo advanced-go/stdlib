@@ -7,11 +7,6 @@ import (
 	"sync/atomic"
 )
 
-const (
-	XRequestId = "x-request-id"
-	XRelatesTo = "x-relates-to"
-)
-
 // ResponseWriter - write a response
 type ResponseWriter struct {
 	statusCode int32

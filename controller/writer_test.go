@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
 )
@@ -17,16 +18,16 @@ func Example_ResponseWriter() {
 	content := "this is response write content"
 	w := newResponseWriter()
 
-	w.Header().Add(XRequestId, requestId2)
-	w.Header().Add(XRelatesTo, relatesTo2)
+	w.Header().Add(core.XRequestId, requestId2)
+	w.Header().Add(core.XRelatesTo, relatesTo2)
 	w.WriteHeader(http.StatusAccepted)
 	cnt, err := w.Write([]byte(content))
 	fmt.Printf("test: responseWriter() -> [cnt:%v] [error:%v]\n", cnt, err)
 
 	resp := w.Response()
 
-	fmt.Printf("test: responseWriter() -> [write-requestId:%v] [response-requestId:%v]\n", requestId, resp.Header.Get(XRequestId))
-	fmt.Printf("test: responseWriter() -> [write-relatesTo:%v] [response-relatesTo:%v]\n", relatesTo, resp.Header.Get(XRelatesTo))
+	fmt.Printf("test: responseWriter() -> [write-requestId:%v] [response-requestId:%v]\n", requestId, resp.Header.Get(core.XRequestId))
+	fmt.Printf("test: responseWriter() -> [write-relatesTo:%v] [response-relatesTo:%v]\n", relatesTo, resp.Header.Get(core.XRelatesTo))
 	fmt.Printf("test: responseWriter() -> [write-statusCode:%v] [response-statusCode:%v]\n", http.StatusAccepted, resp.StatusCode)
 
 	buf, _ := io.ReadAll(resp.Body)

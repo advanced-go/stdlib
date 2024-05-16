@@ -2,6 +2,7 @@ package access
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"log"
 	"net/http"
@@ -14,12 +15,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+var defaultLog = func(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
 	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o *Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
+func DefaultFormat(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	if o == nil {
 		o = &origin
 	}

@@ -2,6 +2,7 @@ package access
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
 )
@@ -10,7 +11,7 @@ func Example_LogAccess() {
 	var start time.Time //:= time.Now().UTC()
 	r, _ := http.NewRequest("PUT", "/github.com/advanced-go/example-domain/activity:entry", nil)
 	r.Host = "localhost:8080"
-	s := DefaultFormat(&Origin{Region: "us", Zone: "zone", App: "ai-agent"}, EgressTraffic, start, 0, r, &http.Response{StatusCode: 200, Status: "OK"}, "route", "primary", -1, "")
+	s := DefaultFormat(&core.Origin{Region: "us", Zone: "zone", App: "ai-agent"}, EgressTraffic, start, 0, r, &http.Response{StatusCode: 200, Status: "OK"}, "route", "primary", -1, "")
 
 	fmt.Printf("test: fmtlog() -> %v\n", s)
 
