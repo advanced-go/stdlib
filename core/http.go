@@ -3,8 +3,9 @@ package core
 import "net/http"
 
 const (
-	HealthLivenessPath  = "/health/liveness"
-	HealthReadinessPath = "/health/readiness"
+	HealthLivenessPath  = "health/liveness"
+	HealthReadinessPath = "health/readiness"
+	VersionPath         = "version"
 )
 
 type HttpHandler func(w http.ResponseWriter, r *http.Request)
