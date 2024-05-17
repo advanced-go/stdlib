@@ -14,6 +14,7 @@ const (
 	ContentLength       = "Content-Length"
 	ContentEncodingGzip = "gzip"
 	ContentTypeTextHtml = "text/html"
+	ContentTypeText     = "text/plain charset=utf-8"
 )
 
 func forwardDefaults(dest http.Header, src http.Header) http.Header {

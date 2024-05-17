@@ -34,13 +34,16 @@ func NewResponse(status *core.Status, content string) *http.Response {
 	if len(content) == 0 {
 		return &http.Response{StatusCode: status.HttpCode()}
 	}
-	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Body: io.NopCloser(bytes.NewReader([]byte(content)))}
+	h := make(http.Header)
+	h.Add(ContentType, ContentTypeText)
+	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
 }
 
 func NewInfoResponse(info core.ModuleInfo) *http.Response {
 	h := make(http.Header)
 	h.Add(core.XVersion, info.Version)
 	h.Add(core.XAuthority, info.Authority)
+	h.Add(ContentType, ContentTypeJson)
 	content := fmt.Sprintf(infoFmt, info.Authority, info.Version, info.Name)
 	return &http.Response{StatusCode: http.StatusOK, Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
 }
