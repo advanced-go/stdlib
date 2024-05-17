@@ -8,12 +8,6 @@ import (
 	"net/http"
 )
 
-const (
-// VersionPrefix = "v"
-// MethodInfo    = "INFO"
-// PathInfo      = "info"
-)
-
 // ValidateRequestURL - validate the request URL path
 func ValidateRequestURL(req *http.Request, authority string) (ver string, path string, status *core.Status) {
 	if req == nil {
