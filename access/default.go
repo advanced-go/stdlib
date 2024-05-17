@@ -24,12 +24,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
 	url, host, path := CreateUrlHostPath(req)
-	if len(o.App) == 0 {
-		o.App = host
-	}
-	if len(authority) == 0 {
-		authority = o.App
-	}
+	o.App = CreateAuthority(o.App, host)
+	authority = CreateAuthority(authority, o.App)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
@@ -136,4 +132,11 @@ func Encoding(resp *http.Response) string {
 		encoding = ""
 	}
 	return encoding
+}
+
+func CreateAuthority(primary, secondary string) string {
+	if len(primary) == 0 {
+		return secondary
+	}
+	return primary
 }
