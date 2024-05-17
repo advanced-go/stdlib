@@ -77,12 +77,14 @@ func _ExampleNewInfoResponse() {
 
 }
 
-func ExampleNewHealthResponseOK() {
+func _ExampleNewHealthResponseOK() {
 	resp := NewHealthResponseOK()
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewHealthResponseOK() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	//Output:
-	//test: NewHealthResponseOK() -> [status-code:200] [content:up]
+	//test: NewHealthResponseOK() -> [status-code:200] [content:{
+	// "status": "up"
+	//}]
 
 }

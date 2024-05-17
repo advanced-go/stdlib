@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	healthOK     = []byte("up")
+	healthOK     = []byte("{\n \"status\": \"up\"\n}")
 	healthLength = int64(len(healthOK))
 )
 
