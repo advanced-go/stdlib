@@ -15,18 +15,21 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
-	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) {
+	s := formatter(o, traffic, start, duration, req, resp, authority, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o *core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
-	if o == nil {
-		o = &origin
-	}
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
 	url, host, path := CreateUrlHostPath(req)
+	if len(o.App) == 0 {
+		o.App = host
+	}
+	if len(authority) == 0 {
+		authority = o.App
+	}
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
@@ -41,7 +44,7 @@ func DefaultFormat(o *core.Origin, traffic string, start time.Time, duration tim
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
 		"\"uri\":%v, "+
-		"\"host\":%v, "+
+		"\"authority\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"encoding\":%v, "+
@@ -65,7 +68,7 @@ func DefaultFormat(o *core.Origin, traffic string, start time.Time, duration tim
 		fmt2.JsonString(req.Proto),
 		fmt2.JsonString(req.Method),
 		fmt2.JsonString(url),
-		fmt2.JsonString(host),
+		fmt2.JsonString(authority),
 		fmt2.JsonString(path),
 
 		resp.StatusCode,

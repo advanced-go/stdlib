@@ -28,11 +28,13 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
+	authority := ""
 	traffic := access.EgressTraffic
 	rsc := c.Router.RouteTo()
 	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
 		do = rsc.Handler
+		authority, _ = core.Authority(do)
 	} else {
 		if do == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))
@@ -73,7 +75,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
-	access.Log(traffic, start, elapsed, req, resp, c.RouteName(), rsc.Name, access.Milliseconds(duration), flags)
+	access.Log(traffic, start, elapsed, req, resp, authority, c.RouteName(), rsc.Name, access.Milliseconds(duration), flags)
 	return
 }
 

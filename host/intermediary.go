@@ -42,6 +42,7 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 			return badRequest("error: AccessLog Intermediary HttpExchange is nil")
 		}
 		flags := ""
+		authority := ""
 		var dur time.Duration
 		if ct, ok := r.Context().Deadline(); ok {
 			dur = time.Until(ct) * -1
@@ -51,7 +52,8 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 		if status.Code == http.StatusGatewayTimeout {
 			flags = access.TimeoutFlag
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, routeName, "", access.Milliseconds(dur), flags)
+		authority, _ = core.Authority(c2)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, authority, routeName, "", access.Milliseconds(dur), flags)
 		return
 	}
 }

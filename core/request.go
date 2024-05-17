@@ -8,6 +8,8 @@ import (
 const (
 	XRequestId = "x-request-id"
 	XRelatesTo = "x-relates-to"
+	XAuthority = "x-authority"
+	XVersion   = "x-version"
 )
 
 // AddRequestId - add a request to an http.Request or an http.Header

@@ -14,6 +14,11 @@ func httpCall(r *http.Request) (resp *http.Response, status *core.Status) {
 	var err0 error
 	var err1 error
 
+	if r.Method == core.MethodInfo {
+		h := make(http.Header)
+		h.Add(core.XAuthority, "authority")
+		return &http.Response{StatusCode: http.StatusOK, Header: h}, core.StatusOK()
+	}
 	resp, err0 = http.DefaultClient.Do(r)
 	if err0 != nil {
 		resp = new(http.Response)

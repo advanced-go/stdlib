@@ -9,6 +9,7 @@ const (
 	HealthLivenessPath  = "health/liveness"
 	HealthReadinessPath = "health/readiness"
 	VersionPath         = "version"
+	AuthorityPath       = "authority"
 )
 
 type HttpHandler func(w http.ResponseWriter, r *http.Request)
