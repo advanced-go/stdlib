@@ -60,11 +60,11 @@ func ExampleValidateRequest() {
 }
 func ExampleValidateRequest_Info() {
 	auth := "github/advanced-go/stdlib"
-	req, _ := http.NewRequest(core.MethodInfo, core.InfoPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, core.InfoRootPath, nil)
 	ver, path, status := ValidateRequestURL(req, auth)
-	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", core.InfoPath, auth, status, ver, path)
+	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", core.InfoPath, auth, status, ver, path)
 
 	//Output:
-	//test: ValidateRequest("info","github/advanced-go/stdlib") -> [status:OK] [ver:] [path:info]
+	//test: ValidateRequestURL("info","github/advanced-go/stdlib") -> [status:OK] [ver:] [path:info]
 
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func authExchange(req *http.Request) (*http.Response, *Status) {
-	if req.Method == MethodInfo {
+	if req.URL.Path == InfoRootPath {
 		h := make(http.Header)
 		h.Add(XAuthority, "github/advanced-go/stdlib")
 		h.Add(XVersion, "1.2.345")
@@ -21,5 +21,5 @@ func ExampleAuthority() {
 
 	//Output:
 	//test: Authority() -> [auth:github/advanced-go/stdlib] [vers:1.2.345]
-	
+
 }

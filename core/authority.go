@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	MethodInfo = "INFO"
-	InfoPath   = "info"
+	InfoPath     = "info"
+	InfoRootPath = "/" + InfoPath
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	req, _ = http.NewRequest(MethodInfo, "/info", nil)
+	req, _ = http.NewRequest(http.MethodGet, InfoRootPath, nil)
 }
 
 func Authority(h HttpExchange) (authority, version string) {

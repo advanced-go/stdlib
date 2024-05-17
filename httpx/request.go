@@ -16,7 +16,7 @@ func ValidateRequestURL(req *http.Request, authority string) (ver string, path s
 	if len(authority) == 0 {
 		return "", "", core.NewStatusError(core.StatusInvalidArgument, errors.New("error: authority is empty"))
 	}
-	if req.Method == core.MethodInfo {
+	if req.URL.Path == core.InfoRootPath {
 		return "", core.InfoPath, core.StatusOK()
 	}
 	p := uri.Uproot(req.URL.Path)
