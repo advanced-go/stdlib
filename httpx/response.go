@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	HealthResponseOK = NewResponse(core.StatusOK(), core.HealthContent("up"))
+	healthOK     = []byte("up")
+	healthLength = int64(len(healthOK))
 )
 
 func NewErrorResponse(status *core.Status) *http.Response {
@@ -39,4 +40,9 @@ func NewInfoResponse(status *core.Status, authority, version string) *http.Respo
 	h.Add(core.XVersion, version)
 	h.Add(core.XAuthority, authority)
 	return &http.Response{StatusCode: status.HttpCode(), Header: h}
+}
+
+func NewHealthResponseOK() *http.Response {
+	return &http.Response{StatusCode: http.StatusOK, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
+
 }
