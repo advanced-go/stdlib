@@ -30,3 +30,13 @@ func NewResponse(status *core.Status, content string) *http.Response {
 	}
 	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Body: io.NopCloser(bytes.NewReader([]byte(content)))}
 }
+
+func NewInfoResponse(status *core.Status, authority, version string) *http.Response {
+	if status == nil {
+		return &http.Response{StatusCode: http.StatusBadRequest}
+	}
+	h := make(http.Header)
+	h.Add(core.XVersion, version)
+	h.Add(core.XAuthority, authority)
+	return &http.Response{StatusCode: status.HttpCode(), Header: h}
+}

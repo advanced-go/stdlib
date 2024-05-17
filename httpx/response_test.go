@@ -42,3 +42,12 @@ func ExampleNewResponse() {
 	//test: NewResponse() -> [status-code:200] [content:version 1.2.35]
 
 }
+
+func ExampleNewInfoesponse() {
+	resp := NewInfoResponse(core.StatusOK(), "github/advanced-go/stdlib", "4.3.21")
+	fmt.Printf("test: NewIfoResponse() -> [status-code:%v] [auth:%v] [vers:%v]\n", resp.StatusCode, resp.Header.Get(core.XAuthority), resp.Header.Get(core.XVersion))
+
+	//Output:
+	//test: NewIfoResponse() -> [status-code:200] [auth:github/advanced-go/stdlib] [vers:4.3.21]
+
+}
