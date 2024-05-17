@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 )
 
@@ -55,5 +56,15 @@ func ExampleValidateRequest() {
 	//Output:
 	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:] [path:search]
 	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:v1/search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:v1] [path:search]
+
+}
+func ExampleValidateRequest_Info() {
+	auth := "github/advanced-go/stdlib"
+	req, _ := http.NewRequest(core.MethodInfo, core.InfoPath, nil)
+	ver, path, status := ValidateRequestURL(req, auth)
+	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", core.InfoPath, auth, status, ver, path)
+
+	//Output:
+	//test: ValidateRequest("info","github/advanced-go/stdlib") -> [status:OK] [ver:] [path:info]
 
 }

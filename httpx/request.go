@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	VersionPrefix = "v"
-	MethodInfo    = "INFO"
-	PathInfo      = "info"
+// VersionPrefix = "v"
+// MethodInfo    = "INFO"
+// PathInfo      = "info"
 )
 
 // ValidateRequestURL - validate the request URL path
@@ -22,8 +22,8 @@ func ValidateRequestURL(req *http.Request, authority string) (ver string, path s
 	if len(authority) == 0 {
 		return "", "", core.NewStatusError(core.StatusInvalidArgument, errors.New("error: authority is empty"))
 	}
-	if req.Method == MethodInfo {
-		return "", PathInfo, core.StatusOK()
+	if req.Method == core.MethodInfo {
+		return "", core.InfoPath, core.StatusOK()
 	}
 	p := uri.Uproot(req.URL.Path)
 	if !p.Valid {
