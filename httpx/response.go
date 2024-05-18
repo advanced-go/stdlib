@@ -10,7 +10,7 @@ import (
 
 const (
 	infoFmt    = "{\n \"authority\": \"%v\",\n \"version\": \"%v\",\n \"name\": \"%v\"\n  }"
-	versionFmt = "{\n \"version\": \"%v\"\n  }"
+	versionFmt = "{\n \"version\": \"%v\"\n}"
 )
 
 var (
