@@ -58,11 +58,11 @@ func ExampleValidateRequest() {
 	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:v1/search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:v1] [path:search]
 
 }
-func ExampleValidateRequest_Info() {
+func ExampleValidateRequestURL_Authority() {
 	auth := "github/advanced-go/stdlib"
-	req, _ := http.NewRequest(http.MethodGet, core.InfoRootPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, core.AuthorityRootPath, nil)
 	ver, path, status := ValidateRequestURL(req, auth)
-	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", core.InfoPath, auth, status, ver, path)
+	fmt.Printf("test: ValidateRequestURL(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", core.AuthorityPath, auth, status, ver, path)
 
 	//Output:
 	//test: ValidateRequestURL("info","github/advanced-go/stdlib") -> [status:OK] [ver:] [path:info]

@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	infoFmt = "{\n \"authority\": \"%v\",\n \"version\": \"%v\",\n \"name\": \"%v\"\n  }"
+	infoFmt    = "{\n \"authority\": \"%v\",\n \"version\": \"%v\",\n \"name\": \"%v\"\n  }"
+	versionFmt = "{\n \"version\": \"%v\"\n  }"
 )
 
 var (
@@ -39,13 +40,18 @@ func NewResponse(status *core.Status, content string) *http.Response {
 	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
 }
 
-func NewInfoResponse(info core.ModuleInfo) *http.Response {
+func NewVersionResponse(version string) *http.Response {
 	h := make(http.Header)
-	h.Add(core.XVersion, info.Version)
-	h.Add(core.XAuthority, info.Authority)
 	h.Add(ContentType, ContentTypeJson)
-	content := fmt.Sprintf(infoFmt, info.Authority, info.Version, info.Name)
+	content := fmt.Sprintf(versionFmt, version)
 	return &http.Response{StatusCode: http.StatusOK, Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
+}
+
+func NewAuthorityResponse(authority string) *http.Response {
+	h := make(http.Header)
+	h.Add(core.XAuthority, authority)
+	//h.Add(ContentType, ContentTypeJson)
+	return &http.Response{StatusCode: http.StatusOK, Header: h}
 }
 
 func NewHealthResponseOK() *http.Response {

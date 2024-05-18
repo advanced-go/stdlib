@@ -34,7 +34,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
 		do = rsc.Handler
-		authority, _ = core.Authority(do)
+		authority = core.Authority(do)
 	} else {
 		if do == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))

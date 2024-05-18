@@ -14,7 +14,7 @@ func httpCall(r *http.Request) (resp *http.Response, status *core.Status) {
 	var err0 error
 	var err1 error
 
-	if r.URL.Path == core.InfoRootPath {
+	if r.URL.Path == core.AuthorityRootPath {
 		h := make(http.Header)
 		h.Add(core.XAuthority, "authority")
 		return &http.Response{StatusCode: http.StatusOK, Header: h}, core.StatusOK()

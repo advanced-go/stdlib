@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+/*
 func _ExampleInfoFmt() {
 	info := core.ModuleInfo{
 		Authority: "github/advanced/go/stdlib",
@@ -21,6 +22,9 @@ func _ExampleInfoFmt() {
 	//fail
 
 }
+
+
+*/
 
 func ExampleNewErrorResponse() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
@@ -57,27 +61,28 @@ func ExampleNewResponse() {
 
 }
 
-func _ExampleNewInfoResponse() {
-	info := core.ModuleInfo{
-		Authority: "github/advanced/go/stdlib",
-		Version:   "7.8.9",
-		Name:      "library",
-	}
-
-	resp := NewInfoResponse(info)
+func ExampleNewVersionResponse() {
+	resp := NewVersionResponse("7.8.9")
 	buf, _ := io.ReadAll(resp.Body, nil)
-	fmt.Printf("test: NewIfoResponse() -> [status-code:%v] [auth:%v] [vers:%v] [%v]\n", resp.StatusCode, resp.Header.Get(core.XAuthority), resp.Header.Get(core.XVersion), string(buf))
+	fmt.Printf("test: NewVersionResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	//Output:
-	//test: NewIfoResponse() -> [status-code:200] [auth:github/advanced/go/stdlib] [vers:7.8.9] [{
-	// "authority": "github/advanced/go/stdlib",
-	// "version": "7.8.9",
-	// "name": "library"
+	//test: NewVersionResponse() -> [status-code:200] [content:{
+	// "version": "7.8.9"
 	//  }]
 
 }
 
-func _ExampleNewHealthResponseOK() {
+func ExampleNewAuthorityResponse() {
+	resp := NewAuthorityResponse("github/advanced-go/stdlib")
+	fmt.Printf("test: NewAuthorityResponse() -> [status-code:%v] [auth:%v]\n", resp.StatusCode, resp.Header.Get(core.XAuthority))
+
+	//Output:
+	//test: NewAuthorityResponse() -> [status-code:200] [auth:github/advanced-go/stdlib]
+
+}
+
+func ExampleNewHealthResponseOK() {
 	resp := NewHealthResponseOK()
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewHealthResponseOK() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))

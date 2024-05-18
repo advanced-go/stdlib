@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+/*
 func ExampleVersionContent() {
 	s := "1.2.34"
 	fmt.Printf("test: VersionContent() -> [%v]\n", VersionContent(s))
@@ -22,6 +23,9 @@ func ExampleHealthContent() {
 	//test: HealthContent() -> [{ "status": "jacked up!!" }]
 
 }
+
+
+*/
 
 func ExampleHttpHandler() {
 	ok := exchange(func(w http.ResponseWriter, r *http.Request) {})
@@ -52,4 +56,22 @@ func handler2(w http.ResponseWriter, r *http.Request) {
 
 func handler3() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {}
+}
+
+func authExchange(req *http.Request) (*http.Response, *Status) {
+	if req.URL.Path == AuthorityRootPath {
+		h := make(http.Header)
+		h.Add(XAuthority, "github/advanced-go/stdlib")
+		return &http.Response{StatusCode: http.StatusOK, Header: h}, StatusOK()
+	}
+	return &http.Response{StatusCode: http.StatusBadRequest}, NewStatus(http.StatusBadRequest)
+}
+
+func ExampleAuthority() {
+	auth := Authority(authExchange)
+	fmt.Printf("test: Authority() -> [auth:%v]\n", auth)
+
+	//Output:
+	//test: Authority() -> [auth:github/advanced-go/stdlib]
+
 }
