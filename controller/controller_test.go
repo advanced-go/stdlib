@@ -36,7 +36,7 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 }
 
 func ExampleDo_Error() {
-	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", 0, "/health/liveness", httpCall), nil)
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
 
 	_, status := ctrl.Do(testDo, nil)
 	fmt.Printf("test: Do(testDo,nil) -> [status:%v]\n", status)
@@ -47,7 +47,7 @@ func ExampleDo_Error() {
 }
 
 func ExampleDo_Internal() {
-	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", 0, "/health/liveness", httpCall), nil)
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
@@ -58,7 +58,7 @@ func ExampleDo_Internal() {
 	}
 	fmt.Printf("test: Do_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
 
-	ctrl = NewController("google-search", NewPrimaryResource("https://www.google.com", time.Millisecond*5, "/health/liveness", httpCall), nil)
+	ctrl = NewController("google-search", NewPrimaryResource("www.google.com", "", time.Millisecond*5, "/health/liveness", httpCall), nil)
 	resp, status = ctrl.Do(nil, req)
 	if status.OK() {
 		buf, _ = io.ReadAll(resp.Body)
@@ -75,7 +75,7 @@ func ExampleDo_Internal() {
 
 func ExampleDo_Egress() {
 	var buf []byte
-	ctrl := NewController("google-search", NewPrimaryResource("https://www.google.com", 0, "/health/liveness", nil), nil)
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", nil), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
@@ -85,7 +85,7 @@ func ExampleDo_Egress() {
 	}
 	fmt.Printf("test: Do_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
 
-	ctrl = NewController("google-search", NewPrimaryResource("https://www.google.com", time.Millisecond*5, "/health/liveness", nil), nil)
+	ctrl = NewController("google-search", NewPrimaryResource("www.google.com", "", time.Millisecond*5, "/health/liveness", nil), nil)
 	resp, status = ctrl.Do(testDo, req)
 	if status.OK() {
 		buf, _ = io.ReadAll(resp.Body)

@@ -43,7 +43,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	inDuration, outDuration := durations(rsc, req)
 	duration := time.Duration(0)
 	flags := ""
-	newURL := rsc.BuildUri(req.URL)
+	newURL := rsc.BuildURL(req.URL)
 	req.URL = newURL
 	if req.URL != nil {
 		req.Host = req.URL.Host

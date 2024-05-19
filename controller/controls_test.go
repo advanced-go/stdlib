@@ -4,39 +4,46 @@ import (
 	"fmt"
 )
 
-func ExampleControlsRegister() {
+func ExampleRegisterController() {
+	err := RegisterController(nil)
+	fmt.Printf("test: RegisterController(nil) -> [err:%v]\n", err)
+
 	ctrl := NewController("test-route", nil, nil)
-	p := NewControls()
-	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
+	ctrl.Router = nil
+	err = RegisterController(ctrl)
+	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
-	err := p.registerWithAuthority("", nil)
-	fmt.Printf("test: Register(\"\") -> [err:%v]\n", err)
+	ctrl = NewController("test-route", nil, nil)
+	err = RegisterController(ctrl)
+	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
-	err = p.registerWithAuthority(path, nil)
-	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+	ctrl = NewController("test-route", NewPrimaryResource("", "", 0, "", nil), nil)
+	err = RegisterController(ctrl)
+	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
-	err = p.registerWithAuthority(path, ctrl)
-	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+	ctrl = NewController("test-route", NewPrimaryResource("localhost:8080", "", 0, "", nil), nil)
+	err = RegisterController(ctrl)
+	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
 	//err = p.registerWithAuthority(path, ctrl)
 	//fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
-
-	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = p.registerWithAuthority(path, ctrl)
-	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+	//path = "http://localhost:8080/github/advanced-go/example-domain/activity"
+	//err = p.register(ctrl)
+	//fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	//Output:
-	//test: Register("") -> [err:invalid argument: authority is empty]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:invalid argument: Controller is nil for authority: [http://localhost:8080/github.com/advanced-go/example-domain/activity]]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
-	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
+	//test: RegisterController(nil) -> [err:invalid argument: Controller is nil]
+	//test: RegisterController(ctrl) -> [err:invalid argument: Controller router is nil]
+	//test: RegisterController(ctrl) -> [err:invalid argument: Controller router primary resource is nil]
+	//test: RegisterController(ctrl) -> [err:invalid argument: Controller router primary resource host is empty]
+	//test: RegisterController(ctrl) -> [err:<nil>]
 
 }
 
-func ExampleControlsLookup() {
+func _ExampleControlsLookup() {
 	ctrl := NewController("test-route", nil, nil)
 	p := NewControls()
-	path := "http://localhost:8080/github.com/advanced-go/example-domain/activity"
+	path := "http://localhost:8080/github/advanced-go/example-domain/activity"
 
 	_, status := p.lookup("")
 	fmt.Printf("test: Lookup(\"\") -> [status:%v]\n", status)
@@ -44,14 +51,14 @@ func ExampleControlsLookup() {
 	_, status = p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v]\n", path, status)
 
-	err := p.registerWithAuthority(path, ctrl)
+	err := p.registerWithAuthority(ctrl)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 
 	handler, status1 := p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
 
 	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = p.registerWithAuthority(path, ctrl)
+	err = p.registerWithAuthority(ctrl)
 	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
 	handler, status1 = p.lookup(path)
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)

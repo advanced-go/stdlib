@@ -24,13 +24,12 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
 	url, host, path := CreateUrlHostPath(req)
-	o.App = CreateAuthority(o.App, host)
-	authority = CreateAuthority(authority, o.App)
+	o.Host = Conditional(o.Host, host)
+	authority = Conditional(authority, o.Host)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
 		"\"sub-zone\":%v, "+
-		"\"app\":%v, "+
 		"\"instance-id\":%v, "+
 		"\"traffic\":\"%v\", "+
 		"\"start\":%v, "+
@@ -39,8 +38,9 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"relates-to\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
-		"\"uri\":%v, "+
+		"\"host\":%v, "+
 		"\"authority\":%v, "+
+		"\"uri\":%v, "+
 		"\"path\":%v, "+
 		"\"status-code\":%v, "+
 		"\"encoding\":%v, "+
@@ -49,29 +49,33 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
 		"\"threshold-flags\":%v }",
+
+		// Origin, traffic, timestamp, duration
 		fmt2.JsonString(o.Region),
 		fmt2.JsonString(o.Zone),
 		fmt2.JsonString(o.SubZone),
-		fmt2.JsonString(o.App),
 		fmt2.JsonString(o.InstanceId),
-
 		traffic,
 		fmt2.FmtRFC3339Millis(start),
 		strconv.Itoa(Milliseconds(duration)),
 
+		// Request
 		fmt2.JsonString(req.Header.Get(XRequestId)),
 		fmt2.JsonString(req.Header.Get(XRelatesTo)),
 		fmt2.JsonString(req.Proto),
 		fmt2.JsonString(req.Method),
-		fmt2.JsonString(url),
+		fmt2.JsonString(o.Host),
 		fmt2.JsonString(authority),
+		fmt2.JsonString(url),
 		fmt2.JsonString(path),
 
+		// Response
 		resp.StatusCode,
 		//fmt2.JsonString(resp.Status),
 		fmt2.JsonString(Encoding(resp)),
 		fmt.Sprintf("%v", resp.ContentLength),
 
+		// Routing, controller threshold
 		fmt2.JsonString(routeName),
 		fmt2.JsonString(routeTo),
 		threshold,
@@ -134,7 +138,7 @@ func Encoding(resp *http.Response) string {
 	return encoding
 }
 
-func CreateAuthority(primary, secondary string) string {
+func Conditional(primary, secondary string) string {
 	if len(primary) == 0 {
 		return secondary
 	}

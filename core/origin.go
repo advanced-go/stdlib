@@ -5,6 +5,6 @@ type Origin struct {
 	Region     string `json:"region"`
 	Zone       string `json:"zone"`
 	SubZone    string `json:"sub-zone"`
-	App        string `json:"app"`
+	Host       string `json:"host"`
 	InstanceId string `json:"instance-id"`
 }

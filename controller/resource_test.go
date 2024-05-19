@@ -7,23 +7,47 @@ import (
 	"time"
 )
 
-func ExampleNewResource() {
+func ExampleResource_BuildURL() {
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", 0, "/health/liveness", httpCall)
 
+	// No host, default to localhost
+	rsc := NewPrimaryResource("", "", 0, "", nil)
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := rsc.BuildUri(req.URL)
-	fmt.Printf("test: NewResource(\"%v\") [url:%v]\n", uri, url)
+	url := rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
+
+	// localhost
+	rsc = NewPrimaryResource("localhost:8080", "", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
+
+	// non-localhost
+	uri = "/update"
+	rsc = NewPrimaryResource("www.google.com", "", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
+
+	// authority
+	uri = "/update"
+	rsc = NewPrimaryResource("www.google.com", "github/advanced-go/search", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
 
 	//Output:
-	//test: NewResource("/search?q=golang") [url:http://localhost:8080/search?q=golang]
+	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q=golang]
+	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang]
+	//test: BuildURL("/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
+	//test: BuildURL("/update") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:update]
 
 }
 
 func ExampleTimeout() {
 	var dIn time.Duration = -1
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
+	rsc := NewPrimaryResource("localhost:8080", "", dIn, "/health/liveness", httpCall)
 
 	dOut := rsc.timeout(nil)
 	fmt.Printf("test: timeout(nil) -> [timeout:%v]\n", dOut)
@@ -33,7 +57,7 @@ func ExampleTimeout() {
 	fmt.Printf("test: timeout(req) -> [duration:%v] [timeout:%v]\n", dIn, dOut)
 
 	dIn = time.Millisecond * 100
-	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
+	rsc = NewPrimaryResource("localhost:8080", "", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [timeout:%v]\n", dIn, dOut)
 
@@ -48,7 +72,7 @@ func ExampleTimeout_Deadline() {
 	dIn := time.Millisecond * 200
 	deadline := time.Millisecond * 100
 	uri := "/search?q=golang"
-	rsc := NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
+	rsc := NewPrimaryResource("localhost:8080", "", dIn, "/health/liveness", httpCall)
 
 	ctx, cancel := context.WithTimeout(context.Background(), deadline)
 	defer cancel()
@@ -57,12 +81,12 @@ func ExampleTimeout_Deadline() {
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 
 	dIn = time.Millisecond * 100
-	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
+	rsc = NewPrimaryResource("localhost:8080", "", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 
 	dIn = time.Millisecond * 50
-	rsc = NewPrimaryResource("http://localhost:8080", dIn, "/health/liveness", httpCall)
+	rsc = NewPrimaryResource("localhost:8080", "", dIn, "/health/liveness", httpCall)
 	dOut = rsc.timeout(req)
 	fmt.Printf("test: timeout(req) -> [duration:%v] [deadline:%v] [timeout:%v]\n", dIn, deadline, dOut)
 

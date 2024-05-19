@@ -10,7 +10,7 @@ import (
 func Example_Formatter() {
 	//EnableTestLogger()
 	start := time.Now().UTC()
-	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", App: "search-app", InstanceId: "123456789"})
+	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
 	req, err := http.NewRequest("GET", "https://www.google.com/search?q=test", nil)
 	req.Header.Add(XRequestId, "123-456")

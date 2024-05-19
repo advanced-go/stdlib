@@ -13,14 +13,24 @@ var (
 	ctrlMap = NewControls()
 )
 
-// RegisterController - add a controller for a host authority
+// RegisterController - add a controller for an egress route
 func RegisterController(ctrl *Controller) error {
-	return ctrlMap.register(ctrl)
-}
-
-// RegisterControllerWithAuthority - add a controller for an embedded authority
-func RegisterControllerWithAuthority(authority string, ctrl *Controller) error {
-	return ctrlMap.registerWithAuthority(authority, ctrl)
+	if ctrl == nil {
+		return errors.New(fmt.Sprintf("invalid argument: Controller is nil"))
+	}
+	if ctrl.Router == nil {
+		return errors.New(fmt.Sprintf("invalid argument: Controller router is nil"))
+	}
+	if ctrl.Router.Primary == nil {
+		return errors.New(fmt.Sprintf("invalid argument: Controller router primary resource is nil"))
+	}
+	if len(ctrl.Router.Primary.Authority) == 0 {
+		if ctrl.Router.Primary.Host == "" {
+			return errors.New(fmt.Sprintf("invalid argument: Controller router primary resource host is empty"))
+		}
+		return ctrlMap.register(ctrl)
+	}
+	return ctrlMap.registerWithAuthority(ctrl)
 }
 
 func Lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
@@ -57,41 +67,31 @@ func NewControls() *controls {
 	return p
 }
 
-func (p *controls) registerWithAuthority(authority string, ctrl *Controller) error {
-	if len(authority) == 0 {
-		return errors.New("invalid argument: authority is empty")
-	}
-	if ctrl == nil {
-		return errors.New(fmt.Sprintf("invalid argument: Controller is nil for authority: [%v]", authority))
-	}
-	parsed := uri2.Uproot(authority)
-	if !parsed.Valid {
-		return errors.New(fmt.Sprintf("invalid argument: authority is invalid: [%v] [%v]", authority, parsed.Err))
-	}
-	_, ok1 := p.m.Load(parsed.Authority)
-	if ok1 {
-		return errors.New(fmt.Sprintf("invalid argument: Controller already exists for authority : [%v]", authority))
-		//return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: controller already exists: [%v]", authority)))
-	}
-	p.m.Store(parsed.Authority, ctrl)
-	return nil
-}
-
 func (p *controls) register(ctrl *Controller) error {
 	if ctrl == nil {
-		return errors.New(fmt.Sprintf("invalid argument: Controller is nil"))
-	}
-	if ctrl.Router == nil {
-		return errors.New(fmt.Sprintf("invalid argument: Controller Router is nil"))
-	}
-	if ctrl.Router.Primary == nil {
-		return errors.New(fmt.Sprintf("invalid argument: Controller Router primary resource is nil"))
+		return errors.New("invalid argument: Controller is nil")
 	}
 	_, ok1 := p.m.Load(ctrl.Router.Primary.Authority)
 	if ok1 {
 		return errors.New(fmt.Sprintf("invalid argument: Controller already exists for authority: [%v]", ctrl.Router.Primary))
 	}
 	p.m.Store(ctrl.Router.Primary.Authority, ctrl)
+	return nil
+}
+
+func (p *controls) registerWithAuthority(ctrl *Controller) error {
+	if ctrl == nil {
+		return errors.New("invalid argument: Controller is nil")
+	}
+	parsed := uri2.Uproot(ctrl.Router.Primary.Authority)
+	if !parsed.Valid {
+		return errors.New(fmt.Sprintf("invalid argument: Controller primary authority is invalid: [%v] [%v]", ctrl.Router.Primary.Authority, parsed.Err))
+	}
+	_, ok1 := p.m.Load(parsed.Authority)
+	if ok1 {
+		return errors.New(fmt.Sprintf("invalid argument: Controller already exists for authority : [%v]", ctrl.Router.Primary.Authority))
+	}
+	p.m.Store(parsed.Authority, ctrl)
 	return nil
 }
 
