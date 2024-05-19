@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"time"
 )
 
 func ExampleRegisterController() {
@@ -40,35 +41,38 @@ func ExampleRegisterController() {
 
 }
 
-func _ExampleControlsLookup() {
-	ctrl := NewController("test-route", nil, nil)
+func ExampleControlsLookup() {
 	p := NewControls()
-	path := "http://localhost:8080/github/advanced-go/example-domain/activity"
+	//path := "http://localhost:8080/github/advanced-go/search:google?q=golang"
+	auth := "github/advanced-go/search"
+	ctrl := NewController("test-route", NewPrimaryResource("", auth, time.Second*2, "", httpCall), nil)
 
 	_, status := p.lookup("")
 	fmt.Printf("test: Lookup(\"\") -> [status:%v]\n", status)
 
-	_, status = p.lookup(path)
-	fmt.Printf("test: Lookup(%v) -> [status:%v]\n", path, status)
+	_, status = p.lookup(auth)
+	fmt.Printf("test: Lookup(%v) -> [status:%v]\n", auth, status)
 
 	err := p.registerWithAuthority(ctrl)
-	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
+	fmt.Printf("test: Register() -> [err:%v]\n", err)
 
-	handler, status1 := p.lookup(path)
-	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
+	handler, status1 := p.lookup(auth)
+	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", auth, status1, handler != nil)
 
-	path = "http://localhost:8080/github/advanced-go/example-domain/activity"
-	err = p.registerWithAuthority(ctrl)
-	fmt.Printf("test: Register(%v) -> [err:%v]\n", path, err)
-	handler, status1 = p.lookup(path)
-	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", path, status1, handler != nil)
+	host := "www.google.com"
+	ctrl = NewController("test-route", NewPrimaryResource(host, "", time.Second*2, "", httpCall), nil)
+
+	err = p.register(ctrl)
+	fmt.Printf("test: Register() -> [err:%v]\n", err)
+	handler, status1 = p.lookup(host)
+	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", host, status1, handler != nil)
 
 	//Output:
-	//test: Lookup("") -> [status:Invalid Argument [error: invalid input, URI is empty]]
-	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:Invalid Argument [invalid argument: Controller does not exist: [github.com/advanced-go/example-domain/activity]]]
-	//test: Register(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [err:<nil>]
-	//test: Lookup(http://localhost:8080/github.com/advanced-go/example-domain/activity) -> [status:OK] [handler:true]
-	//test: Register(http://localhost:8080/github/advanced-go/example-domain/activity) -> [err:<nil>]
-	//test: Lookup(http://localhost:8080/github/advanced-go/example-domain/activity) -> [status:OK] [handler:true]
+	//test: Lookup("") -> [status:Invalid Argument [invalid argument: authority is empty]]
+	//test: Lookup(github/advanced-go/search) -> [status:Invalid Argument [invalid argument: Controller does not exist: [github/advanced-go/search]]]
+	//test: Register() -> [err:<nil>]
+	//test: Lookup(github/advanced-go/search) -> [status:OK] [handler:true]
+	//test: Register() -> [err:<nil>]
+	//test: Lookup(www.google.com) -> [status:OK] [handler:true]
 
 }
