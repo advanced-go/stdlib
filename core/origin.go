@@ -46,3 +46,26 @@ func NewOrigin(values url.Values) Origin {
 	}
 	return o
 }
+
+func OriginMatch(target Origin, filter Origin) bool {
+	if !StringMatch(target.Region, filter.Region) {
+		return false
+	}
+	if !StringMatch(target.Zone, filter.Zone) {
+		return false
+	}
+	if !StringMatch(target.SubZone, filter.SubZone) {
+		return false
+	}
+	if !StringMatch(target.Host, filter.Host) {
+		return false
+	}
+	return true
+}
+
+func StringMatch(target, filter string) bool {
+	if filter == "" {
+		return true
+	}
+	return target == filter
+}
