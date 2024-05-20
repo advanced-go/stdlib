@@ -93,3 +93,13 @@ func ExampleNewHealthResponseOK() {
 	//}]
 
 }
+
+func ExampleNewNotFoundResponse() {
+	resp := NewNotFoundResponse()
+	buf, _ := io.ReadAll(resp.Body, nil)
+	fmt.Printf("test: NewNotFoundResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
+
+	//Output:
+	//test: NewNotFoundResponse() -> [status-code:404] [content:Not Found]
+	
+}

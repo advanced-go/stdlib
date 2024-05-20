@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	infoFmt    = "{\n \"authority\": \"%v\",\n \"version\": \"%v\",\n \"name\": \"%v\"\n  }"
 	versionFmt = "{\n \"version\": \"%v\"\n}"
 )
 
@@ -56,5 +55,8 @@ func NewAuthorityResponse(authority string) *http.Response {
 
 func NewHealthResponseOK() *http.Response {
 	return &http.Response{StatusCode: http.StatusOK, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
+}
 
+func NewNotFoundResponse() *http.Response {
+	return NewResponse(core.NewStatus(http.StatusNotFound), "Not Found")
 }
