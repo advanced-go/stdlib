@@ -27,6 +27,14 @@ func NewErrorResponse(status *core.Status) *http.Response {
 	return NewResponse(status, status.Err.Error())
 }
 
+func NewErrorResponseWithStatus(status *core.Status) (*http.Response, *core.Status) {
+	resp := NewErrorResponse(status)
+	if status == nil {
+		status = core.NewStatus(http.StatusBadRequest)
+	}
+	return resp, status
+}
+
 func NewResponse(status *core.Status, content string) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
@@ -37,6 +45,14 @@ func NewResponse(status *core.Status, content string) *http.Response {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeText)
 	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
+}
+
+func NewResponseWithStatus(status *core.Status, content string) (*http.Response, *core.Status) {
+	resp := NewResponse(status, content)
+	if status == nil {
+		status = core.NewStatus(http.StatusBadRequest)
+	}
+	return resp, status
 }
 
 func NewVersionResponse(version string) *http.Response {
@@ -57,6 +73,6 @@ func NewHealthResponseOK() *http.Response {
 	return &http.Response{StatusCode: http.StatusOK, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
 }
 
-func NewNotFoundResponse() *http.Response {
-	return NewResponse(core.NewStatus(http.StatusNotFound), "Not Found")
+func NewNotFoundResponseWithStatus() (*http.Response, *core.Status) {
+	return NewResponseWithStatus(core.NewStatus(http.StatusNotFound), "Not Found")
 }

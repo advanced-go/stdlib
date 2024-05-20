@@ -94,12 +94,12 @@ func ExampleNewHealthResponseOK() {
 
 }
 
-func ExampleNewNotFoundResponse() {
-	resp := NewNotFoundResponse()
+func ExampleNewNotFoundResponseWithStatus() {
+	resp, status := NewNotFoundResponseWithStatus()
 	buf, _ := io.ReadAll(resp.Body, nil)
-	fmt.Printf("test: NewNotFoundResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
+	fmt.Printf("test: NewNotFoundResponse() -> [status-code:%v] [status:%v] [content:%v]\n", resp.StatusCode, status, string(buf))
 
 	//Output:
-	//test: NewNotFoundResponse() -> [status-code:404] [content:Not Found]
+	//test: NewNotFoundResponse() -> [status-code:404] [status:Not Found] [content:Not Found]
 	
 }
