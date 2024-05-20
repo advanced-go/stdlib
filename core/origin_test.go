@@ -79,5 +79,5 @@ func ExampleOriginMatch() {
 	//test: OriginMatch({region zone sub-zone host },{region zone sub-zone host }) -> [match:true]
 	//test: OriginMatch({region zone sub-zone host },{region zone  host }) -> [match:true]
 	//test: OriginMatch({region zone sub-zone host },{region zone invalid host }) -> [match:false]
-	
+
 }

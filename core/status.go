@@ -93,6 +93,10 @@ func (s *Status) Timeout() bool {
 	return s.Code == http.StatusGatewayTimeout || s.Code == StatusDeadlineExceeded
 }
 
+func (s *Status) NotFound() bool {
+	return s.Code == http.StatusNotFound
+}
+
 func (s *Status) StatusCode() int {
 	return s.Code
 }
