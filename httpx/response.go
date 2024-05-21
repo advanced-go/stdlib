@@ -73,7 +73,7 @@ func NewVersionResponse(version string) *http.Response {
 
 func NewAuthorityResponse(authority string) *http.Response {
 	h := make(http.Header)
-	h.Add(core.XURLAuthority, authority)
+	h.Add(core.XAuthority, authority)
 	//h.Add(ContentType, ContentTypeJson)
 	return &http.Response{StatusCode: http.StatusOK, Header: h}
 }

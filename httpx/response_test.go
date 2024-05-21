@@ -75,7 +75,7 @@ func ExampleNewVersionResponse() {
 
 func ExampleNewAuthorityResponse() {
 	resp := NewAuthorityResponse("github/advanced-go/stdlib")
-	fmt.Printf("test: NewAuthorityResponse() -> [status-code:%v] [auth:%v]\n", resp.StatusCode, resp.Header.Get(core.XURLAuthority))
+	fmt.Printf("test: NewAuthorityResponse() -> [status-code:%v] [auth:%v]\n", resp.StatusCode, resp.Header.Get(core.XAuthority))
 
 	//Output:
 	//test: NewAuthorityResponse() -> [status-code:200] [auth:github/advanced-go/stdlib]
