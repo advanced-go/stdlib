@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	Region     = "reg"
-	Zone       = "az"
-	SubZone    = "sz"
-	Host       = "host"
-	InstanceId = "id"
+	RegionKey     = "reg"
+	ZoneKey       = "az"
+	SubZoneKey    = "sz"
+	HostKey       = "host"
+	InstanceIdKey = "id"
 )
 
 // Origin - location
@@ -25,16 +25,16 @@ type Origin struct {
 func NewValues(o Origin) url.Values {
 	values := make(url.Values)
 	if o.Region != "" {
-		values.Add(Region, o.Region)
+		values.Add(RegionKey, o.Region)
 	}
 	if o.Zone != "" {
-		values.Add(Zone, o.Zone)
+		values.Add(ZoneKey, o.Zone)
 	}
 	if o.SubZone != "" {
-		values.Add(SubZone, o.SubZone)
+		values.Add(SubZoneKey, o.SubZone)
 	}
 	if o.Host != "" {
-		values.Add(Host, o.Host)
+		values.Add(HostKey, o.Host)
 	}
 	return values
 }
@@ -42,10 +42,10 @@ func NewValues(o Origin) url.Values {
 func NewOrigin(values url.Values) Origin {
 	o := Origin{}
 	if values != nil {
-		o.Region = values.Get(Region)
-		o.Zone = values.Get(Zone)
-		o.SubZone = values.Get(SubZone)
-		o.Host = values.Get(Host)
+		o.Region = values.Get(RegionKey)
+		o.Zone = values.Get(ZoneKey)
+		o.SubZone = values.Get(SubZoneKey)
+		o.Host = values.Get(HostKey)
 	}
 	return o
 }
