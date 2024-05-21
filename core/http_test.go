@@ -61,7 +61,7 @@ func handler3() func(http.ResponseWriter, *http.Request) {
 func authExchange(req *http.Request) (*http.Response, *Status) {
 	if req.URL.Path == AuthorityRootPath {
 		h := make(http.Header)
-		h.Add(XAuthority, "github/advanced-go/stdlib")
+		h.Add(XURLAuthority, "github/advanced-go/stdlib")
 		return &http.Response{StatusCode: http.StatusOK, Header: h}, StatusOK()
 	}
 	return &http.Response{StatusCode: http.StatusBadRequest}, NewStatus(http.StatusBadRequest)

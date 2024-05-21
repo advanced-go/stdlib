@@ -30,7 +30,7 @@ func Authority(h HttpExchange) string {
 	}
 	resp, status := h(req)
 	if status.OK() {
-		return resp.Header.Get(XAuthority)
+		return resp.Header.Get(XURLAuthority)
 	}
 	return ""
 }
