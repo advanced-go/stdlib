@@ -17,6 +17,7 @@ var (
 	healthLength = int64(len(healthOK))
 )
 
+/*
 func NewErrorResponse(status *core.Status) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
@@ -35,24 +36,32 @@ func NewErrorResponseWithStatus(status *core.Status) (*http.Response, *core.Stat
 	return resp, status
 }
 
-func NewResponse(status *core.Status, content string) *http.Response {
+
+*/
+
+func NewResponse(status *core.Status, content any) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
 	}
-	if len(content) == 0 {
-		return &http.Response{StatusCode: status.HttpCode()}
+	if content == nil {
+		return &http.Response{StatusCode: status.HttpCode(), Status: status.String()}
 	}
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeText)
-	return &http.Response{StatusCode: status.HttpCode(), ContentLength: int64(len(content)), Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
+	if s, ok := content.(string); ok {
+		return &http.Response{StatusCode: status.HttpCode(), Status: status.String(), Header: h, ContentLength: int64(len(s)), Body: io.NopCloser(bytes.NewReader([]byte(s)))}
+	}
+	if err, ok := content.(error); ok {
+		return &http.Response{StatusCode: status.HttpCode(), Status: status.String(), Header: h, ContentLength: int64(len(err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(err.Error())))}
+	}
+	return &http.Response{StatusCode: http.StatusBadRequest, Header: h, Body: io.NopCloser(bytes.NewReader([]byte(fmt.Sprintf("invalid content : %v", core.NewInvalidBodyTypeError(content)))))}
 }
 
-func NewResponseWithStatus(status *core.Status, content string) (*http.Response, *core.Status) {
-	resp := NewResponse(status, content)
+func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *core.Status) {
 	if status == nil {
 		status = core.NewStatus(http.StatusBadRequest)
 	}
-	return resp, status
+	return NewResponse(status, content), status
 }
 
 func NewVersionResponse(version string) *http.Response {

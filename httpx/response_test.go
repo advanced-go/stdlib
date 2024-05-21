@@ -26,20 +26,20 @@ func _ExampleInfoFmt() {
 
 */
 
-func ExampleNewErrorResponse() {
+func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
-	resp := NewErrorResponse(status)
+	resp := NewResponse(status, status.Err)
 	buf, _ := io.ReadAll(resp.Body, nil)
-	fmt.Printf("test: NewErrorResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
+	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	status = core.NewStatusError(http.StatusGatewayTimeout, errors.New("Deadline Exceeded"))
-	resp = NewErrorResponse(status)
+	resp = NewResponse(status, status.Err)
 	buf, _ = io.ReadAll(resp.Body, nil)
-	fmt.Printf("test: NewErrorResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
+	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	//Output:
-	//test: NewErrorResponse() -> [status-code:504] [content:]
-	//test: NewErrorResponse() -> [status-code:504] [content:Deadline Exceeded]
+	//test: NewResponse() -> [status-code:504] [content:]
+	//test: NewResponse() -> [status-code:504] [content:Deadline Exceeded]
 
 }
 
@@ -101,5 +101,5 @@ func ExampleNewNotFoundResponseWithStatus() {
 
 	//Output:
 	//test: NewNotFoundResponse() -> [status-code:404] [status:Not Found] [content:Not Found]
-	
+
 }
