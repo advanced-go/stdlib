@@ -19,7 +19,7 @@ type testStruct struct {
 }
 
 func ExampleNewReader() {
-	reader, status := NewReader(nil)
+	reader, status := NewReadCloser(nil)
 	buf, _ := io.ReadAll(reader)
 	fmt.Printf("test: NewReader(nil) -> [status:%v] [reader:%v]\n", status, string(buf))
 
@@ -33,7 +33,7 @@ func ExampleNewReader() {
 		SecondaryPct:   "45",
 	}
 
-	reader, status = NewReader(t)
+	reader, status = NewReadCloser(t)
 	buf, _ = io.ReadAll(reader)
 	fmt.Printf("test: NewReader(nil) -> [status:%v] [reader:%v]\n", status, string(buf))
 
