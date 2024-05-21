@@ -1,6 +1,9 @@
 package core
 
-import "net/url"
+import (
+	"net/url"
+	"strings"
+)
 
 const (
 	Region     = "reg"
@@ -67,5 +70,5 @@ func StringMatch(target, filter string) bool {
 	if filter == "" {
 		return true
 	}
-	return target == filter
+	return strings.ToLower(target) == strings.ToLower(filter)
 }
