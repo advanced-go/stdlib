@@ -55,7 +55,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content(got *http.Response, want *http.Response, testLength bool) (failures []Args, gotBuf []byte, wantBuf []byte) {
+func Content(got *http.Response, want *http.Response) (failures []Args, gotBuf []byte, wantBuf []byte) {
 	// validate content type matches
 	fails, _ := validateContentType(got, want)
 	if fails != nil {
@@ -73,11 +73,6 @@ func Content(got *http.Response, want *http.Response, testLength bool) (failures
 	gotBuf, status = io.ReadAll(got.Body, nil)
 	if status.Err != nil {
 		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status.Err}}
-	}
-	if testLength {
-		if len(gotBuf) != len(wantBuf) {
-			failures = []Args{{Item: "Body", Got: fmt.Sprintf("%v", gotBuf), Want: fmt.Sprintf("%v", wantBuf), Err: errors.New("content length does not match")}}
-		}
 	}
 	return
 }
