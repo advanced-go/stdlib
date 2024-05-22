@@ -19,7 +19,8 @@ type testStruct struct {
 }
 
 func ExampleNewReader() {
-	reader, status := NewReadCloser(nil)
+	var length int64
+	reader, _, status := NewReadCloser(nil)
 	buf, _ := io.ReadAll(reader)
 	fmt.Printf("test: NewReader(nil) -> [status:%v] [reader:%v]\n", status, string(buf))
 
@@ -33,12 +34,12 @@ func ExampleNewReader() {
 		SecondaryPct:   "45",
 	}
 
-	reader, status = NewReadCloser(t)
+	reader, length, status = NewReadCloser(t)
 	buf, _ = io.ReadAll(reader)
-	fmt.Printf("test: NewReader(nil) -> [status:%v] [reader:%v]\n", status, string(buf))
+	fmt.Printf("test: NewReader(nil) -> [status:%v] [reader:%v] [length:%v]\n", status, string(buf), length)
 
 	//Output:
 	//test: NewReader(nil) -> [status:OK] [reader:]
-	//test: NewReader(nil) -> [status:OK] [reader:{"status":"Status","CreatedTS":"2024-05-24","updated-ts":"2024-05-25","cost-function":"Testing","primary-route":"www.google.com","secondary-route":"www.search.yahoo.com","secondary-pct":"45"}]
+	//test: NewReader(nil) -> [status:OK] [reader:{"status":"Status","CreatedTS":"2024-05-24","updated-ts":"2024-05-25","cost-function":"Testing","primary-route":"www.google.com","secondary-route":"www.search.yahoo.com","secondary-pct":"45"}] [length:191]
 
 }

@@ -53,6 +53,18 @@ var okStatus = func() *Status {
 	return s
 }()
 
+var badRequestStatus = func() *Status {
+	s := new(Status)
+	s.Code = http.StatusBadRequest
+	return s
+}()
+
+var notFoundStatus = func() *Status {
+	s := new(Status)
+	s.Code = http.StatusNotFound
+	return s
+}()
+
 type Status struct {
 	Code     int   `json:"code"`
 	Err      error `json:"err"`
@@ -63,6 +75,14 @@ type Status struct {
 
 func StatusOK() *Status {
 	return okStatus
+}
+
+func StatusBadRequest() *Status {
+	return badRequestStatus
+}
+
+func StatusNotFound() *Status {
+	return notFoundStatus
 }
 
 func NewStatus(code int) *Status {

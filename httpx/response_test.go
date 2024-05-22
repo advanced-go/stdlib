@@ -26,6 +26,12 @@ func _ExampleInfoFmt() {
 
 */
 
+var testCore = []core.Origin{
+	{Region: "region1", Zone: "Zone1", Host: "www.host1.com"},
+	{Region: "region1", Zone: "Zone2", Host: "www.host2.com"},
+	{Region: "region2", Zone: "Zone1", Host: "www.google.com"},
+}
+
 func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
 	resp := NewResponse(status, status.Err)
@@ -101,5 +107,28 @@ func ExampleNewNotFoundResponseWithStatus() {
 
 	//Output:
 	//test: NewNotFoundResponse() -> [status-code:404] [status:Not Found] [content:Not Found]
+
+}
+
+func ExampleNewJsonResponse() {
+	resp, status := NewJsonResponse(nil, nil)
+	fmt.Printf("test: NewJsonResponse(nil,nil) -> [status:%v] [status-code:%v] [content-length:%v]\n", status, resp.StatusCode, resp.ContentLength)
+
+	resp, status = NewJsonResponse(testCore, nil)
+	//if status.OK() && resp.Body != nil {
+	//	buff, _ = io.ReadAll(resp.Body, nil)
+	//}
+	fmt.Printf("test: NewJsonResponse(testCore,nil) -> [status:%v] [status-code:%v] [header:%v] [content-length:%v]\n", status, resp.StatusCode, resp.Header, resp.ContentLength)
+	//fmt.Printf("test: NewJsonResponse(testCore,nil) -> [status:%v] [status-code:%v] [content:%v]\n", status, resp.StatusCode, string(buff))
+
+	h := make(http.Header)
+	h.Add(ContentLocation, "http://localhost:8081/search?q=golang")
+	resp, status = NewJsonResponse(testCore, h)
+	fmt.Printf("test: NewJsonResponse(testCore,nil) -> [status:%v] [status-code:%v] [header:%v] [content-length:%v]\n", status, resp.StatusCode, resp.Header, resp.ContentLength)
+
+	//Output:
+	//test: NewJsonResponse(nil,nil) -> [status:OK] [status-code:200] [content-length:0]
+	//test: NewJsonResponse(testCore,nil) -> [status:OK] [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:272]
+	//test: NewJsonResponse(testCore,nil) -> [status:OK] [status-code:200] [header:map[Content-Location:[http://localhost:8081/search?q=golang] Content-Type:[application/json]]] [content-length:272]
 
 }

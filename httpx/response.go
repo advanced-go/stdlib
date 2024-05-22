@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/json"
 	"io"
 	"net/http"
 )
@@ -16,28 +17,6 @@ var (
 	healthOK     = []byte("{\n \"status\": \"up\"\n}")
 	healthLength = int64(len(healthOK))
 )
-
-/*
-func NewErrorResponse(status *core.Status) *http.Response {
-	if status == nil {
-		return &http.Response{StatusCode: http.StatusBadRequest}
-	}
-	if status.Err == nil {
-		return &http.Response{StatusCode: status.HttpCode()}
-	}
-	return NewResponse(status, status.Err.Error())
-}
-
-func NewErrorResponseWithStatus(status *core.Status) (*http.Response, *core.Status) {
-	resp := NewErrorResponse(status)
-	if status == nil {
-		status = core.NewStatus(http.StatusBadRequest)
-	}
-	return resp, status
-}
-
-
-*/
 
 func NewResponse(status *core.Status, content any) *http.Response {
 	if status == nil {
@@ -83,5 +62,20 @@ func NewHealthResponseOK() *http.Response {
 }
 
 func NewNotFoundResponseWithStatus() (*http.Response, *core.Status) {
-	return NewResponseWithStatus(core.NewStatus(http.StatusNotFound), "Not Found")
+	return NewResponseWithStatus(core.StatusNotFound(), core.StatusNotFound().String())
+}
+
+func NewJsonResponse(content any, h http.Header) (*http.Response, *core.Status) {
+	if content == nil {
+		return &http.Response{StatusCode: http.StatusOK, Header: h}, core.StatusOK()
+	}
+	rc, length, status := json.NewReadCloser(content)
+	if !status.OK() {
+		return NewResponseWithStatus(status, status.Err)
+	}
+	if h == nil {
+		h = make(http.Header)
+	}
+	h.Add(ContentType, ContentTypeJson)
+	return &http.Response{StatusCode: status.HttpCode(), Status: status.String(), ContentLength: length, Header: h, Body: rc}, core.StatusOK()
 }
