@@ -7,6 +7,7 @@ import (
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
+	"testing"
 )
 
 const (
@@ -91,6 +92,12 @@ func Unmarshal[T any](gotBuf, wantBuf []byte) (failures []Args, gotT []T, wantT 
 		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}
 	}
 	return
+}
+
+func Errorf(t *testing.T, failures []Args) {
+	for _, arg := range failures {
+		t.Errorf("%v got = %v want = %v", arg.Item, arg.Got, arg.Want)
+	}
 }
 
 func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
