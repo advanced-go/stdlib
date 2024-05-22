@@ -1,6 +1,7 @@
 package httpxtest
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
@@ -74,6 +75,20 @@ func Content(got *http.Response, want *http.Response) (failures []Args, gotBuf [
 	}
 	if len(gotBuf) != len(wantBuf) {
 		failures = []Args{{Item: "Body", Got: fmt.Sprintf("%v", gotBuf), Want: fmt.Sprintf("%v", wantBuf), Err: errors.New("content length does not match")}}
+	}
+	return
+}
+
+// Unmarshal - unmarshal json
+func Unmarshal[T any](gotBuf, wantBuf []byte) (failures []Args, gotT []T, wantT []T) {
+	err := json.Unmarshal(wantBuf, &wantT)
+	if err != nil {
+		failures = []Args{{Item: "want.Unmarshal()", Got: "", Want: "", Err: err}}
+		return
+	}
+	err = json.Unmarshal(gotBuf, &gotT)
+	if err != nil {
+		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}
 	}
 	return
 }
