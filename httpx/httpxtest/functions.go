@@ -1,9 +1,9 @@
 package httpxtest
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
 )
@@ -53,26 +53,49 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content[T any](got *http.Response, want *http.Response, testBytes func(got *http.Response, gotBytes []byte, want *http.Response, wantBytes []byte) []Args) (failures []Args, content bool, gotT T, wantT T) {
+func Content(got *http.Response, want *http.Response) (failures []Args, gotBytes []byte, wantBytes []byte) {
+	// validate content type matches
+	fails, _ := validateContentType(got, want)
+	if fails != nil {
+		failures = fails
+		return
+	}
+	var status *core.Status
+
 	// validate body IO
-	wantBytes, status := io.ReadAll(want.Body, nil)
+	wantBytes, status = io.ReadAll(want.Body, nil)
 	if status.Err != nil {
 		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Err}}
 		return
 	}
-	gotBytes, status1 := io.ReadAll(got.Body, nil)
-	if status1.Err != nil {
-		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status1.Err}}
-		return
+	gotBytes, status = io.ReadAll(got.Body, nil)
+	if status.Err != nil {
+		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status.Err}}
 	}
+	return
+}
 
-	// optional
-	if testBytes != nil {
-		failures = testBytes(got, gotBytes, want, wantBytes)
-		if failures != nil {
-			return
-		}
+func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
+	ct = want.Header.Get(contentType)
+	if ct == "" {
+		return []Args{{Item: contentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
 	}
+	gotCt := got.Header.Get(contentType)
+	if gotCt != ct {
+		return []Args{{Item: contentType, Got: gotCt, Want: ct, Err: nil}}, ct
+	}
+	return nil, ct
+}
+
+/*
+// optional
+//if testBytes != nil {
+//	failures = testBytes(got, gotBytes, want, wantBytes)
+//	if failures != nil {
+return
+}
+//	}
+
 
 	// if no content is wanted, return
 	if len(wantBytes) == 0 {
@@ -84,13 +107,6 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 	//	failures = []Args{{Item: "Content-Length", Got: fmt.Sprintf("%v", len(gotBytes)), Want: fmt.Sprintf("%v", len(wantBytes))}}
 	//	return
 	//}
-
-	// validate content type matches
-	fails, ct := validateContentType(got, want)
-	if fails != nil {
-		failures = fails
-		return
-	}
 
 	// validate content type is application/json
 	if ct != contentTypeJson {
@@ -110,17 +126,5 @@ func Content[T any](got *http.Response, want *http.Response, testBytes func(got 
 	} else {
 		content = true
 	}
-	return
-}
 
-func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
-	ct = want.Header.Get(contentType)
-	if ct == "" {
-		return []Args{{Item: contentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
-	}
-	gotCt := got.Header.Get(contentType)
-	if gotCt != ct {
-		return []Args{{Item: contentType, Got: gotCt, Want: ct, Err: nil}}, ct
-	}
-	return nil, ct
-}
+*/
