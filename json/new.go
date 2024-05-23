@@ -81,6 +81,8 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
 		}
 		return t, core.StatusOK()
+	case *http.Request:
+		return New[T](ptr.Body, h)
 	default:
 		return t, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))
 	}
