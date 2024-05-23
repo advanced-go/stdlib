@@ -5,6 +5,19 @@ import (
 	"net/http"
 )
 
+func ExampleBuildURL() {
+	host := "www.google.com"
+	authority := "github/advanced-go/search"
+	uri := "http://localhost:8081/google/search?q=golang"
+
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	url := BuildURL(host, authority, req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
+
+	//Output:
+	//fail
+}
+
 func ExampleBuildURL_Host() {
 	uri := "/search?q=golang"
 	host := ""
