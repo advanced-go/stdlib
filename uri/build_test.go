@@ -11,7 +11,7 @@ func ExampleBuildURL() {
 	uri := "http://localhost:8081/github/advanced-go/search:google?q=golang"
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, authority, req.URL)
+	url := BuildURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
@@ -25,18 +25,18 @@ func ExampleBuildURL_Host() {
 	authority := ""
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, authority, req.URL)
+	url := BuildURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	host = "localhost:8080"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, authority, req.URL)
+	url = BuildURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	uri = "/update"
 	host = "www.google.com"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, authority, req.URL)
+	url = BuildURL(host, req.URL)
 	fmt.Printf("test: BuildURL\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
@@ -52,12 +52,12 @@ func _ExampleBuildURL_Authority() {
 	authority := "github/advanced-go/search"
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, authority, req.URL)
+	url := BuildURL(host, req.URL)
 	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	host = "www.google.com"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, authority, req.URL)
+	url = BuildURL(host, req.URL)
 	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	/*

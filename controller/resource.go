@@ -47,7 +47,7 @@ func (r *Resource) IsPrimary() bool {
 }
 
 func (r *Resource) BuildURL(uri *url.URL) *url.URL {
-	return uri2.BuildURL(r.Host, r.Authority, uri)
+	return uri2.BuildURL(r.Host, uri)
 }
 
 func (r *Resource) timeout(req *http.Request) time.Duration {
