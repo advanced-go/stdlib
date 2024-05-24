@@ -72,12 +72,12 @@ func ExampleOriginMatch() {
 	fmt.Printf("test: OriginMatch(%v,%v) -> [match:%v]\n", target, filter, OriginMatch(target, filter))
 
 	//Output:
-	//test: OriginMatch({Region zonE sub-zone hOst },{    }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst },{    }) -> [match:false]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region    }) -> [match:true]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone   }) -> [match:true]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone sub-zone  }) -> [match:true]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone sub-zone host }) -> [match:true]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone  host }) -> [match:true]
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone invalid host }) -> [match:false]
-	
+
 }

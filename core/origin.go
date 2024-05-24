@@ -51,24 +51,37 @@ func NewOrigin(values url.Values) Origin {
 }
 
 func OriginMatch(target Origin, filter Origin) bool {
-	if !StringMatch(target.Region, filter.Region) {
-		return false
+	isFilter := false
+	if filter.Region != "" {
+		isFilter = true
+		if !StringMatch(target.Region, filter.Region) {
+			return false
+		}
 	}
-	if !StringMatch(target.Zone, filter.Zone) {
-		return false
+	if filter.Zone != "" {
+		isFilter = true
+		if !StringMatch(target.Zone, filter.Zone) {
+			return false
+		}
 	}
-	if !StringMatch(target.SubZone, filter.SubZone) {
-		return false
+	if filter.SubZone != "" {
+		isFilter = true
+		if !StringMatch(target.SubZone, filter.SubZone) {
+			return false
+		}
 	}
-	if !StringMatch(target.Host, filter.Host) {
-		return false
+	if filter.Host != "" {
+		isFilter = true
+		if !StringMatch(target.Host, filter.Host) {
+			return false
+		}
 	}
-	return true
+	return isFilter
 }
 
 func StringMatch(target, filter string) bool {
-	if filter == "" {
-		return true
-	}
+	//if filter == "" {
+	//	return true
+	//}
 	return strings.ToLower(target) == strings.ToLower(filter)
 }
