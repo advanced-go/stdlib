@@ -31,9 +31,10 @@ func BuildURL(host, authority string, uri *url.URL) *url.URL {
 			newUri += "?" + uri.RawQuery
 		}
 	} else {
+		parsed := Uproot(uri.Path)
 		newUri += "/" + authority
-		if len(uri.Path) > 0 {
-			newUri += ":" + uri.Path[1:]
+		if len(parsed.Path) > 0 {
+			newUri += ":" + parsed.Path //uri.Path[1:]
 		}
 		if len(uri.RawQuery) > 0 {
 			newUri += "?" + uri.RawQuery

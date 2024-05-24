@@ -40,3 +40,7 @@ func ExampleControlsLookup() {
 	//test: Lookup(www.google.com) -> [status:OK] [handler:true]
 
 }
+
+func ExampleUpdatePrimaryExchange() {
+	
+}

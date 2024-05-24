@@ -16,6 +16,10 @@ type HttpHandler func(w http.ResponseWriter, r *http.Request)
 
 type HttpExchange func(r *http.Request) (*http.Response, *Status)
 
+type HttpExchangeable interface {
+	Do(r *http.Request) (*http.Response, *Status)
+}
+
 var (
 	req *http.Request
 )
