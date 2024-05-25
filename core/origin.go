@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	RegionKey     = "reg"
-	ZoneKey       = "az"
-	SubZoneKey    = "sz"
+	RegionKey     = "region"
+	ZoneKey       = "zone"
+	SubZoneKey    = "sub-zone"
 	HostKey       = "host"
 	InstanceIdKey = "id"
 )

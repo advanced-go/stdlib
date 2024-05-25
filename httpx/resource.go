@@ -81,13 +81,11 @@ func (r *Resource[T]) Delete(req *http.Request) *core.Status {
 }
 
 func (r *Resource[T]) Do(req *http.Request) (*http.Response, *core.Status) {
-	//fmt.Printf("resource.Do() -> [url:%v]\n", req.URL.String())
 	switch req.Method {
 	case http.MethodGet:
 		if req.URL.Path == core.AuthorityRootPath {
 			return r.Authority, core.StatusOK()
 		}
-		//if strings.HasPrefix(req.URL.Path, core.AuthorityRootPath) {
 		items, status := r.Get(req)
 		if !status.OK() {
 			return NewResponseWithStatus(status, status.Err)
