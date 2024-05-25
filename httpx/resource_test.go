@@ -19,8 +19,8 @@ func patchContent[PATCH any, T any](content *PATCH, list *[]T) *http.Response {
 	return &http.Response{StatusCode: http.StatusBadRequest}
 }
 
-func ExampleNewAuthority() {
-	a := NewResource[PostData, Patch, core.Origin]("github/advanced-go/stdlib", originMatch2, finalize, nil, nil)
+func ExampleNewResource() {
+	a := NewResource[core.Origin, Patch, PostData]("github/advanced-go/stdlib", originMatch2, finalize, nil, nil)
 	//fmt.Printf("test: NewAuthority() -> [%v]\n", a)
 
 	reader, _, status := json2.NewReadCloser(testOrigins2)
@@ -43,6 +43,7 @@ func ExampleNewAuthority() {
 	}
 
 	//Output:
-	//fail
+	//test: PutT() -> [status-code:200] [header:map[X-Authority:[github/advanced-go/stdlib] X-Method:[PUT]]] [[]]
+	//test: GetT() -> [status:OK] [status-code:200] [header:map[Content-Type:[application/json] X-Authority:[github/advanced-go/stdlib] X-Method:[GET]]] [[{region1 Zone1  www.host1.com } {region2 Zone1  www.google.com }]]
 
 }

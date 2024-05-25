@@ -55,15 +55,15 @@ func DeleteT[T any](r *http.Request, list *[]T, match MatchFunc[T], finalize Fin
 	return FinalizeResponse(core.StatusOK(), r, finalize)
 }
 
-func PatchT[PATCH any, T any](r *http.Request, list *[]T, patch PatchProcessFunc[PATCH, T], finalize FinalizeFunc) *http.Response {
+func PatchT[T, U any](r *http.Request, list *[]T, patch PatchProcessFunc[T, U], finalize FinalizeFunc) *http.Response {
 	if patch == nil {
 		FinalizeResponse(core.StatusBadRequest(), r, finalize)
 	}
-	content, status := json.New[PATCH](r.Body, r.Header)
+	content, status := json.New[U](r.Body, r.Header)
 	if !status.OK() {
 		return FinalizeResponse(status, r, finalize)
 	}
-	resp := patch(&content, list)
+	resp := patch(list, &content)
 	if finalize != nil {
 		resp.Request = r
 		finalize(resp)
@@ -72,15 +72,15 @@ func PatchT[PATCH any, T any](r *http.Request, list *[]T, patch PatchProcessFunc
 
 }
 
-func PostT[POST any, T any](r *http.Request, list *[]T, post PostProcessFunc[POST, T], finalize FinalizeFunc) *http.Response {
+func PostT[T any, V any](r *http.Request, list *[]T, post PostProcessFunc[T, V], finalize FinalizeFunc) *http.Response {
 	if post == nil {
 		FinalizeResponse(core.StatusBadRequest(), r, finalize)
 	}
-	content, status := json.New[POST](r.Body, r.Header)
+	content, status := json.New[V](r.Body, r.Header)
 	if !status.OK() {
 		return FinalizeResponse(status, r, finalize)
 	}
-	resp := post(&content, list)
+	resp := post(list, &content)
 	if finalize != nil {
 		resp.Request = r
 		finalize(resp)

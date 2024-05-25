@@ -37,7 +37,7 @@ func originMatch2(item *core.Origin, req *http.Request) bool {
 	return false
 }
 
-func originPatch2(patch *Patch, list *[]core.Origin) *http.Response {
+func originPatch2(list *[]core.Origin, patch *Patch) *http.Response {
 	for _, op := range patch.Updates {
 		switch op.Op {
 		case OpReplace:
@@ -56,7 +56,7 @@ type PostContent struct {
 	Item string
 }
 
-func originPost(post *PostContent, list *[]core.Origin) *http.Response {
+func originPost(list *[]core.Origin, post *PostContent) *http.Response {
 	(*list)[0].Host = "www.search.yahoo.com"
 	return NewResponse(core.StatusOK(), nil)
 }
@@ -115,7 +115,7 @@ func ExamplePatchT() {
 	}}
 	buf, _ := json.Marshal(p)
 	req, _ := http.NewRequest(http.MethodPatch, "https://localhost:8081/github/advanced-go/documents:resiliency", io.NopCloser(bytes.NewReader(buf)))
-	resp := PatchT[Patch, core.Origin](req, &local, originPatch2, finalize)
+	resp := PatchT[core.Origin, Patch](req, &local, originPatch2, finalize)
 	fmt.Printf("test: PatchT-host() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, local)
 
 	//Output:
@@ -130,7 +130,7 @@ func ExamplePostT() {
 	p := PostContent{Item: "test"}
 	buf, _ := json.Marshal(p)
 	req, _ := http.NewRequest(http.MethodPost, "https://localhost:8081/github/advanced-go/documents:resiliency", io.NopCloser(bytes.NewReader(buf)))
-	resp := PostT[PostContent, core.Origin](req, &local, originPost, finalize)
+	resp := PostT[core.Origin, PostContent](req, &local, originPost, finalize)
 	fmt.Printf("test: PostT-host() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, local)
 
 	//Output:
