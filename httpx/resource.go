@@ -22,6 +22,7 @@ type PostFunc[POST any, T any] func(r *http.Request, list *[]T, post PostProcess
 type Resource[POST any, PATCH any, T any] struct {
 	Name             string
 	List             []T
+	Identity         *http.Response
 	MethodNotAllowed *http.Response
 	Finalize         FinalizeFunc
 	Match            MatchFunc[T]
@@ -29,8 +30,9 @@ type Resource[POST any, PATCH any, T any] struct {
 	PatchProcess     PatchProcessFunc[PATCH, T]
 }
 
-func NewResource[POST any, PATCH any, T any](match MatchFunc[T], finalize FinalizeFunc, patch PatchProcessFunc[PATCH, T], post PostProcessFunc[POST, T]) *Resource[POST, PATCH, T] {
+func NewResource[POST any, PATCH any, T any](name string, match MatchFunc[T], finalize FinalizeFunc, patch PatchProcessFunc[PATCH, T], post PostProcessFunc[POST, T]) *Resource[POST, PATCH, T] {
 	a := new(Resource[POST, PATCH, T])
+	a.Identity = NewAuthorityResponse(name)
 	a.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
 	a.Finalize = finalize
 	if a.Finalize == nil {
@@ -53,6 +55,9 @@ func NewResource[POST any, PATCH any, T any](match MatchFunc[T], finalize Finali
 func (a *Resource[POST, PATCH, T]) Do(req *http.Request) *http.Response {
 	switch req.Method {
 	case http.MethodGet:
+		if req.URL.Path == core.AuthorityRootPath {
+			return a.Identity
+		}
 		return GetT[T](req, a.List, a.Match, a.Finalize)
 	case http.MethodPut:
 		return PutT[T](req, &a.List, a.Finalize)
