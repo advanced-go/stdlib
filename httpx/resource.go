@@ -4,119 +4,81 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
-	"github.com/advanced-go/stdlib/json"
 	"net/http"
 )
 
-type Resource[T any] struct {
-	List      []T
-	Authority *http.Response
-	MatchFn   func(item any, r *http.Request) bool
-	PatchFn   func(item any, patch *Patch)
+type FinalizeFunc func(*http.Response)
+
+type MatchFunc[T any] func(item *T, r *http.Request) bool
+type PatchProcessFunc[PATCH any, T any] func(content *PATCH, list *[]T) *http.Response
+type PostProcessFunc[POST any, T any] func(content *POST, list *[]T) *http.Response
+
+type GetFunc[T any] func(r *http.Request, list []T, match MatchFunc[T], finalize FinalizeFunc) *http.Response
+type DeleteFunc[T any] func(r *http.Request, list *[]T, match MatchFunc[T], finalize FinalizeFunc) *http.Response
+type PutFunc[T any] func(r *http.Request, list *[]T, finalize FinalizeFunc) *http.Response
+type PatchFunc[PATCH any, T any] func(r *http.Request, list *[]T, patch PatchProcessFunc[PATCH, T], finalize FinalizeFunc) *http.Response
+type PostFunc[POST any, T any] func(r *http.Request, list *[]T, post PostProcessFunc[POST, T], finalize FinalizeFunc) *http.Response
+
+type Resource[POST any, PATCH any, T any] struct {
+	Name             string
+	List             []T
+	MethodNotAllowed *http.Response
+	Finalize         FinalizeFunc
+	Match            MatchFunc[T]
+	PostProcess      PostProcessFunc[POST, T]
+	PatchProcess     PatchProcessFunc[PATCH, T]
 }
 
-func NewResource[T any](authority string, match func(item any, r *http.Request) bool, patch func(item any, patch *Patch)) *Resource[T] {
-	r := new(Resource[T])
-	r.Authority = NewAuthorityResponse(authority)
-	r.MatchFn = match
-	r.PatchFn = patch
-	return r
-}
-
-func (r *Resource[T]) Count() int {
-	return len(r.List)
-}
-
-func (r *Resource[T]) Empty() {
-	r.List = nil
-}
-
-func (r *Resource[T]) Get(req *http.Request) (items []T, status *core.Status) {
-	if r.MatchFn == nil {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("MatchFunc() is nil"))
-	}
-	for _, target := range r.List {
-		if r.MatchFn(&target, req) {
-			items = append(items, target)
+func NewResource[POST any, PATCH any, T any](match MatchFunc[T], finalize FinalizeFunc, patch PatchProcessFunc[PATCH, T], post PostProcessFunc[POST, T]) *Resource[POST, PATCH, T] {
+	a := new(Resource[POST, PATCH, T])
+	a.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
+	a.Finalize = finalize
+	if a.Finalize == nil {
+		a.Finalize = func(resp *http.Response) {
+			if resp.Header == nil {
+				resp.Header = make(http.Header)
+				if resp.Request != nil {
+					resp.Header.Add("X-Method", resp.Request.Method)
+				}
+			}
 		}
 	}
-	if len(items) == 0 {
-		return nil, core.StatusNotFound()
+	a.Match = match
+	if a.Match == nil {
+		a.Match = func(item *T, r *http.Request) bool { return false }
 	}
-	return items, core.StatusOK()
+	return a
 }
 
-func (r *Resource[T]) Put(items []T) *core.Status {
-	if len(items) > 0 {
-		r.List = append(r.List, items...)
-	}
-	return core.StatusOK()
-}
-
-func (r *Resource[T]) Patch(req *http.Request, patch *Patch) *core.Status {
-	if r.MatchFn == nil {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New("MatchFunc() is nil"))
-	}
-	if r.PatchFn == nil {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New("PatchFunc() is nil"))
-	}
-	for i, target := range r.List {
-		if r.MatchFn(&target, req) {
-			r.PatchFn(&r.List[i], patch)
-		}
-	}
-	return core.StatusOK()
-}
-
-func (r *Resource[T]) Delete(req *http.Request) *core.Status {
-	if r.MatchFn == nil {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New("MatchFunc() is nil"))
-	}
-	for i, target := range r.List {
-		if r.MatchFn(&target, req) {
-			r.List = append(r.List[:i], r.List[i+1:]...)
-		}
-	}
-	return core.StatusOK()
-}
-
-func (r *Resource[T]) Do(req *http.Request) (*http.Response, *core.Status) {
+func (a *Resource[POST, PATCH, T]) Do(req *http.Request) *http.Response {
 	switch req.Method {
 	case http.MethodGet:
-		if req.URL.Path == core.AuthorityRootPath {
-			return r.Authority, core.StatusOK()
-		}
-		items, status := r.Get(req)
-		if !status.OK() {
-			return NewResponseWithStatus(status, status.Err)
-		}
-		resp, status1 := NewJsonResponse(items, req.Header)
-		if !status1.OK() {
-			return NewResponseWithStatus(status, status.Err)
-		}
-		return resp, core.StatusOK()
+		return GetT[T](req, a.List, a.Match, a.Finalize)
 	case http.MethodPut:
-		items, status := json.New[[]T](req.Body, req.Header)
-		if !status.OK() {
-			return NewResponseWithStatus(status, status.Err)
-		}
-		if len(items) == 0 {
-			return NewResponseWithStatus(core.StatusNotFound(), nil)
-		}
-		r.Put(items)
-		return NewResponseWithStatus(core.StatusOK(), nil)
+		return PutT[T](req, &a.List, a.Finalize)
 	case http.MethodPatch:
-		patch, status := json.New[Patch](req.Body, req.Header)
-		if !status.OK() {
-			return NewResponseWithStatus(status, status.Err)
+		if a.PatchProcess == nil {
+			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil)
 		}
-		status = r.Patch(req, &patch)
-		return NewResponseWithStatus(status, status.Err)
+		return PatchT(req, &a.List, a.PatchProcess, a.Finalize)
+	case http.MethodPost:
+		if a.PostProcess == nil {
+			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil)
+		}
+		return PostT(req, &a.List, a.PostProcess, a.Finalize)
 	case http.MethodDelete:
-		status := r.Delete(req)
-		return NewResponseWithStatus(status, status.Err)
+		return DeleteT(req, &a.List, a.Match, a.Finalize)
 	default:
-		status := core.NewStatusError(http.StatusBadRequest, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
-		return NewResponseWithStatus(status, status.Err)
+		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
+		return NewResponse(status, status.Err)
 	}
+}
+
+func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFunc) *http.Response {
+	resp := NewResponse(status, status.Err)
+	resp.Request = r
+	if finalize != nil {
+		finalize(resp)
+	}
+	return resp
 }
