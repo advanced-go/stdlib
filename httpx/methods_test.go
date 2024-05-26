@@ -30,7 +30,6 @@ func finalize(resp *http.Response) {
 
 func originMatch2(item *core.Origin, req *http.Request) bool {
 	filter := core.NewOrigin(req.URL.Query())
-	//if entry, ok := item.(*core.Origin); ok {
 	if core.OriginMatch(*item, filter) {
 		return true
 	}

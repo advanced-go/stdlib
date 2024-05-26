@@ -11,13 +11,14 @@ type PostData struct {
 	Item string
 }
 
-func postContent[POST any, T any](content *POST, list *[]T) *http.Response {
+func postProcess(list *[]core.Origin, content *PostData) *http.Response {
 	return &http.Response{StatusCode: http.StatusBadRequest}
 }
 
-func patchContent[PATCH any, T any](content *PATCH, list *[]T) *http.Response {
+func patchProcess(list *[]core.Origin, content *Patch) *http.Response {
 	return &http.Response{StatusCode: http.StatusBadRequest}
 }
+
 func ExampleNewBasicResource() {
 	a := NewBasicResource[core.Origin]("github/advanced-go/stdlib", originMatch2, finalize)
 
@@ -47,7 +48,7 @@ func ExampleNewBasicResource() {
 }
 
 func ExampleNewResource() {
-	a := NewResource[core.Origin, Patch, PostData]("github/advanced-go/stdlib", originMatch2, finalize, nil, nil)
+	a := NewResource[core.Origin, Patch, PostData]("github/advanced-go/stdlib", originMatch2, finalize, patchProcess, postProcess)
 
 	reader, _, status := json2.NewReadCloser(testOrigins2)
 	if !status.OK() {
