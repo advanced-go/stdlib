@@ -45,7 +45,7 @@ func ExampleNewHost_Error() {
 	//test: NewHost() -> [err:resource map function is nil]
 	//test: NewHost() -> [err:error: invalid resource map, resource name is empty]
 	//test: NewHost() -> [err:error: invalid resource name, Exchange already exists for: rsc1-name]
-	
+
 }
 
 /*
@@ -86,11 +86,11 @@ func ExampleNewHost_Do() {
 	h, _ := NewHost("github/advanced-go/stdlib", mapper, rsc1, rsc2)
 
 	req, _ := http.NewRequest(http.MethodGet, url1, nil)
-	resp := h.Do(req)
+	resp, _ := h.Do(req)
 	fmt.Printf("test: Do(\"%v\") -> [map:%v] [status-code:%v]\n", url1, mapper(req), resp.StatusCode)
 
 	req, _ = http.NewRequest(http.MethodGet, url2, nil)
-	resp = h.Do(req)
+	resp, _ = h.Do(req)
 	fmt.Printf("test: Do(\"%v\") -> [map:%v] [status-code:%v]\n", url2, mapper(req), resp.StatusCode)
 
 	//Output:

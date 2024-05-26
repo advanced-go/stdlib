@@ -57,19 +57,18 @@ func (a *Host) Exchange(name string) (core.HttpExchange, error) {
 	return nil, errors.New(fmt.Sprintf("invalid argument: Exchange not found for resource name: %v", name))
 }
 
-func (a *Host) Do(req *http.Request) *http.Response {
+func (a *Host) Do(req *http.Request) (*http.Response, *core.Status) {
 	if req == nil {
-		return NewResponse(core.StatusBadRequest(), errors.New("bad request: http.Request is nil"))
+		return NewResponse(core.StatusBadRequest(), errors.New("bad request: http.Request is nil")), core.StatusBadRequest()
 	}
 	if req.Method == http.MethodGet && req.URL.Path == core.AuthorityRootPath {
-		return a.Identity
+		return a.Identity, core.StatusOK()
 	}
 	ex, err := a.Exchange(a.ResourceMap(req))
 	if ex == nil {
-		return NewResponse(core.StatusBadRequest(), errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
+		return NewResponse(core.StatusBadRequest(), errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL))), core.StatusBadRequest()
 	}
-	resp, _ := ex(req)
-	return resp
+	return ex(req)
 }
 
 /*
