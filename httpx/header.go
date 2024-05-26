@@ -1,6 +1,7 @@
 package httpx
 
 import (
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"strings"
 )
@@ -28,6 +29,8 @@ func forwardDefaults(dest http.Header, src http.Header) http.Header {
 	// TO DO : add other default headers
 	dest.Set(XRequestId, src.Get(XRequestId))
 	dest.Set(XRelatesTo, src.Get(XRelatesTo))
+	// Verify
+	dest.Set(core.XTest, src.Get(core.XTest))
 	return dest
 }
 

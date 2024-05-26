@@ -13,18 +13,21 @@ var (
 	ctrlMap = NewControls()
 )
 
-func UpdatePrimaryExchange(list []core.HttpExchangeable) (status *core.Status) {
+func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {
 	if list == nil {
 		return core.NewStatus(core.StatusInvalidArgument)
 	}
-	var ctrl *Controller
-	for _, ex := range list {
-		ctrl, status = LookupWithAuthority(core.Authority(ex.Do))
-		if status.OK() && ctrl.Router.Primary.Handler == nil {
-			ctrl.Router.Primary.Handler = ex.Do
+	/*
+		var ctrl *Controller
+		for _, ex := range list {
+			ctrl, status = LookupWithAuthority(core.Authority(ex.Do))
+			if status.OK() && ctrl.Router.Primary.Handler == nil {
+				ctrl.Router.Primary.Handler = ex.Do
+			}
 		}
-	}
-	return status
+
+	*/
+	return core.StatusOK()
 }
 
 func LookupWithAuthority(authority string) (ctrl *Controller, status *core.Status) {

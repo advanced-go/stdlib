@@ -11,6 +11,7 @@ const (
 	XAuthority = "x-authority"
 	XVersion   = "x-version"
 	XURLPath   = "x-url-path"
+	XTest      = "x-test"
 )
 
 // AddRequestId - add a request to an http.Request or an http.Header
