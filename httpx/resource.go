@@ -62,40 +62,39 @@ func NewResource[T any, U any, V any](name string, match MatchFunc[T], finalize 
 	return r
 }
 
-func (a *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status) {
+func (r *Resource[T, U, V]) Count() int {
+	return len(r.List)
+}
+
+func (r *Resource[T, U, V]) Empty() {
+	r.List = nil
+}
+
+func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status) {
 	switch req.Method {
 	case http.MethodGet:
 		if req.URL.Path == core.AuthorityRootPath {
-			return a.Identity, core.StatusOK()
+			return r.Identity, core.StatusOK()
 		}
-		return GetT[T](req, a.List, a.Match, a.Finalize), core.StatusOK()
+		return GetT[T](req, r.List, r.Match, r.Finalize), core.StatusOK()
 	case http.MethodPut:
-		return PutT[T](req, &a.List, a.Finalize), core.StatusOK()
+		return PutT[T](req, &r.List, r.Finalize), core.StatusOK()
 	case http.MethodPatch:
-		if a.PatchProcess == nil {
+		if r.PatchProcess == nil {
 			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil), core.NewStatus(core.StatusInvalidArgument)
 		}
-		return PatchT(req, &a.List, a.PatchProcess, a.Finalize), core.StatusOK()
+		return PatchT(req, &r.List, r.PatchProcess, r.Finalize), core.StatusOK()
 	case http.MethodPost:
-		if a.PostProcess == nil {
+		if r.PostProcess == nil {
 			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil), core.NewStatus(core.StatusInvalidArgument)
 		}
-		return PostT(req, &a.List, a.PostProcess, a.Finalize), core.StatusOK()
+		return PostT(req, &r.List, r.PostProcess, r.Finalize), core.StatusOK()
 	case http.MethodDelete:
-		return DeleteT(req, &a.List, a.Match, a.Finalize), core.StatusOK()
+		return DeleteT(req, &r.List, r.Match, r.Finalize), core.StatusOK()
 	default:
 		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
 		return NewResponse(status, status.Err), core.NewStatus(http.StatusMethodNotAllowed)
 	}
-}
-
-func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFunc) *http.Response {
-	resp := NewResponse(status, status.Err)
-	resp.Request = r
-	if finalize != nil {
-		finalize(resp)
-	}
-	return resp
 }
 
 func defaultFinalize() func(resp *http.Response) {

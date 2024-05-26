@@ -6,6 +6,15 @@ import (
 	"net/http"
 )
 
+func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFunc) *http.Response {
+	resp := NewResponse(status, status.Err)
+	resp.Request = r
+	if finalize != nil {
+		finalize(resp)
+	}
+	return resp
+}
+
 func PutT[T any](r *http.Request, list *[]T, finalize FinalizeFunc) *http.Response {
 	items, status := json.New[[]T](r.Body, r.Header)
 	if !status.OK() {
