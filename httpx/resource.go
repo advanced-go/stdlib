@@ -30,26 +30,36 @@ type Resource[T any, U any, V any] struct {
 	PatchProcess     PatchProcessFunc[T, U]
 }
 
+func NewBasicResource[T any](name string, match MatchFunc[T], finalize FinalizeFunc) *Resource[T, emptyPatchContent, emptyPostContent] {
+	r := new(Resource[T, emptyPatchContent, emptyPostContent])
+	r.Identity = NewAuthorityResponse(name)
+	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
+	r.Finalize = finalize
+	if r.Finalize == nil {
+		r.Finalize = defaultFinalize()
+	}
+	r.Match = match
+	if r.Match == nil {
+		r.Match = defaultMatch[T]()
+	}
+	return r
+}
+
 func NewResource[T any, U any, V any](name string, match MatchFunc[T], finalize FinalizeFunc, patch PatchProcessFunc[T, U], post PostProcessFunc[T, V]) *Resource[T, U, V] {
-	a := new(Resource[T, U, V])
-	a.Identity = NewAuthorityResponse(name)
-	a.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
-	a.Finalize = finalize
-	if a.Finalize == nil {
-		a.Finalize = func(resp *http.Response) {
-			if resp.Header == nil {
-				resp.Header = make(http.Header)
-				if resp.Request != nil {
-					resp.Header.Add("X-Method", resp.Request.Method)
-				}
-			}
-		}
+	r := new(Resource[T, U, V])
+	r.Identity = NewAuthorityResponse(name)
+	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
+	r.Finalize = finalize
+	if r.Finalize == nil {
+		r.Finalize = defaultFinalize()
 	}
-	a.Match = match
-	if a.Match == nil {
-		a.Match = func(item *T, r *http.Request) bool { return false }
+	r.Match = match
+	if r.Match == nil {
+		r.Match = defaultMatch[T]()
 	}
-	return a
+	r.PatchProcess = patch
+	r.PostProcess = post
+	return r
 }
 
 func (a *Resource[T, U, V]) Do(req *http.Request) *http.Response {
@@ -86,4 +96,22 @@ func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFun
 		finalize(resp)
 	}
 	return resp
+}
+
+type emptyPostContent struct{}
+type emptyPatchContent struct{}
+
+func defaultFinalize() func(resp *http.Response) {
+	return func(resp *http.Response) {
+		if resp.Header == nil {
+			resp.Header = make(http.Header)
+			if resp.Request != nil {
+				resp.Header.Add("X-Method", resp.Request.Method)
+			}
+		}
+	}
+}
+
+func defaultMatch[T any]() func(item *T, r *http.Request) bool {
+	return func(item *T, r *http.Request) bool { return false }
 }
