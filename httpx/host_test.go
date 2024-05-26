@@ -3,7 +3,6 @@ package httpx
 import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
-	"io"
 	"net/http"
 )
 
@@ -29,6 +28,28 @@ func rsc2(r *http.Request) (*http.Response, *core.Status) {
 }
 
 func ExampleNewHost_Error() {
+	_, err := NewHost("", nil, nil)
+	fmt.Printf("test: NewHost() -> [err:%v]\n", err)
+
+	_, err = NewHost("github/advanced-go/stdlib", nil, nil)
+	fmt.Printf("test: NewHost() -> [err:%v]\n", err)
+
+	_, err = NewHost("github/advanced-go/stdlib", mapper, nil)
+	fmt.Printf("test: NewHost() -> [err:%v]\n", err)
+
+	_, err = NewHost("github/advanced-go/stdlib", mapper, rsc1, rsc1)
+	fmt.Printf("test: NewHost() -> [err:%v]\n", err)
+
+	//Output:
+	//test: NewHost() -> [err:error: authority is empty]
+	//test: NewHost() -> [err:resource map function is nil]
+	//test: NewHost() -> [err:error: invalid resource map, resource name is empty]
+	//test: NewHost() -> [err:error: invalid resource name, Exchange already exists for: rsc1-name]
+	
+}
+
+/*
+func ExampleNewHost_Error() {
 	h := NewHost("github/advanced-go/stdlib", nil, nil)
 	req, _ := http.NewRequest(http.MethodPut, "https://www.google.com/search?Q=golang", nil)
 
@@ -52,6 +73,8 @@ func ExampleNewHost_Error() {
 
 }
 
+*/
+
 func mapper(r *http.Request) string {
 	if r.URL.String() == url1 {
 		return rsc1Name
@@ -60,7 +83,7 @@ func mapper(r *http.Request) string {
 }
 
 func ExampleNewHost_Do() {
-	h := NewHost("github/advanced-go/stdlib", mapper, rsc1, rsc2)
+	h, _ := NewHost("github/advanced-go/stdlib", mapper, rsc1, rsc2)
 
 	req, _ := http.NewRequest(http.MethodGet, url1, nil)
 	resp := h.Do(req)
