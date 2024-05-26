@@ -76,25 +76,15 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 		if req.URL.Path == core.AuthorityRootPath {
 			return r.Identity, core.StatusOK()
 		}
-		resp := GetT[T](req, r.List, r.Match, r.Finalize)
-		return resp, core.NewStatus(resp.StatusCode)
+		return GetT[T](req, r.List, r.Match, r.Finalize)
 	case http.MethodPut:
-		return PutT[T](req, &r.List, r.Finalize), core.StatusOK()
+		return PutT[T](req, &r.List, r.Finalize)
 	case http.MethodPatch:
-		if r.PatchProcess == nil {
-			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil), core.NewStatus(core.StatusInvalidArgument)
-		}
-		resp := PatchT(req, &r.List, r.PatchProcess, r.Finalize)
-		return resp, core.NewStatus(resp.StatusCode)
+		return PatchT(req, &r.List, r.PatchProcess, r.Finalize)
 	case http.MethodPost:
-		if r.PostProcess == nil {
-			return NewResponse(core.NewStatus(core.StatusInvalidArgument), nil), core.NewStatus(core.StatusInvalidArgument)
-		}
-		resp := PostT(req, &r.List, r.PostProcess, r.Finalize)
-		return resp, core.NewStatus(resp.StatusCode)
+		return PostT(req, &r.List, r.PostProcess, r.Finalize)
 	case http.MethodDelete:
-		resp := DeleteT(req, &r.List, r.Match, r.Finalize)
-		return resp, core.NewStatus(resp.StatusCode)
+		return DeleteT(req, &r.List, r.Match, r.Finalize)
 	default:
 		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
 		return NewResponse(status, status.Err), core.NewStatus(http.StatusMethodNotAllowed)

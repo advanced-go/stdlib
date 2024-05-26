@@ -62,7 +62,7 @@ func originPost(list *[]core.Origin, post *PostContent) *http.Response {
 
 func ExampleGetT() {
 	req, _ := http.NewRequest(http.MethodGet, "https://localhost:8081/github/advanced-go/documents:resiliency?zone=zOne1", nil)
-	resp := GetT[core.Origin](req, testOrigins2, originMatch2, finalize)
+	resp, _ := GetT[core.Origin](req, testOrigins2, originMatch2, finalize)
 
 	if resp.Body != nil {
 		items, status := json2.New[[]core.Origin](resp.Body, resp.Header)
@@ -83,7 +83,7 @@ func ExamplePutT() {
 	} else {
 		var list []core.Origin
 		req, _ := http.NewRequest(http.MethodPut, "https://localhost:8081/github/advanced-go/documents:resiliency", reader)
-		resp := PutT[core.Origin](req, &list, finalize)
+		resp, _ := PutT[core.Origin](req, &list, finalize)
 		fmt.Printf("test: PutT() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, list)
 	}
 
@@ -97,7 +97,7 @@ func ExampleDeleteT() {
 	local = append(local, testOrigins2...)
 
 	req, _ := http.NewRequest(http.MethodDelete, "https://localhost:8081/github/advanced-go/documents:resiliency?host=www.host2.com", nil)
-	resp := DeleteT[core.Origin](req, &local, originMatch2, finalize)
+	resp, _ := DeleteT[core.Origin](req, &local, originMatch2, finalize)
 	fmt.Printf("test: DeleteT-host() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, local)
 
 	//Output:
@@ -114,7 +114,7 @@ func ExamplePatchT() {
 	}}
 	buf, _ := json.Marshal(p)
 	req, _ := http.NewRequest(http.MethodPatch, "https://localhost:8081/github/advanced-go/documents:resiliency", io.NopCloser(bytes.NewReader(buf)))
-	resp := PatchT[core.Origin, Patch](req, &local, originPatch2, finalize)
+	resp, _ := PatchT[core.Origin, Patch](req, &local, originPatch2, finalize)
 	fmt.Printf("test: PatchT-host() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, local)
 
 	//Output:
@@ -129,7 +129,7 @@ func ExamplePostT() {
 	p := PostContent{Item: "test"}
 	buf, _ := json.Marshal(p)
 	req, _ := http.NewRequest(http.MethodPost, "https://localhost:8081/github/advanced-go/documents:resiliency", io.NopCloser(bytes.NewReader(buf)))
-	resp := PostT[core.Origin, PostContent](req, &local, originPost, finalize)
+	resp, _ := PostT[core.Origin, PostContent](req, &local, originPost, finalize)
 	fmt.Printf("test: PostT-host() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, local)
 
 	//Output:
