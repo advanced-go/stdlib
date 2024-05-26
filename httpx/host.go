@@ -47,6 +47,16 @@ func (a *Host) AddExchange(ex core.HttpExchange) error {
 	return nil
 }
 
+func (a *Host) Exchange(name string) (core.HttpExchange, error) {
+	if name == "" {
+		return nil, errors.New(fmt.Sprintf("invalid arguement: resource name is empty"))
+	}
+	if ex, ok := a.Exchanges[name]; ok {
+		return ex, nil
+	}
+	return nil, errors.New(fmt.Sprintf("invalid argument: Exchange not found for resource name: %v", name))
+}
+
 func (a *Host) Do(req *http.Request) *http.Response {
 	if req == nil {
 		return NewResponse(core.StatusBadRequest(), errors.New("bad request: http.Request is nil"))
@@ -54,6 +64,15 @@ func (a *Host) Do(req *http.Request) *http.Response {
 	if req.Method == http.MethodGet && req.URL.Path == core.AuthorityRootPath {
 		return a.Identity
 	}
+	ex, err := a.Exchange(a.ResourceMap(req))
+	if ex == nil {
+		return NewResponse(core.StatusBadRequest(), errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
+	}
+	resp, _ := ex(req)
+	return resp
+}
+
+/*
 	name := a.ResourceMap(req)
 	if name == "" {
 		return NewResponse(core.StatusBadRequest(), errors.New(fmt.Sprintf("invalid resource map, resource name is empty for: [%v]", req.URL)))
@@ -64,3 +83,5 @@ func (a *Host) Do(req *http.Request) *http.Response {
 	}
 	return NewResponse(core.StatusBadRequest(), errors.New(fmt.Sprintf("invalid resource map, HttpExchange not found for: [%v]", req.URL)))
 }
+
+*/
