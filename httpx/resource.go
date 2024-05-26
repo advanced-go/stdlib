@@ -30,8 +30,8 @@ type Resource[T any, U any, V any] struct {
 	PatchProcess     PatchProcessFunc[T, U]
 }
 
-func NewBasicResource[T any](name string, match MatchFunc[T], finalize FinalizeFunc) *Resource[T, emptyPatchContent, emptyPostContent] {
-	r := new(Resource[T, emptyPatchContent, emptyPostContent])
+func NewBasicResource[T any](name string, match MatchFunc[T], finalize FinalizeFunc) *Resource[T, struct{}, struct{}] {
+	r := new(Resource[T, struct{}, struct{}])
 	r.Identity = NewAuthorityResponse(name)
 	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
 	r.Finalize = finalize
@@ -97,9 +97,6 @@ func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFun
 	}
 	return resp
 }
-
-type emptyPostContent struct{}
-type emptyPatchContent struct{}
 
 func defaultFinalize() func(resp *http.Response) {
 	return func(resp *http.Response) {

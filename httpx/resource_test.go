@@ -43,7 +43,7 @@ func ExampleNewBasicResource() {
 	//Output:
 	//test: PutT() -> [status-code:200] [header:map[X-Authority:[github/advanced-go/stdlib] X-Method:[PUT]]] [[]]
 	//test: GetT() -> [status:OK] [status-code:200] [header:map[Content-Type:[application/json] X-Authority:[github/advanced-go/stdlib] X-Method:[GET]]] [[{region1 Zone1  www.host1.com } {region2 Zone1  www.google.com }]]
-	
+
 }
 
 func ExampleNewResource() {
