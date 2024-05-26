@@ -26,6 +26,9 @@ func BuildURL(host string, uri *url.URL) *url.URL {
 	var newUri = scheme + "://" + host
 
 	if len(uri.Path) > 0 {
+		if uri.Path[:1] != "/" {
+			newUri += "/"
+		}
 		newUri += uri.Path
 	}
 	if len(uri.RawQuery) > 0 {

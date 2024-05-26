@@ -111,7 +111,7 @@ func ExampleUproot() {
 	//test: Uproot(/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [query:] [err:<nil>]
 	//test: Uproot(http://localhost:8080/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [query:term=golang] [err:<nil>]
 	//test: Uproot(http://localhost:8080/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [query:] [err:<nil>]
-	
+
 }
 
 /*

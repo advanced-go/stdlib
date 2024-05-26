@@ -46,14 +46,7 @@ func Uproot(in string) Parsed {
 	case 1:
 		return Parsed{Valid: true, Authority: str[0], Query: u.RawQuery}
 	case 2:
-		//var p Parsed
 		p := Parsed{Valid: true, Authority: str[0], Path: str[1], Query: u.RawQuery}
-		//index := strings.Index(u.Path, "?")
-		//if index == -1 {
-		//	p = Parsed{Valid: true, Authority: str[0], Path: str[1]}
-		//} else {
-		//	p = Parsed{Valid: true, Authority: str[0], Path: str[1][:index], Query: u.RawQuery}
-		//}
 		parseVersion(&p)
 		return p
 	default:
