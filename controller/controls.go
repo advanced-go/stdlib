@@ -17,17 +17,15 @@ func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {
 	if list == nil {
 		return core.NewStatus(core.StatusInvalidArgument)
 	}
-	/*
-		var ctrl *Controller
-		for _, ex := range list {
-			ctrl, status = LookupWithAuthority(core.Authority(ex.Do))
-			if status.OK() && ctrl.Router.Primary.Handler == nil {
-				ctrl.Router.Primary.Handler = ex.Do
-			}
-		}
 
-	*/
-	return core.StatusOK()
+	var ctrl *Controller
+	for _, ex := range list {
+		ctrl, status = LookupWithAuthority(core.Authority(ex))
+		if status.OK() && ctrl.Router.Primary.Handler == nil {
+			ctrl.Router.Primary.Handler = ex
+		}
+	}
+	return status
 }
 
 func LookupWithAuthority(authority string) (ctrl *Controller, status *core.Status) {
