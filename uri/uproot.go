@@ -18,6 +18,7 @@ type Parsed struct {
 	Authority string
 	Version   string
 	Path      string
+	Query     string
 	Err       error
 }
 
@@ -43,9 +44,16 @@ func Uproot(in string) Parsed {
 	case 0:
 		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has no URN separator [%v]", u.Path))}
 	case 1:
-		return Parsed{Valid: true, Authority: str[0]}
+		return Parsed{Valid: true, Authority: str[0], Query: u.RawQuery}
 	case 2:
-		p := Parsed{Valid: true, Authority: str[0], Path: str[1]}
+		//var p Parsed
+		p := Parsed{Valid: true, Authority: str[0], Path: str[1], Query: u.RawQuery}
+		//index := strings.Index(u.Path, "?")
+		//if index == -1 {
+		//	p = Parsed{Valid: true, Authority: str[0], Path: str[1]}
+		//} else {
+		//	p = Parsed{Valid: true, Authority: str[0], Path: str[1][:index], Query: u.RawQuery}
+		//}
 		parseVersion(&p)
 		return p
 	default:

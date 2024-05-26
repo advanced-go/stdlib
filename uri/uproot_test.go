@@ -92,26 +92,26 @@ func ExampleUproot_Validate() {
 func ExampleUproot() {
 	path := "/github/advanced-go/search:query?term=golang"
 	p := Uproot(path)
-	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Err)
+	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [query:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Query, p.Err)
 
 	path = "/github/advanced-go/search:v1/query"
 	p = Uproot(path)
-	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Err)
+	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [query:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Query, p.Err)
 
 	path = "http://localhost:8080/github/advanced-go/search:query?term=golang"
 	p = Uproot(path)
-	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Err)
+	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [query:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Query, p.Err)
 
 	path = "http://localhost:8080/github/advanced-go/search:v1/query"
 	p = Uproot(path)
-	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Err)
+	fmt.Printf("test: Uproot(%v) -> [ok:%v] [auth:%v] [vers:%v] [path:%v] [query:%v] [err:%v]\n", path, p.Valid, p.Authority, p.Version, p.Path, p.Query, p.Err)
 
 	//Output:
-	//test: Uproot(/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [err:<nil>]
-	//test: Uproot(/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [err:<nil>]
-	//test: Uproot(http://localhost:8080/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [err:<nil>]
-	//test: Uproot(http://localhost:8080/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [err:<nil>]
-
+	//test: Uproot(/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [query:term=golang] [err:<nil>]
+	//test: Uproot(/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [query:] [err:<nil>]
+	//test: Uproot(http://localhost:8080/github/advanced-go/search:query?term=golang) -> [ok:true] [auth:github/advanced-go/search] [vers:] [path:query] [query:term=golang] [err:<nil>]
+	//test: Uproot(http://localhost:8080/github/advanced-go/search:v1/query) -> [ok:true] [auth:github/advanced-go/search] [vers:v1] [path:query] [query:] [err:<nil>]
+	
 }
 
 /*
