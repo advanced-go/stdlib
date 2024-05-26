@@ -27,12 +27,12 @@ func ExampleNewBasicResource() {
 	} else {
 		var list []core.Origin
 		req, _ := http.NewRequest(http.MethodPut, "https://localhost:8081/github/advanced-go/documents:resiliency", reader)
-		resp := a.Do(req)
+		resp, _ := a.Do(req)
 		fmt.Printf("test: PutT() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, list)
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, "https://localhost:8081/github/advanced-go/documents:resiliency?zone=zOne1", nil)
-	resp := a.Do(req)
+	resp, _ := a.Do(req)
 	if resp.Body != nil {
 		items, status1 := json2.New[[]core.Origin](resp.Body, resp.Header)
 		fmt.Printf("test: GetT() -> [status:%v] [status-code:%v] [header:%v] [%v]\n", status1, resp.StatusCode, resp.Header, items)
@@ -55,12 +55,12 @@ func ExampleNewResource() {
 	} else {
 		var list []core.Origin
 		req, _ := http.NewRequest(http.MethodPut, "https://localhost:8081/github/advanced-go/documents:resiliency", reader)
-		resp := a.Do(req)
+		resp, _ := a.Do(req)
 		fmt.Printf("test: PutT() -> [status-code:%v] [header:%v] [%v]\n", resp.StatusCode, resp.Header, list)
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, "https://localhost:8081/github/advanced-go/documents:resiliency?zone=zOne1", nil)
-	resp := a.Do(req)
+	resp, _ := a.Do(req)
 	if resp.Body != nil {
 		items, status1 := json2.New[[]core.Origin](resp.Body, resp.Header)
 		fmt.Printf("test: GetT() -> [status:%v] [status-code:%v] [header:%v] [%v]\n", status1, resp.StatusCode, resp.Header, items)
