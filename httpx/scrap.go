@@ -1,10 +1,6 @@
 package httpx
 
-import (
-	"github.com/advanced-go/stdlib/core"
-	"net/http"
-)
-
+/*
 type FinalizeFunc func(*http.Response)
 
 type MatchFunc[T any] func(item *T, r *http.Request) bool
@@ -25,3 +21,6 @@ func FinalizeResponse(status *core.Status, r *http.Request, finalize FinalizeFun
 	}
 	return resp
 }
+
+
+*/

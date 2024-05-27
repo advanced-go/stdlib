@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+type FinalizeFunc func(*http.Response)
+
 type Resource2[T any, U any, V any] struct {
 	Name             string
 	Identity         *http.Response
