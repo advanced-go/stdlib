@@ -18,14 +18,14 @@ func finalize2(resp *http.Response) {
 }
 
 var (
-	content3 = NewListContent[core.Origin, Patch, postContent2](match2, patch2, post2)
-	rsc3     = NewResource[core.Origin, Patch, postContent2]("rsc-origin", content3, finalize2)
+	content3 = NewListContent[core.Origin, Patch, postContent2, Bypass](match2, patch2, post2)
+	rsc3     = NewResource[core.Origin, Patch, postContent2, Bypass]("rsc-origin", content3, finalize2)
 )
 
 func getList3() []core.Origin {
 	var list []core.Origin
 
-	if l, ok := any(content3).(*ListContent[core.Origin, Patch, postContent2]); ok {
+	if l, ok := any(content3).(*ListContent[core.Origin, Patch, postContent2, Bypass]); ok {
 		list = l.List
 	}
 	return list

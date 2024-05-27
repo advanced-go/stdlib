@@ -10,16 +10,16 @@ import (
 
 type FinalizeFunc func(*http.Response)
 
-type Resource[T any, U any, V any] struct {
+type Resource[T any, U any, V any, W Mutex] struct {
 	Name             string
 	Identity         *http.Response
 	MethodNotAllowed *http.Response
 	Finalize         FinalizeFunc
-	Content          Content[T, U, V]
+	Content          Content[T, U, V, W]
 }
 
-func NewResource[T any, U any, V any](name string, content Content[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
-	r := new(Resource[T, U, V])
+func NewResource[T any, U any, V any, W Mutex](name string, content Content[T, U, V, W], finalize FinalizeFunc) *Resource[T, U, V, W] {
+	r := new(Resource[T, U, V, W])
 	r.Identity = NewAuthorityResponse(name)
 	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
 	r.Finalize = finalize
@@ -30,22 +30,22 @@ func NewResource[T any, U any, V any](name string, content Content[T, U, V], fin
 	return r
 }
 
-func (r *Resource[T, U, V]) Count() int {
+func (r *Resource[T, U, V, W]) Count() int {
 	return r.Content.Count()
 }
 
-func (r *Resource[T, U, V]) Empty() {
+func (r *Resource[T, U, V, W]) Empty() {
 	r.Content.Empty()
 }
 
-func (r *Resource[T, U, V]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
+func (r *Resource[T, U, V, W]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
 	resp := NewResponse(status, status.Err)
 	resp.Request = req
 	r.Finalize(resp)
 	return resp, status
 }
 
-func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status) {
+func (r *Resource[T, U, V, W]) Do(req *http.Request) (*http.Response, *core.Status) {
 	switch req.Method {
 	case http.MethodGet:
 		if req.URL.Path == core.AuthorityRootPath {
