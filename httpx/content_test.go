@@ -18,16 +18,6 @@ var (
 	}
 )
 
-func finalize2(resp *http.Response) {
-	if resp.Header == nil {
-		resp.Header = make(http.Header)
-	}
-	resp.Header.Add(core.XAuthority, "github/advanced-go/stdlib")
-	if resp.Request != nil {
-		resp.Header.Add("x-method", resp.Request.Method)
-	}
-}
-
 func match2(req *http.Request, item *core.Origin) bool {
 	filter := core.NewOrigin(req.URL.Query())
 	if core.OriginMatch(*item, filter) {

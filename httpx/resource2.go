@@ -53,7 +53,11 @@ func (r *Resource2[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status
 		if !status.OK() {
 			return r.finalize(req, status)
 		}
-		resp, status1 := NewJsonResponse(items, req.Header)
+		reader, bytes, status1 := json.NewReadCloser(items)
+		if !status1.OK() {
+			return r.finalize(req, status)
+		}
+		resp := &http.Response{StatusCode: status1.HttpCode(), Status: status1.String(), ContentLength: bytes, Body: reader}
 		resp.Request = req
 		r.Finalize(resp)
 		return resp, status1
