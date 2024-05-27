@@ -86,3 +86,14 @@ func (r *Resource2[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status
 		return NewResponse(status, status.Err), core.NewStatus(http.StatusMethodNotAllowed)
 	}
 }
+
+func defaultFinalize() func(resp *http.Response) {
+	return func(resp *http.Response) {
+		if resp.Header == nil {
+			resp.Header = make(http.Header)
+			if resp.Request != nil {
+				resp.Header.Add("X-Method", resp.Request.Method)
+			}
+		}
+	}
+}
