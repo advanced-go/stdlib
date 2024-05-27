@@ -77,6 +77,7 @@ func (c *ListContent[T, U, V]) Delete(r *http.Request) *core.Status {
 	if r == nil {
 		return core.NewStatus(core.StatusInvalidArgument)
 	}
+	count := 0
 	deleted := true
 	for deleted {
 		deleted = false
@@ -84,9 +85,13 @@ func (c *ListContent[T, U, V]) Delete(r *http.Request) *core.Status {
 			if c.match(r, &target) {
 				c.List = append(c.List[:i], c.List[i+1:]...)
 				deleted = true
+				count++
 				break
 			}
 		}
+	}
+	if count == 0 {
+		return core.StatusNotFound()
 	}
 	return core.StatusOK()
 }

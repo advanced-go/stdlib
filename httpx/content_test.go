@@ -117,7 +117,7 @@ func ExampleListContent_Delete() {
 	fmt.Printf("test: Put() -> [status:%v] [count:%v]\n", status, content.Count())
 
 	//Output:
-	//test: Delete-0() -> [status:OK]
+	//test: Delete-0() -> [status:Not Found]
 	//test: Delete-1() -> [status:OK] [prev:3] [curr:2] [{region1 Zone1  www.host1.com } {region2 Zone1  www.google.com }]
 	//test: Delete-2() -> [status:OK] [prev:2] [curr:0] []
 	//test: Put() -> [status:OK] [count:3]
