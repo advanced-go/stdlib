@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-type MatchFunc2[T any] func(r *http.Request, item *T) bool
-type PatchProcessFunc2[T any, U any] func(r *http.Request, list *[]T, content *U) *core.Status
-type PostProcessFunc2[T any, V any] func(r *http.Request, list *[]T, content *V) *core.Status
+type MatchFunc[T any] func(r *http.Request, item *T) bool
+type PatchProcessFunc[T any, U any] func(r *http.Request, list *[]T, content *U) *core.Status
+type PostProcessFunc[T any, V any] func(r *http.Request, list *[]T, content *V) *core.Status
 
 type Content[T any, U any, V any] interface {
 	Count() int
@@ -21,12 +21,12 @@ type Content[T any, U any, V any] interface {
 
 type ListContent[T any, U any, V any] struct {
 	List  []T
-	match MatchFunc2[T]
-	patch PatchProcessFunc2[T, U]
-	post  PostProcessFunc2[T, V]
+	match MatchFunc[T]
+	patch PatchProcessFunc[T, U]
+	post  PostProcessFunc[T, V]
 }
 
-func NewListContent[T any, U any, V any](match MatchFunc2[T], patch PatchProcessFunc2[T, U], post PostProcessFunc2[T, V]) Content[T, U, V] {
+func NewListContent[T any, U any, V any](match MatchFunc[T], patch PatchProcessFunc[T, U], post PostProcessFunc[T, V]) Content[T, U, V] {
 	c := new(ListContent[T, U, V])
 	c.match = match
 	c.patch = patch
