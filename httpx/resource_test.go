@@ -19,7 +19,7 @@ func finalize2(resp *http.Response) {
 
 var (
 	content3 = NewListContent[core.Origin, Patch, postContent2](match2, patch2, post2)
-	rsc3     = NewResource2[core.Origin, Patch, postContent2]("rsc-origin", content3, finalize2)
+	rsc3     = NewResource[core.Origin, Patch, postContent2]("rsc-origin", content3, finalize2)
 )
 
 func getList3() []core.Origin {
@@ -31,7 +31,7 @@ func getList3() []core.Origin {
 	return list
 }
 
-func ExampleResource2_Put() {
+func ExampleResource_Put() {
 	reader, _, status := json2.NewReadCloser(origin2)
 	if !status.OK() {
 		fmt.Printf("test: Put() -> [read-closer-status:%v]\n", status)
@@ -46,7 +46,7 @@ func ExampleResource2_Put() {
 
 }
 
-func ExampleResource2_Get() {
+func ExampleResource_Get() {
 	req, _ := http.NewRequest(http.MethodGet, "https://localhost:8081/github/advanced-go/documents:resiliency?zone=zone1", nil)
 	resp, status := rsc3.Do(req)
 	if !status.OK() {
@@ -61,7 +61,7 @@ func ExampleResource2_Get() {
 
 }
 
-func ExampleResource2_Delete() {
+func ExampleResource_Delete() {
 	// Empty
 	req, _ := http.NewRequest(http.MethodDelete, "https://localhost:8081/github/advanced-go/documents:resiliency?zone=invalid", nil)
 	resp, status := rsc3.Do(req)
@@ -97,7 +97,7 @@ func ExampleResource2_Delete() {
 
 }
 
-func ExampleResource2_Patch() {
+func ExampleResource_Patch() {
 	p := Patch{Updates: []Operation{
 		{Op: OpReplace, Path: core.HostKey, Value: "www.search.yahoo.com"},
 	}}
@@ -118,7 +118,7 @@ func ExampleResource2_Patch() {
 
 }
 
-func ExampleResource2_Post() {
+func ExampleResource_Post() {
 	p := postContent2{}
 	fmt.Printf("test: Post-before() -> %v\n", getList3())
 

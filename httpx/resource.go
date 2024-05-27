@@ -10,7 +10,7 @@ import (
 
 type FinalizeFunc func(*http.Response)
 
-type Resource2[T any, U any, V any] struct {
+type Resource[T any, U any, V any] struct {
 	Name             string
 	Identity         *http.Response
 	MethodNotAllowed *http.Response
@@ -18,8 +18,8 @@ type Resource2[T any, U any, V any] struct {
 	Content          Content[T, U, V]
 }
 
-func NewResource2[T any, U any, V any](name string, content Content[T, U, V], finalize FinalizeFunc) *Resource2[T, U, V] {
-	r := new(Resource2[T, U, V])
+func NewResource[T any, U any, V any](name string, content Content[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
+	r := new(Resource[T, U, V])
 	r.Identity = NewAuthorityResponse(name)
 	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
 	r.Finalize = finalize
@@ -30,22 +30,22 @@ func NewResource2[T any, U any, V any](name string, content Content[T, U, V], fi
 	return r
 }
 
-func (r *Resource2[T, U, V]) Count() int {
+func (r *Resource[T, U, V]) Count() int {
 	return r.Content.Count()
 }
 
-func (r *Resource2[T, U, V]) Empty() {
+func (r *Resource[T, U, V]) Empty() {
 	r.Content.Empty()
 }
 
-func (r *Resource2[T, U, V]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
+func (r *Resource[T, U, V]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
 	resp := NewResponse(status, status.Err)
 	resp.Request = req
 	r.Finalize(resp)
 	return resp, status
 }
 
-func (r *Resource2[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status) {
+func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status) {
 	switch req.Method {
 	case http.MethodGet:
 		if req.URL.Path == core.AuthorityRootPath {
