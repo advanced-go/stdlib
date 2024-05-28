@@ -11,6 +11,7 @@ type PatchProcessFunc[T any, U any] func(r *http.Request, list *[]T, content *U)
 type PostProcessFunc[T any, V any] func(r *http.Request, list *[]T, content *V) *core.Status
 
 type Content[T any, U any, V any] interface {
+	//Count2(string) int
 	Count() int
 	Empty()
 	Get(r *http.Request) ([]T, *core.Status)
@@ -53,6 +54,17 @@ func (c *ListContent[T, U, V]) acquire() func() {
 		return func() {}
 	}
 }
+
+/*
+func (c *ListContent[T, U, V]) Count2(goid string) int {
+	fmt.Printf("Count-start() -> %v - %v\n", goid, time.Now().UTC())
+	defer c.acquire()()
+	time.Sleep(time.Second * 2)
+	fmt.Printf("Count-stop()  -> %v - %v\n", goid, time.Now().UTC())
+	return len(c.List)
+}
+
+*/
 
 func (c *ListContent[T, U, V]) Count() int {
 	defer c.acquire()()

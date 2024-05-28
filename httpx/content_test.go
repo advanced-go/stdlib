@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
+	"time"
 )
 
 type postContent2 struct {
@@ -54,6 +55,21 @@ func post2(_ *http.Request, list *[]core.Origin, _ *postContent2) *core.Status {
 var (
 	content = NewListContent[core.Origin, Patch, postContent2](true, match2, patch2, post2)
 )
+
+func _ExampleListContent_Count2() {
+	fmt.Printf("example-start()  ->       %v\n", time.Now().UTC())
+	go func() {
+		time.Sleep(time.Millisecond * 500)
+		//content.Count2("goid-2")
+	}()
+	//content.Count2("goid-1")
+	time.Sleep(time.Second * 3)
+	fmt.Printf("example-stop()   ->       %v\n", time.Now().UTC())
+
+	//Output:
+	//fail
+
+}
 
 func ExampleListContent_Put() {
 	req, _ := http.NewRequest(http.MethodPut, "https://ww.google.com/search?q=golang", nil)
