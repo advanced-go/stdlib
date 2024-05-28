@@ -60,9 +60,9 @@ func _ExampleListContent_Count2() {
 	fmt.Printf("example-start()  ->       %v\n", time.Now().UTC())
 	go func() {
 		time.Sleep(time.Millisecond * 500)
-		//content.Count2("goid-2")
+		//content.count2("goid-2")
 	}()
-	//content.Count2("goid-1")
+	//content.count2("goid-1")
 	time.Sleep(time.Second * 3)
 	fmt.Printf("example-stop()   ->       %v\n", time.Now().UTC())
 

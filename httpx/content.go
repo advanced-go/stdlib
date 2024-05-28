@@ -56,7 +56,7 @@ func (c *ListContent[T, U, V]) acquire() func() {
 }
 
 /*
-func (c *ListContent[T, U, V]) Count2(goid string) int {
+func (c *ListContent[T, U, V]) count2(goid string) int {
 	fmt.Printf("Count-start() -> %v - %v\n", goid, time.Now().UTC())
 	defer c.acquire()()
 	time.Sleep(time.Second * 2)
