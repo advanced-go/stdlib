@@ -52,7 +52,7 @@ func post2(_ *http.Request, list *[]core.Origin, _ *postContent2) *core.Status {
 }
 
 var (
-	content = NewListContent[core.Origin, Patch, postContent2, Lock](match2, patch2, post2)
+	content = NewListContent[core.Origin, Patch, postContent2](true, match2, patch2, post2)
 )
 
 func ExampleListContent_Put() {
@@ -88,7 +88,7 @@ func ExampleListContent_GetEmpty() {
 func getList() []core.Origin {
 	var list []core.Origin
 
-	if l, ok := any(content).(*ListContent[core.Origin, Patch, postContent2, Lock]); ok {
+	if l, ok := any(content).(*ListContent[core.Origin, Patch, postContent2]); ok {
 		list = l.List
 	}
 	return list
