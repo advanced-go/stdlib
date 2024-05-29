@@ -18,6 +18,7 @@ func Uproot(in string) Parsed {
 	if in == "" {
 		return Parsed{Valid: false, Err: errors.New("error: invalid input, URI is empty")}
 	}
+	in = strings.ToLower(in)
 	if strings.HasPrefix(in, UrnScheme) {
 		return Parsed{Valid: true, Authority: in, Path: in}
 	}
@@ -26,10 +27,11 @@ func Uproot(in string) Parsed {
 		return Parsed{Valid: false, Err: err}
 	}
 	var str []string
-	if u.Path[0] == '/' {
-		str = strings.Split(u.Path[1:], UrnSeparator)
+	lower := strings.ToLower(u.Path)
+	if lower[0] == '/' {
+		str = strings.Split(lower[1:], UrnSeparator)
 	} else {
-		str = strings.Split(u.Path, UrnSeparator)
+		str = strings.Split(lower, UrnSeparator)
 	}
 	switch len(str) {
 	case 0:
@@ -39,6 +41,12 @@ func Uproot(in string) Parsed {
 	case 2:
 		p := Parsed{Valid: true, Authority: str[0], Path: str[1], Query: u.RawQuery}
 		parseVersion(&p)
+		index := strings.Index(p.Path, "/")
+		if index != -1 {
+			p.Resource = p.Path[:index]
+		} else {
+			p.Resource = p.Path
+		}
 		return p
 	default:
 		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has multiple URN separators [%v]", u.Path))}

@@ -6,6 +6,7 @@ type Parsed struct {
 	Valid     bool
 	Authority string
 	Version   string
+	Resource  string
 	Path      string
 	Query     string
 	Err       error
