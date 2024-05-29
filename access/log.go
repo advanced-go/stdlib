@@ -41,15 +41,20 @@ func SetLogFn(fn LogFn) {
 	}
 }
 
+func DisableLogging(v bool) {
+	disabled = v
+}
+
 var (
 	origin    = core.Origin{}
 	formatter = DefaultFormat
 	logger    = defaultLog
+	disabled  = false
 )
 
 // Log - access logging
 func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) {
-	if logger == nil {
+	if logger == nil || disabled {
 		return
 	}
 	logger(origin, traffic, start, duration, req, resp, authority, routeName, routeTo, threshold, thresholdFlags)
