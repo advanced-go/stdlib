@@ -2,57 +2,7 @@ package uri
 
 import (
 	"fmt"
-	"net/url"
 )
-
-func ExampleParseRaw() {
-	u := "http://localhost:8080/github/advanced-go/stdlib/uri.Uproot?q=golang"
-	uri, err := url.Parse(u)
-	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [host:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Host, uri.Path, uri.Fragment, uri.RawQuery, err)
-
-	u = "http://localhost:8080/github/advanced-go/stdlib/uri:Uproot?q=golang"
-	uri, err = url.Parse(u)
-	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Path, uri.Fragment, uri.RawQuery, err)
-
-	u = "http://localhost:8080/github/advanced-go/stdlib/uri?q=golang#Uproot"
-	uri, err = url.Parse(u)
-	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Path, uri.Fragment, uri.RawQuery, err)
-
-	u = uri.Path
-	uri, err = url.Parse(u)
-	fmt.Printf("test: ParseRaw(\"%v\") -> [scheme:%v] [path:%v] [frag:%v] [query:%v] [err:%v]\n", u, uri.Scheme, uri.Path, uri.Fragment, uri.RawQuery, err)
-
-	//Output:
-	//test: ParseRaw("http://localhost:8080/github/advanced-go/stdlib/uri.Uproot?q=golang") -> [scheme:http] [host:localhost:8080] [path:/github/advanced-go/stdlib/uri.Uproot] [frag:] [query:q=golang] [err:<nil>]
-	//test: ParseRaw("http://localhost:8080/github/advanced-go/stdlib/uri:Uproot?q=golang") -> [scheme:http] [path:/github/advanced-go/stdlib/uri:Uproot] [frag:] [query:q=golang] [err:<nil>]
-	//test: ParseRaw("http://localhost:8080/github/advanced-go/stdlib/uri?q=golang#Uproot") -> [scheme:http] [path:/github/advanced-go/stdlib/uri] [frag:Uproot] [query:q=golang] [err:<nil>]
-	//test: ParseRaw("/github/advanced-go/stdlib/uri") -> [scheme:] [path:/github/advanced-go/stdlib/uri] [frag:] [query:] [err:<nil>]
-
-}
-
-func ExampleParseVersion() {
-	p := new(Parsed)
-
-	prev := p.Path
-	parseVersion(p)
-	fmt.Printf("test: parseVersion(\"%v\") -> [path:%v] [vers:%v]\n", prev, p.Path, p.Version)
-
-	p.Path = "search"
-	prev = p.Path
-	parseVersion(p)
-	fmt.Printf("test: parseVersion(\"%v\") -> [path:%v] [vers:%v]\n", prev, p.Path, p.Version)
-
-	p.Path = "v1/search"
-	prev = p.Path
-	parseVersion(p)
-	fmt.Printf("test: parseVersion(\"%v\") -> [path:%v] [vers:%v]\n", prev, p.Path, p.Version)
-
-	//Output:
-	//test: parseVersion("") -> [path:] [vers:]
-	//test: parseVersion("search") -> [path:search] [vers:]
-	//test: parseVersion("v1/search") -> [path:search] [vers:v1]
-
-}
 
 func ExampleUproot_Validate() {
 	// Empty

@@ -13,15 +13,6 @@ const (
 	VersionPrefix = "v"
 )
 
-type Parsed struct {
-	Valid     bool
-	Authority string
-	Version   string
-	Path      string
-	Query     string
-	Err       error
-}
-
 // Uproot - uproot an embedded uri in a URI or a URI path
 func Uproot(in string) Parsed {
 	if in == "" {
