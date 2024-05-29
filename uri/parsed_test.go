@@ -71,7 +71,8 @@ func ExampleParsed_PathURL() {
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
 
 	//Output:
-	//test: Parsed("https://www.google.com/github/advanced-go/search:google") -> [pathURL:google]
-	//test: Parsed("https://www.google.com/github/advanced-go/search:v2/google") -> [pathURL:google]
+	//test: Parsed("https://www.google.com/github/advanced-go/search:google") -> [pathURL:google] [query:]
+	//test: Parsed("https://www.google.com/github/advanced-go/search:v2/google") -> [pathURL:google] [query:]
+	//test: Parsed("https://www.google.com/github/advanced-go/search:v2/google?q=golang") -> [pathURL:google?q=golang] [query:q=golang]
 
 }

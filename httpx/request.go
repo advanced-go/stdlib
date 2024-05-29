@@ -10,15 +10,15 @@ import (
 )
 
 // ValidateURL - validate ta URL
-func ValidateURL(url *url.URL, authority string) (p uri.Parsed, status *core.Status) {
+func ValidateURL(url *url.URL, authority string) (p *uri.Parsed, status *core.Status) {
 	if url == nil {
-		return uri.Parsed{}, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
+		return &uri.Parsed{}, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
 	}
 	if len(authority) == 0 {
-		return uri.Parsed{}, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: authority is empty"))
+		return &uri.Parsed{}, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: authority is empty"))
 	}
 	if url.Path == core.AuthorityRootPath {
-		return uri.Parsed{Path: core.AuthorityPath}, core.StatusOK()
+		return &uri.Parsed{Path: core.AuthorityPath}, core.StatusOK()
 	}
 	p = uri.Uproot(url.Path)
 	if !p.Valid {

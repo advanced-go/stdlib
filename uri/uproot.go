@@ -14,17 +14,17 @@ const (
 )
 
 // Uproot - uproot an embedded uri in a URI or a URI path
-func Uproot(in string) Parsed {
+func Uproot(in string) *Parsed {
 	if in == "" {
-		return Parsed{Valid: false, Err: errors.New("error: invalid input, URI is empty")}
+		return &Parsed{Valid: false, Err: errors.New("error: invalid input, URI is empty")}
 	}
 	in = strings.ToLower(in)
 	if strings.HasPrefix(in, UrnScheme) {
-		return Parsed{Valid: true, Authority: in, Path: in}
+		return &Parsed{Valid: true, Authority: in, Path: in}
 	}
 	u, err := url.Parse(in)
 	if err != nil {
-		return Parsed{Valid: false, Err: err}
+		return &Parsed{Valid: false, Err: err}
 	}
 	var str []string
 	lower := strings.ToLower(u.Path)
@@ -35,12 +35,12 @@ func Uproot(in string) Parsed {
 	}
 	switch len(str) {
 	case 0:
-		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has no URN separator [%v]", u.Path))}
+		return &Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has no URN separator [%v]", u.Path))}
 	case 1:
-		return Parsed{Valid: true, Authority: str[0], Query: u.RawQuery}
+		return &Parsed{Valid: true, Authority: str[0], Query: u.RawQuery}
 	case 2:
-		p := Parsed{Valid: true, Authority: str[0], Path: str[1], Query: u.RawQuery}
-		parseVersion(&p)
+		p := &Parsed{Valid: true, Authority: str[0], Path: str[1], Query: u.RawQuery}
+		parseVersion(p)
 		index := strings.Index(p.Path, "/")
 		if index != -1 {
 			p.Resource = p.Path[:index]
@@ -49,7 +49,7 @@ func Uproot(in string) Parsed {
 		}
 		return p
 	default:
-		return Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has multiple URN separators [%v]", u.Path))}
+		return &Parsed{Valid: false, Err: errors.New(fmt.Sprintf("error: path has multiple URN separators [%v]", u.Path))}
 	}
 }
 
