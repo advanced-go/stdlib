@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	ctrlMap       = NewControls()
-	silentLogging = false
+	ctrlMap        = NewControls()
+	disableLogging = false
 )
 
-func SetSilentLogging(v bool) {
-	silentLogging = v
+func DisableLogging(v bool) {
+	disableLogging = v
 }
 
 func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {
