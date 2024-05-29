@@ -13,6 +13,7 @@ const (
 )
 
 type Resource struct {
+	SilentAccess bool   `json:"silent"`
 	Name         string `json:"name"`
 	Host         string `json:"host"`
 	Authority    string `json:"authority"`
@@ -21,8 +22,9 @@ type Resource struct {
 	Handler      core.HttpExchange
 }
 
-func newResource(name, host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
+func newResource(silent bool, name, host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
 	r := new(Resource)
+	r.SilentAccess = silent
 	r.Name = name
 	r.Host = host
 	r.Authority = authority
@@ -34,12 +36,12 @@ func newResource(name, host, authority string, duration time.Duration, livenessP
 	return r
 }
 
-func NewPrimaryResource(host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
-	return newResource(PrimaryName, host, authority, duration, livenessPath, handler)
+func NewPrimaryResource(silent bool, host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
+	return newResource(silent, PrimaryName, host, authority, duration, livenessPath, handler)
 }
 
-func NewSecondaryResource(host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
-	return newResource(SecondaryName, host, authority, duration, livenessPath, handler)
+func NewSecondaryResource(silent bool, host, authority string, duration time.Duration, livenessPath string, handler core.HttpExchange) *Resource {
+	return newResource(silent, SecondaryName, host, authority, duration, livenessPath, handler)
 }
 
 func (r *Resource) IsPrimary() bool {

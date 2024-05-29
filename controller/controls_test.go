@@ -9,7 +9,7 @@ func ExampleControlsLookup() {
 	p := NewControls()
 	//path := "http://localhost:8080/github/advanced-go/search:google?q=golang"
 	auth := "github/advanced-go/search"
-	ctrl := NewController("test-route", NewPrimaryResource("", auth, time.Second*2, "", httpCall), nil)
+	ctrl := NewController("test-route", NewPrimaryResource(false, "", auth, time.Second*2, "", httpCall), nil)
 
 	_, status := p.lookup("")
 	fmt.Printf("test: Lookup(\"\") -> [status:%v]\n", status)
@@ -24,7 +24,7 @@ func ExampleControlsLookup() {
 	fmt.Printf("test: Lookup(%v) -> [status:%v] [handler:%v]\n", auth, status1, handler != nil)
 
 	host := "www.google.com"
-	ctrl = NewController("test-route", NewPrimaryResource(host, "", time.Second*2, "", httpCall), nil)
+	ctrl = NewController("test-route", NewPrimaryResource(false, host, "", time.Second*2, "", httpCall), nil)
 
 	err = p.register(ctrl)
 	fmt.Printf("test: Register() -> [err:%v]\n", err)
@@ -42,5 +42,5 @@ func ExampleControlsLookup() {
 }
 
 func ExampleUpdatePrimaryExchange() {
-	
+
 }

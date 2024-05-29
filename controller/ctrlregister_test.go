@@ -9,16 +9,17 @@ const (
 )
 
 var testCtrls = []*Controller{
-	NewController("test-route-1", NewPrimaryResource(auth1, "", 0, "", nil), nil),
-	NewController("test-route-2", NewPrimaryResource("", auth2, 0, "", nil), nil),
-	NewController("test-route-2", NewPrimaryResource(auth3, "", 0, "", nil), nil),
+	NewController("test-route-1", NewPrimaryResource(false, auth1, "", 0, "", nil), nil),
+	NewController("test-route-2", NewPrimaryResource(false, "", auth2, 0, "", nil), nil),
+	NewController("test-route-2", NewPrimaryResource(false, auth3, "", 0, "", nil), nil),
 }
 
 func ExampleRegisterController_Defer() {
+	silent := false
 	authority1 := "localhost:9999"
 	authority2 := "github/advanced-go/test-guidance"
-	ctrl := NewController("test-route-1", NewPrimaryResource(authority1, "", 0, "", nil), nil)
-	ctrl2 := NewController("test-route-2", NewPrimaryResource("", authority2, 0, "", nil), nil)
+	ctrl := NewController("test-route-1", NewPrimaryResource(silent, authority1, "", 0, "", nil), nil)
+	ctrl2 := NewController("test-route-2", NewPrimaryResource(silent, "", authority2, 0, "", nil), nil)
 
 	fn := RegisterControllerWithDefer(ctrl, nil)
 	fn = RegisterControllerWithDefer(ctrl2, fn)
@@ -107,6 +108,7 @@ func ExampleRegisterControllerList() {
 }
 
 func ExampleRegisterController_Error() {
+	silent := false
 	err := RegisterController(nil)
 	fmt.Printf("test: RegisterController(nil) -> [err:%v]\n", err)
 
@@ -119,7 +121,7 @@ func ExampleRegisterController_Error() {
 	err = RegisterController(ctrl)
 	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
-	ctrl = NewController("test-route", NewPrimaryResource("", "", 0, "", nil), nil)
+	ctrl = NewController("test-route", NewPrimaryResource(silent, "", "", 0, "", nil), nil)
 	err = RegisterController(ctrl)
 	fmt.Printf("test: RegisterController(ctrl) -> [err:%v]\n", err)
 
