@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-// ValidateURL - validate ta URL
+// ValidateURL - validate a URL
 func ValidateURL(url *url.URL, authority string) (p *uri.Parsed, status *core.Status) {
 	if url == nil {
 		return &uri.Parsed{}, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
