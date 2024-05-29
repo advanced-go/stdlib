@@ -14,8 +14,11 @@ var (
 	disableLogging = false
 )
 
-func DisableLogging(v bool) {
+func DisableLogging(v bool) func() {
 	disableLogging = v
+	return func() {
+		disableLogging = !v
+	}
 }
 
 func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {

@@ -20,6 +20,14 @@ func NewController(routeName string, primary, secondary *Resource) *Controller {
 	return c
 }
 
+func NewExchangeController(routeName, authority string, ex core.HttpExchange) *Controller {
+	c := new(Controller)
+	c.Name = routeName
+	//authority := core.Authority(ex)
+	c.Router = NewRouter(NewPrimaryResource("", authority, 0, "", ex), nil)
+	return c
+}
+
 func (c *Controller) RouteName() string {
 	return c.Name
 }

@@ -36,8 +36,7 @@ func testDo(r *http.Request) (*http.Response, *core.Status) {
 }
 
 func ExampleDo_Error() {
-	silent := false
-	ctrl := NewController("google-search", NewPrimaryResource(silent, "www.google.com", "", 0, "/health/liveness", httpCall), nil)
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
 
 	_, status := ctrl.Do(testDo, nil)
 	fmt.Printf("test: Do(testDo,nil) -> [status:%v]\n", status)
@@ -47,9 +46,28 @@ func ExampleDo_Error() {
 
 }
 
+func ExampleDo_Exchange() {
+	//defer DisableLogging(true)()
+	auth := "github/advanced-go/search"
+	ctrl := NewExchangeController("google-search", auth, testDo)
+	uri := "http://localhost:8081/github/advanced-go/search:yahoo?q=golang"
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+
+	resp, status := ctrl.Do(nil, req)
+	var buf []byte
+	if status.OK() {
+		buf, _ = io.ReadAll(resp.Body)
+	}
+	fmt.Printf("test: Do_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
+
+	//Output:
+	//test: Do_0s() -> [status-code:200] [status:OK] [buf:true]
+
+}
+
 func ExampleDo_Internal() {
-	silent := true
-	ctrl := NewController("google-search", NewPrimaryResource(silent, "www.google.com", "", 0, "/health/liveness", httpCall), nil)
+	defer DisableLogging(true)()
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
@@ -60,7 +78,7 @@ func ExampleDo_Internal() {
 	}
 	fmt.Printf("test: Do_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
 
-	ctrl = NewController("google-search", NewPrimaryResource(silent, "www.google.com", "", time.Millisecond*5, "/health/liveness", httpCall), nil)
+	ctrl = NewController("google-search", NewPrimaryResource("www.google.com", "", time.Millisecond*5, "/health/liveness", httpCall), nil)
 	resp, status = ctrl.Do(nil, req)
 	if status.OK() {
 		buf, _ = io.ReadAll(resp.Body)
@@ -76,9 +94,8 @@ func ExampleDo_Internal() {
 }
 
 func ExampleDo_Egress() {
-	silent := false
 	var buf []byte
-	ctrl := NewController("google-search", NewPrimaryResource(silent, "www.google.com", "", 0, "/health/liveness", nil), nil)
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", nil), nil)
 	uri := "/search?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
@@ -88,7 +105,7 @@ func ExampleDo_Egress() {
 	}
 	fmt.Printf("test: Do_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
 
-	ctrl = NewController("google-search", NewPrimaryResource(silent, "www.google.com", "", time.Millisecond*5, "/health/liveness", nil), nil)
+	ctrl = NewController("google-search", NewPrimaryResource("www.google.com", "", time.Millisecond*5, "/health/liveness", nil), nil)
 	resp, status = ctrl.Do(testDo, req)
 	if status.OK() {
 		buf, _ = io.ReadAll(resp.Body)

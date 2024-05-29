@@ -18,7 +18,11 @@ func BuildURL(host string, uri *url.URL) *url.URL {
 	}
 	scheme := HttpsScheme
 	if host == "" {
-		host = Localhost
+		if uri.Host != "" {
+			host = uri.Host
+		} else {
+			host = Localhost
+		}
 	}
 	if strings.Contains(host, Localhost) {
 		scheme = HttpScheme
