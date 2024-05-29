@@ -42,22 +42,23 @@ func ExampleValidateRequest() {
 	auth := "github/advanced-go/httpx"
 	rscSearch := ":search?q=golang"
 	uri := "https://www.google.com/" + auth + rscSearch
-	rscVerSearch := ":v1/search?q=golang"
+	rscVerSearch := ":v1/search/yahoo?q=golang"
 	uri2 := "https://www.google.com/" + auth + rscVerSearch
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	p, status := ValidateURL(req.URL, auth)
-	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", uri, auth, status, p.Version, p.Path)
+	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [rsc:%v] [path:%v] [query:%v]\n", uri, auth, status, p.Version, p.Resource, p.Path, p.Query)
 
 	req, _ = http.NewRequest(http.MethodGet, uri2, nil)
 	p, status = ValidateURL(req.URL, auth)
-	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [path:%v]\n", uri2, auth, status, p.Version, p.Path)
+	fmt.Printf("test: ValidateRequest(\"%v\",\"%v\") -> [status:%v] [ver:%v] [rsc:%v] [path:%v] [query:%v]\n", uri2, auth, status, p.Version, p.Resource, p.Path, p.Query)
 
 	//Output:
-	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:] [path:search]
-	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:v1/search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:v1] [path:search]
+	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:search?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:] [rsc:search] [path:search] [query:q=golang]
+	//test: ValidateRequest("https://www.google.com/github/advanced-go/httpx:v1/search/yahoo?q=golang","github/advanced-go/httpx") -> [status:OK] [ver:v1] [rsc:search] [path:search/yahoo] [query:q=golang]
 
 }
+
 func ExampleValidateURL_Authority() {
 	auth := "github/advanced-go/stdlib"
 	req, _ := http.NewRequest(http.MethodGet, core.AuthorityRootPath, nil)

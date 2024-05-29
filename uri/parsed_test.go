@@ -29,6 +29,16 @@ func ExampleURLParse_Raw() {
 	//test: ParseRaw("/github/advanced-go/stdlib/uri") -> [scheme:] [path:/github/advanced-go/stdlib/uri] [frag:] [query:] [err:<nil>]
 
 }
+func ExampleParsed() {
+	uri := "http://localhost:8081/github/advanced-go/guidance:v1/resiliency?region=region1"
+	p := Uproot(uri)
+
+	fmt.Printf("test: Uproot() -> [auth:%v] [vers:%v] [rsc:%v] [path:%v] [query:%v]\n", p.Authority, p.Version, p.Resource, p.Path, p.Query)
+
+	//Output:
+	//test: Uproot() -> [auth:github/advanced-go/guidance] [vers:v1] [rsc:resiliency] [path:resiliency] [query:region=region1]
+
+}
 
 func ExampleParsed_Version() {
 	p := new(Parsed)

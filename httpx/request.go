@@ -20,7 +20,11 @@ func ValidateURL(url *url.URL, authority string) (p *uri.Parsed, status *core.St
 	if url.Path == core.AuthorityRootPath {
 		return &uri.Parsed{Path: core.AuthorityPath}, core.StatusOK()
 	}
-	p = uri.Uproot(url.Path)
+	if url.RawQuery != "" {
+		p = uri.Uproot(url.Path + "?" + url.RawQuery)
+	} else {
+		p = uri.Uproot(url.Path)
+	}
 	if !p.Valid {
 		return p, core.NewStatusError(http.StatusBadRequest, p.Err)
 	}
