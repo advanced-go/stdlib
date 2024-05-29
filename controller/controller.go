@@ -75,7 +75,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
-	if !rsc.SilentAccess {
+	if !silentLogging {
 		access.Log(traffic, start, elapsed, req, resp, authority, c.RouteName(), rsc.Name, access.Milliseconds(duration), flags)
 	}
 	return
