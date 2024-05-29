@@ -14,8 +14,8 @@ func ExampleNewValues() {
 	fmt.Printf("test: NewValues() -> [%v]\n", values)
 
 	//Output:
-	//test: NewValues() -> [map[az:[zone] host:[host] reg:[region] sz:[sub-zone]]]
-
+	//test: NewValues() -> [map[host:[host] region:[region] sub-zone:[sub-zone] zone:[zone]]]
+	
 }
 
 func ExampleNewOrigin() {

@@ -53,6 +53,9 @@ func NewOrigin(values url.Values) Origin {
 func OriginMatch(target Origin, filter Origin) bool {
 	isFilter := false
 	if filter.Region != "" {
+		if filter.Region == "*" {
+			return true
+		}
 		isFilter = true
 		if !StringMatch(target.Region, filter.Region) {
 			return false
