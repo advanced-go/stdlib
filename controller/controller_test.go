@@ -48,8 +48,8 @@ func ExampleDo_Error() {
 
 func ExampleDo_Exchange() {
 	//defer DisableLogging(true)()
-	auth := "github/advanced-go/search"
-	ctrl := NewExchangeController("google-search", auth, testDo)
+	//auth := "github/advanced-go/search"
+	ctrl := NewExchangeController("google-search", testDo)
 	uri := "http://localhost:8081/github/advanced-go/search:yahoo?q=golang"
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
