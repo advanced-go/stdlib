@@ -10,19 +10,19 @@ import (
 func ExampleTransformURL() {
 	host := "www.google.com"
 	authority := "github/advanced-go/search"
-	uri := "http://localhost:8081/github/advanced-go/search:google?q=golang"
+	uri := "http://localhost:8081/github/advanced-go/search:google?" + BuildQuery("q=golang")
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	url := TransformURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
-	//test: BuildURL("http://localhost:8081/github/advanced-go/search:google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q%3Dgolang]
+	//test: BuildURL("http://localhost:8081/github/advanced-go/search:google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
 
 }
 
 func ExampleTransformURL_Host() {
-	uri := "/search?q=golang"
+	uri := "/search?" + BuildQuery("q=golang")
 	host := ""
 	authority := ""
 
@@ -42,8 +42,8 @@ func ExampleTransformURL_Host() {
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
-	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q%3Dgolang]
-	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q%3Dgolang]
+	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q=golang]
+	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang]
 	//test: BuildURL("/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
 
 }
@@ -104,8 +104,33 @@ func ExampleBuildQuery() {
 
 	//Output:
 	//test: BuildQuery("") -> [query:] [unesc:]
-	//test: BuildQuery("region=*&zone=texas") -> [query:region%3D%2A%26zone%3Dtexas] [unesc:region=*&zone=texas]
 	//test: BuildQuery("region=*&zone=texas") -> [query:region=%2A&zone=texas] [unesc:region=*&zone=texas]
+	//test: BuildQuery("region=*&zone=texas") -> [query:region=%2A&zone=texas] [unesc:region=*&zone=texas]
+
+}
+
+func ExampleBuildValues() {
+	q := ""
+	values := BuildValues(q)
+	fmt.Printf("test: BuildValues(\"%v\") -> [values:%v]\n", q, values)
+
+	q = "regions=*&zone=&sub-zone=dallas"
+	values = BuildValues(q)
+	fmt.Printf("test: BuildValues(\"%v\") -> [values:%v]\n", q, values)
+
+	q = "regions=*&zone=texas&sub-zone"
+	values = BuildValues(q)
+	fmt.Printf("test: BuildValues(\"%v\") -> [values:%v]\n", q, values)
+
+	q = "regions=*&zone=texas&sub-zone=dallas"
+	values = BuildValues(q)
+	fmt.Printf("test: BuildValues(\"%v\") -> [values:%v]\n", q, values)
+
+	//Output:
+	//test: BuildValues("") -> [values:map[]]
+	//test: BuildValues("regions=*&zone=&sub-zone=dallas") -> [values:map[regions:[*] sub-zone:[dallas] zone:[invalid]]]
+	//test: BuildValues("regions=*&zone=texas&sub-zone") -> [values:map[regions:[*] sub-zone:[invalid] zone:[texas]]]
+	//test: BuildValues("regions=*&zone=texas&sub-zone=dallas") -> [values:map[regions:[*] sub-zone:[dallas] zone:[texas]]]
 
 }
 
@@ -129,7 +154,7 @@ func ExampleBuildURL_New() {
 	fmt.Printf("test: BuildURL(\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v] [url:%v] [err:%v]\n", host, version, path, values, u, u1, err)
 
 	//Output:
-	//test: BuildURL("","","/search/yahoo","q=golang&region=*") -> [uri:http://localhost/search/yahoo?q%3Dgolang%26region%3D%2A] [url:http://localhost/search/yahoo?q%3Dgolang%26region%3D%2A] [err:<nil>]
+	//test: BuildURL("","","/search/yahoo","q=golang&region=*") -> [uri:http://localhost/search/yahoo?q=golang&region=%2A] [url:http://localhost/search/yahoo?q=golang&region=%2A] [err:<nil>]
 	//test: BuildURL("www.google.com","v1","/search/yahoo","map[q:[golang] region:[*]]") -> [uri:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [url:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [err:<nil>]
 
 }

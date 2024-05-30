@@ -51,7 +51,7 @@ func ExampleDo_Exchange() {
 	//defer DisableLogging(true)()
 	//auth := "github/advanced-go/search"
 	ctrl := NewExchangeController("google-search", testDo)
-	uri := "http://localhost:8081/github/advanced-go/search:yahoo?q=golang"
+	uri := "http://localhost:8081/github/advanced-go/search:yahoo?" + uri2.BuildQuery("q=golang")
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
 	resp, status := ctrl.Do(nil, req)
@@ -69,7 +69,7 @@ func ExampleDo_Exchange() {
 func ExampleDo_Internal() {
 	defer DisableLogging(true)()
 	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
-	uri := uri2.BuildQuery("/search?q=golang")
+	uri := "/search?" + uri2.BuildQuery("q=golang")
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
 	resp, status := ctrl.Do(nil, req)
@@ -97,7 +97,7 @@ func ExampleDo_Internal() {
 func ExampleDo_Egress() {
 	var buf []byte
 	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", nil), nil)
-	uri := "/search?q=golang"
+	uri := "/search?" + uri2.BuildQuery("q=golang")
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
 	resp, status := ctrl.Do(testDo, req)

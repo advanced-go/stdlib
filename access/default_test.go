@@ -39,7 +39,7 @@ func ExampleFormatter_Urn() {
 	values.Add("zone", "texas")
 	//u := uri.BuildURL()
 
-	req, err := http.NewRequest("select", "github.com/advanced-go/example-domain/activity:v1/entry"+"?"+uri.BuildQuery(values), nil)
+	req, err := http.NewRequest("select", "github.com/advanced-go/example-domain/activity:v1/entry?"+uri.BuildQuery(values), nil)
 	req.Header.Add(XRequestId, "123-456")
 	req.Header.Add(XRelatesTo, "fmtlog testing")
 	fmt.Printf("test: NewRequest() -> [err:%v] [req:%v]\n", err, req != nil)

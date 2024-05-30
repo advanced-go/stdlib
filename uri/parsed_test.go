@@ -29,8 +29,9 @@ func ExampleURLParse_Raw() {
 	//test: ParseRaw("/github/advanced-go/stdlib/uri") -> [scheme:] [path:/github/advanced-go/stdlib/uri] [frag:] [query:] [err:<nil>]
 
 }
+
 func ExampleParsed() {
-	uri := "http://localhost:8081/github/advanced-go/guidance:v1/resiliency?region=region1"
+	uri := "http://localhost:8081/github/advanced-go/guidance:v1/resiliency?" + BuildQuery("region=region1")
 	p := Uproot(uri)
 
 	fmt.Printf("test: Uproot() -> [auth:%v] [vers:%v] [rsc:%v] [path:%v] [query:%v]\n", p.Authority, p.Version, p.Resource, p.Path, p.Query)
@@ -75,7 +76,7 @@ func ExampleParsed_PathURL() {
 	u = p.PathURL()
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
 
-	url = "https://www.google.com/github/advanced-go/search:v2/google?q=golang"
+	url = "https://www.google.com/github/advanced-go/search:v2/google?" + BuildQuery("q=golang")
 	p = Uproot(url)
 	u = p.PathURL()
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
@@ -90,13 +91,13 @@ func ExampleParsed_PathURL() {
 func ExampleParseURL() {
 	values := make(url.Values)
 	values.Add("q", "*")
-	uri := "http://localhost:8081/github/advanced-go/search:yahoo" + "?" + values.Encode()
+	uri := "http://localhost:8081/github/advanced-go/search:yahoo?" + BuildQuery(values)
 	u, _ := url.Parse(uri)
 
 	url1, parsed := ParseURL("", u)
 	fmt.Printf("test: ParseURL(\"%v\") -> [url:%v] [host:%v] [path:%v] [query:%v]\n", uri, url1, parsed.Host, parsed.Path, parsed.Query)
 
-	uri = "http://www.google.com/search/+all/usa" + "?" + values.Encode()
+	uri = "http://www.google.com/search/+all/usa?" + BuildQuery(values)
 	u, _ = url.Parse(uri)
 
 	url1, parsed = ParseURL("", u)
