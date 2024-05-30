@@ -86,3 +86,24 @@ func ExampleParsed_PathURL() {
 	//test: Parsed("https://www.google.com/github/advanced-go/search:v2/google?q=golang") -> [pathURL:google?q=golang] [query:q=golang]
 
 }
+
+func ExampleParseURL() {
+	values := make(url.Values)
+	values.Add("q", "*")
+	uri := "http://localhost:8081/github/advanced-go/search:yahoo" + "?" + values.Encode()
+	u, _ := url.Parse(uri)
+
+	url1, parsed := ParseURL("", u)
+	fmt.Printf("test: ParseURL(\"%v\") -> [url:%v] [host:%v] [path:%v] [query:%v]\n", uri, url1, parsed.Host, parsed.Path, parsed.Query)
+
+	uri = "http://www.google.com/search/+all/usa" + "?" + values.Encode()
+	u, _ = url.Parse(uri)
+
+	url1, parsed = ParseURL("", u)
+	fmt.Printf("test: ParseURL(\"%v\") -> [url:%v] [host:%v] [path:%v] [query:%v]\n", uri, url1, parsed.Host, parsed.Path, parsed.Query)
+
+	//Output:
+	//test: ParseURL("http://localhost:8081/github/advanced-go/search:yahoo?q=%2A") -> [url:http://localhost:8081/github/advanced-go/search:yahoo?q=*] [host:localhost:8081] [path:yahoo] [query:q=*]
+	//test: ParseURL("http://www.google.com/search/+all/usa?q=%2A") -> [url:http://www.google.com/search/+all/usa?q=*] [host:www.google.com] [path:/search/+all/usa] [query:q=*]
+
+}

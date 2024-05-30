@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
+	"github.com/advanced-go/stdlib/uri"
 	"log"
 	"net/http"
 	"strconv"
@@ -23,8 +24,9 @@ var defaultLog = func(o core.Origin, traffic string, start time.Time, duration t
 func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
-	url, host, path, query := CreateURLComponents(req)
-	o.Host = Conditional(o.Host, host)
+	//url, host, path, query := CreateURLComponents(req)
+	url, parsed := uri.ParseURL(req.Host, req.URL)
+	o.Host = Conditional(o.Host, parsed.Host)
 	authority = Conditional(authority, o.Host)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
@@ -68,8 +70,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(o.Host),
 		fmt2.JsonString(authority),
 		fmt2.JsonString(url),
-		fmt2.JsonString(path),
-		fmt2.JsonString(query),
+		fmt2.JsonString(parsed.Path),
+		fmt2.JsonString(parsed.Query),
 
 		// Response
 		resp.StatusCode,

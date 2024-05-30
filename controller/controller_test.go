@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	uri2 "github.com/advanced-go/stdlib/uri"
 	"io"
 	"net/http"
 	"time"
@@ -68,7 +69,7 @@ func ExampleDo_Exchange() {
 func ExampleDo_Internal() {
 	defer DisableLogging(true)()
 	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall), nil)
-	uri := "/search?q=golang"
+	uri := uri2.BuildQuery("/search?q=golang")
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 
 	resp, status := ctrl.Do(nil, req)

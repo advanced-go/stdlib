@@ -2,62 +2,64 @@ package uri
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"net/http"
+	url2 "net/url"
 )
 
-func ExampleBuildURL() {
+func ExampleTransformURL() {
 	host := "www.google.com"
 	authority := "github/advanced-go/search"
 	uri := "http://localhost:8081/github/advanced-go/search:google?q=golang"
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, req.URL)
+	url := TransformURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
-	//test: BuildURL("http://localhost:8081/github/advanced-go/search:google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
+	//test: BuildURL("http://localhost:8081/github/advanced-go/search:google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q%3Dgolang]
 
 }
 
-func ExampleBuildURL_Host() {
+func ExampleTransformURL_Host() {
 	uri := "/search?q=golang"
 	host := ""
 	authority := ""
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, req.URL)
+	url := TransformURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	host = "localhost:8080"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, req.URL)
+	url = TransformURL(host, req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	uri = "/update"
 	host = "www.google.com"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, req.URL)
-	fmt.Printf("test: BuildURL\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
+	url = TransformURL(host, req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	//Output:
-	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q=golang]
-	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang]
-	//test: BuildURL"/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
+	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q%3Dgolang]
+	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q%3Dgolang]
+	//test: BuildURL("/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
 
 }
 
-func _ExampleBuildURL_Authority() {
+func _ExampleTransformURL_Authority() {
 	uri := "/google?q=golang"
 	host := ""
 	authority := "github/advanced-go/search"
 
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := BuildURL(host, req.URL)
+	url := TransformURL(host, req.URL)
 	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	host = "www.google.com"
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = BuildURL(host, req.URL)
+	url = TransformURL(host, req.URL)
 	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
 
 	/*
@@ -79,5 +81,55 @@ func _ExampleBuildURL_Authority() {
 	//Output:
 	//test: BuildUri("/google?q=golang") [host:] [auth:github/advanced-go/search] [url:http://localhost/github/advanced-go/search:google?q=golang]
 	//test: BuildUri("/google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
+
+}
+
+func ExampleBuildQuery() {
+	s := ""
+	q := BuildQuery("")
+	u, _ := url2.QueryUnescape(q)
+	fmt.Printf("test: BuildQuery(\"%v\") -> [query:%v] [unesc:%v]\n", s, q, u)
+
+	s = "region=*&zone=texas"
+	q = BuildQuery(s)
+	u, _ = url2.QueryUnescape(q)
+	fmt.Printf("test: BuildQuery(\"%v\") -> [query:%v] [unesc:%v]\n", s, q, u)
+
+	v := make(url2.Values)
+	v.Add(core.RegionKey, "*")
+	v.Add(core.ZoneKey, "texas")
+	q = BuildQuery(v)
+	u, _ = url2.QueryUnescape(q)
+	fmt.Printf("test: BuildQuery(\"%v\") -> [query:%v] [unesc:%v]\n", s, q, u)
+
+	//Output:
+	//test: BuildQuery("") -> [query:] [unesc:]
+	//test: BuildQuery("region=*&zone=texas") -> [query:region%3D%2A%26zone%3Dtexas] [unesc:region=*&zone=texas]
+	//test: BuildQuery("region=*&zone=texas") -> [query:region=%2A&zone=texas] [unesc:region=*&zone=texas]
+
+}
+
+func ExampleBuildURL_New() {
+	host := ""
+	version := ""
+	path := "/search/yahoo"
+	query := "q=golang&region=*"
+	u := BuildURL(host, version, path, query)
+
+	u1, err := url2.Parse(u)
+	fmt.Printf("test: BuildURL(\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v] [url:%v] [err:%v]\n", host, version, path, query, u, u1, err)
+
+	host = "www.google.com"
+	version = "v1"
+	values := make(url2.Values)
+	values.Add("q", "golang")
+	values.Add("region", "*")
+	u = BuildURL(host, version, path, values)
+	u1, err = url2.Parse(u)
+	fmt.Printf("test: BuildURL(\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v] [url:%v] [err:%v]\n", host, version, path, values, u, u1, err)
+
+	//Output:
+	//test: BuildURL("","","/search/yahoo","q=golang&region=*") -> [uri:http://localhost/search/yahoo?q%3Dgolang%26region%3D%2A] [url:http://localhost/search/yahoo?q%3Dgolang%26region%3D%2A] [err:<nil>]
+	//test: BuildURL("www.google.com","v1","/search/yahoo","map[q:[golang] region:[*]]") -> [uri:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [url:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [err:<nil>]
 
 }
