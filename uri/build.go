@@ -73,6 +73,9 @@ func BuildURLWithAuthority(host, authority, version, path string, query any) str
 		if !isVersion && path[:1] == "/" {
 			path = path[1:]
 		}
+		if isVersion && path[:1] != "/" {
+			path = "/" + path
+		}
 	}
 	newUrl.WriteString(path)
 	q := BuildQuery(query)
