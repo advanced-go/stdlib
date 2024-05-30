@@ -82,6 +82,31 @@ func ExampleBuildURL() {
 
 }
 
+func ExampleBuildURL_WithAuthority() {
+	host := ""
+	version := ""
+	authority := ""
+	path := "/search/yahoo"
+	query := "q=golang&region=*"
+	u := BuildURLWithAuthority(host, authority, version, path, query)
+
+	//u1, err := url2.Parse(u)
+	fmt.Printf("test: BuildURLWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v]\n", host, version, authority, path, query, u)
+
+	host = "www.google.com"
+	version = "v1"
+	authority = "github/advanced-go/stdlib"
+	values := BuildValues("q=golang&region=*")
+	u = BuildURLWithAuthority(host, authority, version, path, values)
+	//u1, err = url2.Parse(u)
+	fmt.Printf("test: BuildURLWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v]\n", host, version, authority, path, values, u)
+
+	//Output:
+	//test: BuildURLWithAuthority("","","","/search/yahoo","q=golang&region=*") -> [uri::search/yahoo?q=golang&region=%2A]
+	//test: BuildURLWithAuthority("www.google.com","v1","github/advanced-go/stdlib","/search/yahoo","map[q:[golang] region:[*]]") -> [uri:https://www.google.com/github/advanced-go/stdlib:v1/search/yahoo?q=golang&region=%2A]
+
+}
+
 func ExampleTransformURL() {
 	host := "www.google.com"
 	authority := "github/advanced-go/search"

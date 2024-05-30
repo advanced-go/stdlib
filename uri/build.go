@@ -44,6 +44,45 @@ func BuildURL(host, version, path string, query any) string {
 	return newUrl.String()
 }
 
+// BuildURLWithAuthority - build an url with the components provided, escaping the query
+// TODO : escaping on path ?? url.PathEscape
+func BuildURLWithAuthority(host, authority, version, path string, query any) string {
+	newUrl := strings.Builder{}
+	if host != "" {
+		scheme := HttpsScheme
+		if host != "" {
+			if strings.Contains(host, Localhost) {
+				scheme = HttpScheme
+			}
+		}
+		newUrl.WriteString(scheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(host)
+	}
+	if authority != "" {
+		newUrl.WriteString("/")
+		newUrl.WriteString(authority)
+	}
+	isVersion := false
+	newUrl.WriteString(":")
+	if version != "" {
+		isVersion = true
+		newUrl.WriteString(version)
+	}
+	if len(path) > 0 {
+		if !isVersion && path[:1] == "/" {
+			path = path[1:]
+		}
+	}
+	newUrl.WriteString(path)
+	q := BuildQuery(query)
+	if q != "" {
+		newUrl.WriteString("?")
+		newUrl.WriteString(q)
+	}
+	return newUrl.String()
+}
+
 // BuildQuery - build a query string with escaping
 func BuildQuery(query any) string {
 	if query == nil {
