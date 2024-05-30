@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Example_Formatter() {
+func ExampleFormatter() {
 	//EnableTestLogger()
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
@@ -30,7 +30,7 @@ func Example_Formatter() {
 
 }
 
-func Example_Formatter_Urn() {
+func ExampleFormatter_Urn() {
 	start := time.Now().UTC()
 
 	req, err := http.NewRequest("select", "github.com/advanced-go/example-domain/activity:entry", nil)

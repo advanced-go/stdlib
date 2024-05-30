@@ -23,7 +23,7 @@ var defaultLog = func(o core.Origin, traffic string, start time.Time, duration t
 func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) string {
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
-	url, host, path := CreateUrlHostPath(req)
+	url, host, path, query := CreateURLComponents(req)
 	o.Host = Conditional(o.Host, host)
 	authority = Conditional(authority, o.Host)
 	s := fmt.Sprintf("{"+
@@ -42,6 +42,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"authority\":%v, "+
 		"\"uri\":%v, "+
 		"\"path\":%v, "+
+		"\"query\":%v, "+
 		"\"status-code\":%v, "+
 		"\"encoding\":%v, "+
 		"\"bytes\":%v, "+
@@ -68,6 +69,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(authority),
 		fmt2.JsonString(url),
 		fmt2.JsonString(path),
+		fmt2.JsonString(query),
 
 		// Response
 		resp.StatusCode,
@@ -88,28 +90,6 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 // Milliseconds - convert time.Duration to milliseconds
 func Milliseconds(duration time.Duration) int {
 	return int(duration / time.Duration(1e6))
-}
-
-// CreateUrlHostPath - create the URL, host and path
-func CreateUrlHostPath(req *http.Request) (url string, host string, path string) {
-	host = req.Host
-	if len(host) == 0 {
-		host = req.URL.Host
-	}
-	url = req.URL.String()
-	if len(host) == 0 {
-		//url = "urn:" + url
-	} else {
-		if len(req.URL.Scheme) == 0 {
-			url = "http://" + host + req.URL.Path
-		}
-	}
-	path = req.URL.Path
-	i := strings.Index(path, ":")
-	if i >= 0 {
-		path = path[i+1:]
-	}
-	return
 }
 
 func SafeRequest(r *http.Request) *http.Request {
