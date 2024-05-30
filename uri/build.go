@@ -15,16 +15,17 @@ const (
 // TODO : escaping on path ?? url.PathEscape
 func BuildURL(host, version, path string, query any) string {
 	newUrl := strings.Builder{}
-	scheme := HttpsScheme
-	if host == "" {
-		host = Localhost
+	if host != "" {
+		scheme := HttpsScheme
+		if host != "" {
+			if strings.Contains(host, Localhost) {
+				scheme = HttpScheme
+			}
+		}
+		newUrl.WriteString(scheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(host)
 	}
-	if strings.Contains(host, Localhost) {
-		scheme = HttpScheme
-	}
-	newUrl.WriteString(scheme)
-	newUrl.WriteString("://")
-	newUrl.WriteString(host)
 	if len(path) > 0 {
 		if path[:1] != "/" {
 			path += "/"
@@ -87,8 +88,12 @@ func TransformURL(host string, uri *url.URL) *url.URL {
 	}
 	if host == "" {
 		host = uri.Host
+		if host == "" {
+			host = Localhost
+		}
 	}
-	newURL := BuildURL(host, "", uri.Path, uri.RawQuery)
+	q, _ := url.QueryUnescape(uri.RawQuery)
+	newURL := BuildURL(host, "", uri.Path, q)
 	u, err1 := url.Parse(newURL)
 	if err1 != nil {
 		return uri

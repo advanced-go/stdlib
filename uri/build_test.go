@@ -7,83 +7,6 @@ import (
 	url2 "net/url"
 )
 
-func ExampleTransformURL() {
-	host := "www.google.com"
-	authority := "github/advanced-go/search"
-	uri := "http://localhost:8081/github/advanced-go/search:google?" + BuildQuery("q=golang")
-
-	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := TransformURL(host, req.URL)
-	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	//Output:
-	//test: BuildURL("http://localhost:8081/github/advanced-go/search:google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
-
-}
-
-func ExampleTransformURL_Host() {
-	uri := "/search?" + BuildQuery("q=golang")
-	host := ""
-	authority := ""
-
-	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := TransformURL(host, req.URL)
-	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	host = "localhost:8080"
-	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = TransformURL(host, req.URL)
-	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	uri = "/update"
-	host = "www.google.com"
-	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = TransformURL(host, req.URL)
-	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	//Output:
-	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q=golang]
-	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang]
-	//test: BuildURL("/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
-
-}
-
-func _ExampleTransformURL_Authority() {
-	uri := "/google?q=golang"
-	host := ""
-	authority := "github/advanced-go/search"
-
-	req, _ := http.NewRequest(http.MethodGet, uri, nil)
-	url := TransformURL(host, req.URL)
-	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	host = "www.google.com"
-	req, _ = http.NewRequest(http.MethodGet, uri, nil)
-	url = TransformURL(host, req.URL)
-	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
-
-	/*
-		// localhost
-		rsc = NewPrimaryResource("localhost:8080", "", 0, "/health/liveness", httpCall)
-		req, _ = http.NewRequest(http.MethodGet, uri, nil)
-		url = rsc.BuildUri(req.URL)
-		fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
-
-		// non-localhost
-		uri = "/update"
-		rsc = NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall)
-		req, _ = http.NewRequest(http.MethodGet, uri, nil)
-		url = rsc.BuildUri(req.URL)
-		fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url
-
-	*/
-
-	//Output:
-	//test: BuildUri("/google?q=golang") [host:] [auth:github/advanced-go/search] [url:http://localhost/github/advanced-go/search:google?q=golang]
-	//test: BuildUri("/google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
-
-}
-
 func ExampleBuildQuery() {
 	s := ""
 	q := BuildQuery("")
@@ -134,7 +57,7 @@ func ExampleBuildValues() {
 
 }
 
-func ExampleBuildURL_New() {
+func ExampleBuildURL() {
 	host := ""
 	version := ""
 	path := "/search/yahoo"
@@ -154,7 +77,83 @@ func ExampleBuildURL_New() {
 	fmt.Printf("test: BuildURL(\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v] [url:%v] [err:%v]\n", host, version, path, values, u, u1, err)
 
 	//Output:
-	//test: BuildURL("","","/search/yahoo","q=golang&region=*") -> [uri:http://localhost/search/yahoo?q=golang&region=%2A] [url:http://localhost/search/yahoo?q=golang&region=%2A] [err:<nil>]
+	//test: BuildURL("","","/search/yahoo","q=golang&region=*") -> [uri:/search/yahoo?q=golang&region=%2A] [url:/search/yahoo?q=golang&region=%2A] [err:<nil>]
 	//test: BuildURL("www.google.com","v1","/search/yahoo","map[q:[golang] region:[*]]") -> [uri:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [url:https://www.google.com/v1/search/yahoo?q=golang&region=%2A] [err:<nil>]
+
+}
+
+func ExampleTransformURL() {
+	host := "www.google.com"
+	authority := "github/advanced-go/search"
+	uri := "http://localhost:8081/github/advanced-go/search:google?" + BuildQuery("q=golang&region=*")
+
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	url := TransformURL(host, req.URL)
+	fmt.Printf("test: TransformURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
+
+	//Output:
+	//test: TransformURL("http://localhost:8081/github/advanced-go/search:google?q=golang&region=%2A") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang&region=%2A]
+
+}
+
+func ExampleTransformURL_Host() {
+	uri := "/search?" + BuildQuery("q=golang&region=*")
+	host := ""
+
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	url := TransformURL(host, req.URL)
+	fmt.Printf("test: TransformURL(\"%v\") [host:%v] [url:%v]\n", uri, host, url)
+
+	host = "localhost:8080"
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = TransformURL(host, req.URL)
+	fmt.Printf("test: TransformURL(\"%v\") [host:%v] [url:%v]\n", uri, host, url)
+
+	uri = "/update"
+	host = "www.google.com"
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = TransformURL(host, req.URL)
+	fmt.Printf("test: TransformURL(\"%v\") [host:%v] [url:%v]\n", uri, host, url)
+
+	//Output:
+	//test: TransformURL("/search?q=golang&region=%2A") [host:] [url:http://localhost/search?q=golang&region=%2A]
+	//test: TransformURL("/search?q=golang&region=%2A") [host:localhost:8080] [url:http://localhost:8080/search?q=golang&region=%2A]
+	//test: TransformURL("/update") [host:www.google.com] [url:https://www.google.com/update]
+
+}
+
+func _ExampleTransformURL_Authority() {
+	uri := "/google?q=golang"
+	host := ""
+	authority := "github/advanced-go/search"
+
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	url := TransformURL(host, req.URL)
+	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
+
+	host = "www.google.com"
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = TransformURL(host, req.URL)
+	fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, host, authority, url)
+
+	/*
+		// localhost
+		rsc = NewPrimaryResource("localhost:8080", "", 0, "/health/liveness", httpCall)
+		req, _ = http.NewRequest(http.MethodGet, uri, nil)
+		url = rsc.BuildUri(req.URL)
+		fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
+
+		// non-localhost
+		uri = "/update"
+		rsc = NewPrimaryResource("www.google.com", "", 0, "/health/liveness", httpCall)
+		req, _ = http.NewRequest(http.MethodGet, uri, nil)
+		url = rsc.BuildUri(req.URL)
+		fmt.Printf("test: BuildUri(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url
+
+	*/
+
+	//Output:
+	//test: BuildUri("/google?q=golang") [host:] [auth:github/advanced-go/search] [url:http://localhost/github/advanced-go/search:google?q=golang]
+	//test: BuildUri("/google?q=golang") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:google?q=golang]
 
 }
