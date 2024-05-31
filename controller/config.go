@@ -11,16 +11,15 @@ type Config struct {
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
 	Duration     time.Duration
-	Handler      core.HttpExchange
 }
 
-func Create(cfg Config) *Controller {
+func Create(cfg Config, handler core.HttpExchange) *Controller {
 	var prime *Resource
 	var second *Resource
-	if cfg.Handler == nil {
+	if handler == nil {
 		prime = NewPrimaryResource(cfg.Host, cfg.Authority, cfg.Duration, cfg.LivenessPath, nil)
 	} else {
-		prime = NewPrimaryResource("", cfg.Authority, cfg.Duration, cfg.LivenessPath, cfg.Handler)
+		prime = NewPrimaryResource("", cfg.Authority, cfg.Duration, cfg.LivenessPath, handler)
 		second = NewSecondaryResource(cfg.Host, cfg.Authority, cfg.Duration, cfg.LivenessPath, nil)
 	}
 	return NewController(cfg.CtrlName, prime, second)

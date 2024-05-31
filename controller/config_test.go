@@ -18,14 +18,12 @@ func ExampleCreate() {
 		Authority:    "github/advanced-go/search",
 		LivenessPath: core.HealthLivenessPath,
 		Duration:     time.Second * 2,
-		Handler:      nil,
 	}
 
-	ctrl := Create(cfg)
+	ctrl := Create(cfg, nil)
 	fmt.Printf("test: Create() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.Name, ctrl.Router.Primary, ctrl.Router.Secondary)
 
-	cfg.Handler = createTest
-	ctrl = Create(cfg)
+	ctrl = Create(cfg, createTest)
 	fmt.Printf("test: Create() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.Name, ctrl.Router.Primary, ctrl.Router.Secondary)
 
 	//Output:
