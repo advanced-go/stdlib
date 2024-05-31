@@ -13,7 +13,7 @@ type Config struct {
 	Duration     time.Duration
 }
 
-func Create(cfg Config, handler core.HttpExchange) *Controller {
+func New(cfg Config, handler core.HttpExchange) *Controller {
 	var prime *Resource
 	var second *Resource
 	if handler == nil {
