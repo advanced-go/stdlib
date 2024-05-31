@@ -39,7 +39,7 @@ func RegisterControllerList(ctrl []*Controller) error {
 
 func RegisterControllerWithDefer(ctrl *Controller, def func()) func() {
 	err := RegisterController(ctrl)
-	// Avoid panic
+	// !panic
 	fn := def
 	return func() {
 		if fn != nil {

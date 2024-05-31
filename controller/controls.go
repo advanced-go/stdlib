@@ -21,19 +21,75 @@ func DisableLogging(v bool) func() {
 	}
 }
 
-func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {
+func updateHost(host, authority string, primary bool) (status *core.Status) {
+	if host == "" || authority == "" {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument: host or authority is empty"))
+	}
+	var ctrl *Controller
+	ctrl, status = LookupWithAuthority(authority)
+	if !status.OK() {
+		return
+	}
+	if primary {
+		if ctrl.Router.Primary == nil {
+			return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: primary resource is nil for authority: %v", authority)))
+		}
+		ctrl.Router.Primary.Host = host
+	} else {
+		if ctrl.Router.Secondary == nil {
+			return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: secondary resource is nil for authority: %v", authority)))
+		}
+		ctrl.Router.Primary.Host = host
+	}
+	return core.StatusOK()
+}
+
+func UpdatePrimaryHost(host, authority string) (status *core.Status) {
+	return updateHost(host, authority, true)
+}
+
+func UpdateSecondaryHost(host, authority string) (status *core.Status) {
+	return updateHost(host, authority, false)
+}
+
+func updateExchange(list []core.HttpExchange, primary bool) (status *core.Status) {
 	if list == nil {
 		return core.NewStatus(core.StatusInvalidArgument)
 	}
 
 	var ctrl *Controller
+	var authority = ""
+	var rsc *Resource
 	for _, ex := range list {
-		ctrl, status = LookupWithAuthority(core.Authority(ex))
-		if status.OK() && ctrl.Router.Primary.Handler == nil {
-			ctrl.Router.Primary.Handler = ex
+		authority = core.Authority(ex)
+		ctrl, status = LookupWithAuthority(authority)
+		if !status.OK() {
+			continue
+		}
+		if primary {
+			rsc = ctrl.Router.Primary
+			if rsc == nil {
+				return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: primary resource is nil for authority: %v", authority)))
+			}
+		} else {
+			rsc = ctrl.Router.Secondary
+			if rsc == nil {
+				return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("invalid argument: secondary resource is nil for authority: %v", authority)))
+			}
+		}
+		if rsc.Handler == nil {
+			rsc.Handler = ex
 		}
 	}
 	return status
+}
+
+func UpdatePrimaryExchange(list []core.HttpExchange) (status *core.Status) {
+	return updateExchange(list, true)
+}
+
+func UpdateSecondaryExchange(list []core.HttpExchange) (status *core.Status) {
+	return updateExchange(list, true)
 }
 
 func LookupWithAuthority(authority string) (ctrl *Controller, status *core.Status) {
