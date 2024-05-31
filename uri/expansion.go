@@ -3,6 +3,7 @@ package uri
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -10,6 +11,36 @@ const (
 	BeginDelimiter = "{"
 	EndDelimiter   = "}"
 )
+
+func Expansion(host, path, version string, values url.Values) string {
+	newUrl := strings.Builder{}
+	if host != "" {
+		scheme := HttpsScheme
+		if strings.Contains(host, Localhost) {
+			scheme = HttpScheme
+		}
+		newUrl.WriteString(scheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(host)
+	}
+	newUrl.WriteString(fmt.Sprintf(path, formatVersion(version)))
+	newUrl.WriteString(formatValues(values))
+	return newUrl.String()
+}
+
+func formatValues(values url.Values) string {
+	if values == nil {
+		return ""
+	}
+	return "?" + values.Encode()
+}
+
+func formatVersion(version string) string {
+	if version == "" {
+		return ""
+	}
+	return version + "/"
+}
 
 // Expand - expand a template string, utilizing a template variable lookup function
 func Expand(t string, fn func(string) (string, error)) (string, error) {
