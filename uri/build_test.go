@@ -88,7 +88,7 @@ func ExampleBuildURL_WithAuthority() {
 	authority := ""
 	path := "/search/yahoo"
 	query := "q=golang&region=*"
-	u := BuildURLWithAuthority(host, authority, version, path, query)
+	u := BuildURLWithAuthority2(host, authority, version, path, query)
 
 	//u1, err := url2.Parse(u)
 	fmt.Printf("test: BuildURLWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v]\n", host, version, authority, path, query, u)
@@ -97,7 +97,7 @@ func ExampleBuildURL_WithAuthority() {
 	version = "v1"
 	authority = "github/advanced-go/stdlib"
 	values := BuildValues("q=golang&region=*")
-	u = BuildURLWithAuthority(host, authority, version, path, values)
+	u = BuildURLWithAuthority2(host, authority, version, path, values)
 	//u1, err = url2.Parse(u)
 	fmt.Printf("test: BuildURLWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\",\"%v\") -> [uri:%v]\n", host, version, authority, path, values, u)
 
