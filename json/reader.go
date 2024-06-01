@@ -2,7 +2,6 @@ package json
 
 import (
 	"bytes"
-	"encoding/json"
 	"github.com/advanced-go/stdlib/core"
 	"io"
 )
@@ -12,9 +11,9 @@ func NewReadCloser(v any) (io.ReadCloser, int64, *core.Status) {
 	if v == nil {
 		return io.NopCloser(bytes.NewReader([]byte(""))), 0, core.StatusOK()
 	}
-	buf, err := json.Marshal(v)
-	if err != nil {
-		return nil, 0, core.NewStatusError(core.StatusJsonEncodeError, err)
+	buf, status := Marshal(v)
+	if !status.OK() {
+		return nil, 0, status
 	}
 	return io.NopCloser(bytes.NewReader(buf)), int64(len(buf)), core.StatusOK()
 }
