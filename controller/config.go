@@ -24,3 +24,12 @@ func New(cfg Config, handler core.HttpExchange) *Controller {
 	}
 	return NewController(cfg.CtrlName, prime, second)
 }
+
+func GetConfig(ctrlName string, config []Config) (Config, bool) {
+	for _, cfg := range config {
+		if cfg.CtrlName == ctrlName {
+			return cfg, true
+		}
+	}
+	return Config{}, false
+}
