@@ -9,28 +9,28 @@ import (
 )
 
 type Controller struct {
-	Name   string
-	Router *Router
+	RouteName string
+	Router    *Router
 }
 
 func NewController(routeName string, primary, secondary *Resource) *Controller {
 	c := new(Controller)
-	c.Name = routeName
+	c.RouteName = routeName
 	c.Router = NewRouter(primary, secondary)
 	return c
 }
 
 func NewExchangeController(routeName string, ex core.HttpExchange) *Controller {
 	c := new(Controller)
-	c.Name = routeName
+	c.RouteName = routeName
 	authority := core.Authority(ex)
 	c.Router = NewRouter(NewPrimaryResource("", authority, 0, "", ex), nil)
 	return c
 }
 
-func (c *Controller) RouteName() string {
-	return c.Name
-}
+//func (c *Controller) Name() string {
+//	return c.RouteName
+//}
 
 func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Response, status *core.Status) {
 	if req == nil {
@@ -84,7 +84,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, authority, c.RouteName(), rsc.Name, access.Milliseconds(duration), flags)
+		access.Log(traffic, start, elapsed, req, resp, authority, c.RouteName, rsc.Name, access.Milliseconds(duration), flags)
 	}
 	return
 }

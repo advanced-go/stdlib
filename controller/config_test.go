@@ -13,7 +13,7 @@ func createTest(r *http.Request) (*http.Response, *core.Status) {
 
 func ExampleNew() {
 	cfg := Config{
-		CtrlName:     "ctrl-name",
+		RouteName:    "test-route",
 		Host:         "localhost:8081",
 		Authority:    "github/advanced-go/search",
 		LivenessPath: core.HealthLivenessPath,
@@ -21,10 +21,10 @@ func ExampleNew() {
 	}
 
 	ctrl := New(cfg, nil)
-	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.Name, ctrl.Router.Primary, ctrl.Router.Secondary)
+	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.RouteName, ctrl.Router.Primary, ctrl.Router.Secondary)
 
 	ctrl = New(cfg, createTest)
-	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.Name, ctrl.Router.Primary, ctrl.Router.Secondary)
+	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.RouteName, ctrl.Router.Primary, ctrl.Router.Secondary)
 
 	//Output:
 	//test: New() -> [name:ctrl-name] [prime:&{primary localhost:8081 github/advanced-go/search health/liveness 2s <nil>}] [second:<nil>]
@@ -35,14 +35,14 @@ func ExampleNew() {
 func ExampleGetConfig() {
 	list := []Config{
 		{
-			CtrlName:     "ctrl-1",
+			RouteName:    "test-route",
 			Host:         "localhost:8081",
 			Authority:    "github/advanced-go/search",
 			LivenessPath: core.HealthLivenessPath,
 			Duration:     time.Second * 2,
 		},
 		{
-			CtrlName:     "ctrl-2",
+			RouteName:    "final-route",
 			Host:         "localhost:8081",
 			Authority:    "github/advanced-go/search",
 			LivenessPath: core.HealthLivenessPath,
@@ -50,15 +50,15 @@ func ExampleGetConfig() {
 		},
 	}
 	name := "invalid"
-	cfg, ok := GetConfig(name, list)
-	fmt.Printf("test: GetConfig(\"%v\") -> [ok:%v] [cfg:%v]\n", name, ok, cfg)
+	cfg, ok := GetRoute(name, list)
+	fmt.Printf("test: GetRoute(\"%v\") -> [ok:%v] [cfg:%v]\n", name, ok, cfg)
 
-	name = "ctrl-2"
-	cfg, ok = GetConfig(name, list)
-	fmt.Printf("test: GetConfig(\"%v\") -> [ok:%v] [cfg:%v]\n", name, ok, cfg)
+	name = "final-route"
+	cfg, ok = GetRoute(name, list)
+	fmt.Printf("test: GetRoute(\"%v\") -> [ok:%v] [cfg:%v]\n", name, ok, cfg)
 
 	//Output:
-	//test: GetConfig("invalid") -> [ok:false] [cfg:{    0s}]
-	//test: GetConfig("ctrl-2") -> [ok:true] [cfg:{ctrl-2 localhost:8081 github/advanced-go/search health/liveness 2s}]
+	//test: GetRoute("invalid") -> [ok:false] [cfg:{    0s}]
+	//test: GetRoute("final-route") -> [ok:true] [cfg:{final-route localhost:8081 github/advanced-go/search health/liveness 2s}]
 
 }

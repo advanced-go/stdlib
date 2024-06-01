@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	CtrlName     string
+	RouteName    string
 	Host         string `json:"host"`
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
@@ -22,12 +22,12 @@ func New(cfg Config, handler core.HttpExchange) *Controller {
 		prime = NewPrimaryResource("", cfg.Authority, cfg.Duration, cfg.LivenessPath, handler)
 		second = NewSecondaryResource(cfg.Host, cfg.Authority, cfg.Duration, cfg.LivenessPath, nil)
 	}
-	return NewController(cfg.CtrlName, prime, second)
+	return NewController(cfg.RouteName, prime, second)
 }
 
-func GetConfig(ctrlName string, config []Config) (Config, bool) {
+func GetRoute(name string, config []Config) (Config, bool) {
 	for _, cfg := range config {
-		if cfg.CtrlName == ctrlName {
+		if cfg.RouteName == name {
 			return cfg, true
 		}
 	}
