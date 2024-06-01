@@ -60,5 +60,5 @@ func ExampleGetConfig() {
 	//Output:
 	//test: GetConfig("invalid") -> [ok:false] [cfg:{    0s}]
 	//test: GetConfig("ctrl-2") -> [ok:true] [cfg:{ctrl-2 localhost:8081 github/advanced-go/search health/liveness 2s}]
-	
+
 }
