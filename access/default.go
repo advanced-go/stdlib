@@ -41,7 +41,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
 		"\"host\":%v, "+
-		"\"authority\":%v, "+
+		"\"auth-from\":%v, "+
+		"\"auth-to\":%v, "+
 		"\"uri\":%v, "+
 		"\"path\":%v, "+
 		"\"query\":%v, "+
@@ -68,6 +69,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(req.Proto),
 		fmt2.JsonString(req.Method),
 		fmt2.JsonString(o.Host),
+		fmt2.JsonString(req.Header.Get(core.XAuthority)),
 		fmt2.JsonString(authority),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
