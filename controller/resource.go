@@ -5,11 +5,12 @@ import (
 	uri2 "github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
 const (
-	localhost = "localhost"
+	internalhost = "internalhost"
 )
 
 type Resource struct {
@@ -47,7 +48,49 @@ func (r *Resource) IsPrimary() bool {
 }
 
 func (r *Resource) BuildURL(uri *url.URL) *url.URL {
-	return uri2.TransformURL(r.Host, uri)
+	newUrl := strings.Builder{}
+	// Scheme and host
+	if r.Host != "" {
+		scheme := uri2.HttpsScheme
+		if strings.Contains(r.Host, uri2.Localhost) {
+			scheme = uri2.HttpScheme
+		}
+		newUrl.WriteString(scheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(r.Host)
+	} else {
+		newUrl.WriteString(uri2.HttpScheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(internalhost)
+	}
+	// Authority and path
+	if r.Authority != "" {
+		if r.Authority[0] != '/' {
+			newUrl.WriteString("/")
+		}
+		newUrl.WriteString(r.Authority)
+		newUrl.WriteString(":")
+
+		if uri.Path[0] == '/' {
+			newUrl.WriteString(uri.Path[1:])
+		} else {
+			newUrl.WriteString(uri.Path)
+		}
+	} else {
+		if uri.Path[0] != '/' {
+			newUrl.WriteString("/")
+		}
+		newUrl.WriteString(uri.Path)
+	}
+
+	// Query
+	if uri.RawQuery != "" {
+		newUrl.WriteString("?")
+		newUrl.WriteString(uri.Query().Encode())
+	}
+	u, _ := url.Parse(newUrl.String())
+	return u
+	//return uri2.TransformURL(r.Host, uri)
 }
 
 func (r *Resource) timeout(req *http.Request) time.Duration {

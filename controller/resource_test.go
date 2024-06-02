@@ -8,40 +8,49 @@ import (
 )
 
 func ExampleResource_BuildURL() {
-	uri := "/search?q=golang"
+	uri := "/search?q=golang&region=*"
 
-	// No host, default to localhost
+	// No host, no authority
 	rsc := NewPrimaryResource("", "", 0, "", nil)
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
 	url := rsc.BuildURL(req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
 
+	// No host, with authority
+	uri = "/yahoo?q=golang&region=*"
+	rsc = NewPrimaryResource("", "github/advanced-go/search", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
+
 	// localhost
+	uri = "/search?q=golang&region=*"
 	rsc = NewPrimaryResource("localhost:8080", "", 0, "", nil)
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
 	url = rsc.BuildURL(req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
 
 	// non-localhost
-	uri = "/update"
+	uri = "/update/resource"
 	rsc = NewPrimaryResource("www.google.com", "", 0, "", nil)
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
 	url = rsc.BuildURL(req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
 
 	// authority
-	uri = "/update"
+	uri = "/update/storage?q=golang&region=*"
 	rsc = NewPrimaryResource("www.google.com", "github/advanced-go/search", 0, "", nil)
 	req, _ = http.NewRequest(http.MethodGet, uri, nil)
 	url = rsc.BuildURL(req.URL)
 	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [auth:%v] [url:%v]\n", uri, rsc.Host, rsc.Authority, url)
 
 	//Output:
-	//test: BuildURL("/search?q=golang") [host:] [auth:] [url:http://localhost/search?q=golang]
-	//test: BuildURL("/search?q=golang") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang]
-	//test: BuildURL("/update") [host:www.google.com] [auth:] [url:https://www.google.com/update]
-	//test: BuildURL("/update") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:update]
-
+	//test: BuildURL("/search?q=golang&region=*") [host:] [auth:] [url:http://internalhost/search?q=golang&region=%2A]
+	//test: BuildURL("/yahoo?q=golang&region=*") [host:] [auth:github/advanced-go/search] [url:http://internalhost/github/advanced-go/search:yahoo?q=golang&region=%2A]
+	//test: BuildURL("/search?q=golang&region=*") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang&region=%2A]
+	//test: BuildURL("/update/resource") [host:www.google.com] [auth:] [url:https://www.google.com/update/resource]
+	//test: BuildURL("/update/storage?q=golang&region=*") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:update/storage?q=golang&region=%2A]
+	
 }
 
 func ExampleTimeout() {
