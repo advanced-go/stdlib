@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	RouteName    string
+	RouteName    string `json:"route"`
 	Host         string `json:"host"`
 	Authority    string `json:"authority"`
 	LivenessPath string `json:"liveness"`
