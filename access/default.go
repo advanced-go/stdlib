@@ -27,7 +27,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 	//url, host, path, query := CreateURLComponents(req)
 	url, parsed := uri.ParseURL(req.Host, req.URL)
 	o.Host = Conditional(o.Host, parsed.Host)
-	authority = Conditional(authority, o.Host)
+	//authority = Conditional(authority, o.Host)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
@@ -70,7 +70,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(req.Method),
 		fmt2.JsonString(o.Host),
 		fmt2.JsonString(req.Header.Get(core.XAuthority)),
-		fmt2.JsonString(authority),
+		fmt2.JsonString(uri.UprootAuthority(req.URL)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
 		fmt2.JsonString(parsed.Query),
