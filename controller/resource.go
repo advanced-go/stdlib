@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-const (
-	internalhost = "internalhost"
-)
-
 type Resource struct {
 	Name         string `json:"name"`
 	Host         string `json:"host"`
@@ -61,7 +57,7 @@ func (r *Resource) BuildURL(uri *url.URL) *url.URL {
 	} else {
 		newUrl.WriteString(uri2.HttpScheme)
 		newUrl.WriteString("://")
-		newUrl.WriteString(internalhost)
+		newUrl.WriteString(uri2.Internalhost)
 	}
 	// Authority and path
 	if r.Authority != "" {

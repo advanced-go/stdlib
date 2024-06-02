@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	HttpScheme  = "http"
-	HttpsScheme = "https"
-	Localhost   = "localhost"
+	HttpScheme   = "http"
+	HttpsScheme  = "https"
+	Localhost    = "localhost"
+	Internalhost = "internalhost"
 )
 
 // BuildURL - build an url with the components provided, escaping the query
