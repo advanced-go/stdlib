@@ -59,25 +59,32 @@ func (r *Resource) BuildURL(uri *url.URL) *url.URL {
 		newUrl.WriteString("://")
 		newUrl.WriteString(uri2.Internalhost)
 	}
-	// Authority and path
-	if r.Authority != "" {
-		if r.Authority[0] != '/' {
-			newUrl.WriteString("/")
-		}
-		newUrl.WriteString(r.Authority)
-		newUrl.WriteString(":")
+	/*
+		// Authority and path
+		if r.Authority != "" {
+			if r.Authority[0] != '/' {
+				newUrl.WriteString("/")
+			}
+			newUrl.WriteString(r.Authority)
+			newUrl.WriteString(":")
 
-		if uri.Path[0] == '/' {
-			newUrl.WriteString(uri.Path[1:])
+			if uri.Path[0] == '/' {
+				newUrl.WriteString(uri.Path[1:])
+			} else {
+				newUrl.WriteString(uri.Path)
+			}
 		} else {
+			if uri.Path[0] != '/' {
+				newUrl.WriteString("/")
+			}
 			newUrl.WriteString(uri.Path)
 		}
-	} else {
-		if uri.Path[0] != '/' {
-			newUrl.WriteString("/")
-		}
-		newUrl.WriteString(uri.Path)
+
+	*/
+	if uri.Path[0] != '/' {
+		newUrl.WriteString("/")
 	}
+	newUrl.WriteString(uri.Path)
 
 	// Query
 	if uri.RawQuery != "" {

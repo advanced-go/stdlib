@@ -92,6 +92,13 @@ func UpdateSecondaryExchange(list []core.HttpExchange) (status *core.Status) {
 	return updateExchange(list, true)
 }
 
+func LookupWithConfig(cfg Config) (ctrl *Controller, status *core.Status) {
+	if cfg.Authority != "" {
+		return ctrlMap.lookup(cfg.Authority)
+	}
+	return ctrlMap.lookup(cfg.Host)
+}
+
 func LookupWithAuthority(authority string) (ctrl *Controller, status *core.Status) {
 	return ctrlMap.lookup(authority)
 }

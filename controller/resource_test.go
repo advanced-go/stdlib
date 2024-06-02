@@ -10,6 +10,36 @@ import (
 func ExampleResource_BuildURL() {
 	uri := "/search?q=golang&region=*"
 
+	// No host
+	rsc := NewPrimaryResource("", "", 0, "", nil)
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	url := rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [url:%v]\n", uri, rsc.Host, url)
+
+	// localhost
+	uri = "search?q=golang&region=*"
+	rsc = NewPrimaryResource("localhost:8080", "", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [url:%v]\n", uri, rsc.Host, url)
+
+	// non-localhost
+	uri = "/update/resource"
+	rsc = NewPrimaryResource("www.google.com", "", 0, "", nil)
+	req, _ = http.NewRequest(http.MethodGet, uri, nil)
+	url = rsc.BuildURL(req.URL)
+	fmt.Printf("test: BuildURL(\"%v\") [host:%v] [url:%v]\n", uri, rsc.Host, url)
+
+	//Output:
+	//test: BuildURL("/search?q=golang&region=*") [host:] [url:http://internalhost/search?q=golang&region=%2A]
+	//test: BuildURL("search?q=golang&region=*") [host:localhost:8080] [url:http://localhost:8080/search?q=golang&region=%2A]
+	//test: BuildURL("/update/resource") [host:www.google.com] [url:https://www.google.com/update/resource]
+
+}
+
+func _ExampleResource_BuildURL() {
+	uri := "/search?q=golang&region=*"
+
 	// No host, no authority
 	rsc := NewPrimaryResource("", "", 0, "", nil)
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
@@ -50,7 +80,7 @@ func ExampleResource_BuildURL() {
 	//test: BuildURL("/search?q=golang&region=*") [host:localhost:8080] [auth:] [url:http://localhost:8080/search?q=golang&region=%2A]
 	//test: BuildURL("/update/resource") [host:www.google.com] [auth:] [url:https://www.google.com/update/resource]
 	//test: BuildURL("/update/storage?q=golang&region=*") [host:www.google.com] [auth:github/advanced-go/search] [url:https://www.google.com/github/advanced-go/search:update/storage?q=golang&region=%2A]
-	
+
 }
 
 func ExampleTimeout() {
