@@ -35,5 +35,5 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		flags = access.TimeoutFlag
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, uri.UprootAuthority(r.URL.Path), RouteName, "", access.Milliseconds(dur), flags)
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, uri.UprootAuthority(r.URL), RouteName, "", access.Milliseconds(dur), flags)
 }

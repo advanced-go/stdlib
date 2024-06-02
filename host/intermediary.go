@@ -52,7 +52,7 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 		if status.Code == http.StatusGatewayTimeout {
 			flags = access.TimeoutFlag
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, uri.UprootAuthority(r.URL.Path), routeName, "", access.Milliseconds(dur), flags)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, uri.UprootAuthority(r.URL), routeName, "", access.Milliseconds(dur), flags)
 		return
 	}
 }

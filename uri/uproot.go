@@ -53,11 +53,11 @@ func Uproot(in string) *Parsed {
 	}
 }
 
-func UprootAuthority(path string) string {
-	if path == "" {
+func UprootAuthority(url *url.URL) string {
+	if url == nil {
 		return ""
 	}
-	str := strings.Split(path, ":")
+	str := strings.Split(url.Path, ":")
 	if len(str) != 2 {
 		return ""
 	}

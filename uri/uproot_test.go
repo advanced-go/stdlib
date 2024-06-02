@@ -2,6 +2,7 @@ package uri
 
 import (
 	"fmt"
+	url2 "net/url"
 )
 
 func ExampleUproot_Validate() {
@@ -103,19 +104,23 @@ func ExampleUproot() {
 
 func ExampleUprootAuthority() {
 	path := "/github/advanced-go/search:yahoo?q=golang"
-	auth := UprootAuthority(path)
+	url, _ := url2.Parse(path)
+	auth := UprootAuthority(url)
 	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
 
 	path = "github/advanced-go/search:yahoo?q=golang"
-	auth = UprootAuthority(path)
+	url, _ = url2.Parse(path)
+	auth = UprootAuthority(url)
 	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
 
 	path = "github/adv:anced-go/search:yahoo?q=golang"
-	auth = UprootAuthority(path)
+	url, _ = url2.Parse(path)
+	auth = UprootAuthority(url)
 	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
 
 	path = "github/advanced-go/searchyahoo?q=golang"
-	auth = UprootAuthority(path)
+	url, _ = url2.Parse(path)
+	auth = UprootAuthority(url)
 	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
 
 	//Output:
@@ -123,5 +128,5 @@ func ExampleUprootAuthority() {
 	//test: UprootAuthority("github/advanced-go/search:yahoo?q=golang") -> [auth:github/advanced-go/search]
 	//test: UprootAuthority("github/adv:anced-go/search:yahoo?q=golang") -> [auth:]
 	//test: UprootAuthority("github/advanced-go/searchyahoo?q=golang") -> [auth:]
-	
+
 }
