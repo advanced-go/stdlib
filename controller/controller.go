@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"time"
 )
@@ -36,13 +37,13 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
-	authority := ""
+	//authority := ""
 	traffic := access.EgressTraffic
 	rsc := c.Router.RouteTo()
 	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
 		do = rsc.Handler
-		authority = core.Authority(do)
+		//authority = core.Authority(do)
 	} else {
 		if do == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))
@@ -84,7 +85,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, authority, c.RouteName, rsc.Name, access.Milliseconds(duration), flags)
+		access.Log(traffic, start, elapsed, req, resp, uri.UprootAuthority(req.URL.Path), c.RouteName, rsc.Name, access.Milliseconds(duration), flags)
 	}
 	return
 }

@@ -100,3 +100,28 @@ func ExampleUproot() {
 
 
 */
+
+func ExampleUprootAuthority() {
+	path := "/github/advanced-go/search:yahoo?q=golang"
+	auth := UprootAuthority(path)
+	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
+
+	path = "github/advanced-go/search:yahoo?q=golang"
+	auth = UprootAuthority(path)
+	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
+
+	path = "github/adv:anced-go/search:yahoo?q=golang"
+	auth = UprootAuthority(path)
+	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
+
+	path = "github/advanced-go/searchyahoo?q=golang"
+	auth = UprootAuthority(path)
+	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
+
+	//Output:
+	//test: UprootAuthority("/github/advanced-go/search:yahoo?q=golang") -> [auth:github/advanced-go/search]
+	//test: UprootAuthority("github/advanced-go/search:yahoo?q=golang") -> [auth:github/advanced-go/search]
+	//test: UprootAuthority("github/adv:anced-go/search:yahoo?q=golang") -> [auth:]
+	//test: UprootAuthority("github/advanced-go/searchyahoo?q=golang") -> [auth:]
+	
+}

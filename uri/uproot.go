@@ -53,6 +53,20 @@ func Uproot(in string) *Parsed {
 	}
 }
 
+func UprootAuthority(path string) string {
+	if path == "" {
+		return ""
+	}
+	str := strings.Split(path, ":")
+	if len(str) != 2 {
+		return ""
+	}
+	if str[0][0] == '/' {
+		return str[0][1:]
+	}
+	return str[0]
+}
+
 func parseVersion(p *Parsed) {
 	if p == nil {
 		return
