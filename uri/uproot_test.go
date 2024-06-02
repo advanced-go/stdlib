@@ -123,6 +123,11 @@ func ExampleUprootAuthority() {
 	auth = UprootAuthority(url)
 	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
 
+	path = "http://localhost:8080/github.com/advanced-go/example-domain/activity:entry"
+	url, _ = url2.Parse(path)
+	auth = UprootAuthority(url)
+	fmt.Printf("test: UprootAuthority(\"%v\") -> [auth:%v]\n", path, auth)
+
 	//Output:
 	//test: UprootAuthority("/github/advanced-go/search:yahoo?q=golang") -> [auth:github/advanced-go/search]
 	//test: UprootAuthority("github/advanced-go/search:yahoo?q=golang") -> [auth:github/advanced-go/search]

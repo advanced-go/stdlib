@@ -22,7 +22,7 @@ func ExampleFormatter() {
 	resp.Header = make(http.Header)
 	resp.Header.Add(ContentEncoding, "gzip")
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, &resp, "", "google-search", "secondary", -1, "")
+	logTest(EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, "")
 
 	fmt.Printf("test: LogURI() -> %v\n", "success")
 
@@ -45,7 +45,7 @@ func ExampleFormatter_Urn() {
 	req.Header.Add(core.XAuthority, "github/advanced-go/auth-from")
 	fmt.Printf("test: NewRequest() -> [err:%v] [req:%v]\n", err, req != nil)
 	resp := http.Response{StatusCode: http.StatusOK}
-	logTest(InternalTraffic, start, time.Since(start), req, &resp, "", "route", "primary", -1, "")
+	logTest(InternalTraffic, start, time.Since(start), req, &resp, "route", "primary", -1, "")
 	fmt.Printf("test: LogURN() -> %v\n", "success")
 
 	//Output:
@@ -54,6 +54,6 @@ func ExampleFormatter_Urn() {
 
 }
 
-func logTest(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, authority, routeName, routeTo string, threshold int, thresholdFlags string) {
-	Log(traffic, start, duration, req, resp, authority, routeName, routeTo, threshold, thresholdFlags)
+func logTest(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+	Log(traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 }

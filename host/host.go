@@ -5,7 +5,6 @@ import (
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/httpx"
-	"github.com/advanced-go/stdlib/uri"
 	"net/http"
 	"time"
 )
@@ -35,5 +34,5 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		flags = access.TimeoutFlag
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, uri.UprootAuthority(r.URL), RouteName, "", access.Milliseconds(dur), flags)
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, RouteName, "", access.Milliseconds(dur), flags)
 }
