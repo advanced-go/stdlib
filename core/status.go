@@ -24,6 +24,7 @@ const (
 	StatusTxnBeginError              = int(102) // Transaction processing begin error
 	StatusTxnRollbackError           = int(103) // Transaction processing rollback error
 	StatusTxnCommitError             = int(104) // Transaction processing commit error
+	StatusExecError                  = int(105) // Execution error, as in a database call
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
