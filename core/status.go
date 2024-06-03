@@ -21,6 +21,9 @@ const (
 	StatusHaveContent                = int(99)  // Content is available
 	StatusGzipEncodingError          = int(100) // Gzip encoding error
 	StatusGzipDecodingError          = int(101) // Gzip decoding error
+	StatusTxnBeginError              = int(102) // Transaction processing begin error
+	StatusTxnRollbackError           = int(103) // Transaction processing rollback error
+	StatusTxnCommitError             = int(104) // Transaction processing commit error
 
 	/*
 		StatusOK                 = codes.OK                 // Not an error; returned on success.
