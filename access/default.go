@@ -51,7 +51,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
 		"\"threshold\":%v, "+
-		"\"threshold-flags\":%v }",
+		"\"th-code\":%v }",
 
 		// Origin, traffic, timestamp, duration
 		fmt2.JsonString(o.Region),
