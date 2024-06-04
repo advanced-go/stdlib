@@ -137,5 +137,8 @@ func Threshold(threshold any) int {
 	if i, ok1 := threshold.(int); ok1 {
 		return i
 	}
+	if f, ok2 := threshold.(float64); ok2 {
+		return int(f)
+	}
 	return -2
 }
