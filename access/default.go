@@ -23,8 +23,8 @@ var defaultLog = func(o core.Origin, traffic string, start time.Time, duration t
 }
 
 func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) string {
-	newReq := NewRequest(req)
-	newResp := NewResponse(resp)
+	newReq := BuildRequest(req)
+	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
 	o.Host = Conditional(o.Host, parsed.Host)
 	s := fmt.Sprintf("{"+
@@ -95,7 +95,7 @@ func milliseconds(duration time.Duration) int {
 	return int(duration / time.Duration(1e6))
 }
 
-func NewRequest(r any) *http.Request {
+func BuildRequest(r any) *http.Request {
 	if r == nil {
 		newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
 		return newReq
@@ -112,7 +112,7 @@ func NewRequest(r any) *http.Request {
 	return newReq
 }
 
-func NewResponse(r any) *http.Response {
+func BuildResponse(r any) *http.Response {
 	if r == nil {
 		newResp := &http.Response{StatusCode: http.StatusOK}
 		return newResp

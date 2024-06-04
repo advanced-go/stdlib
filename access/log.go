@@ -2,7 +2,6 @@ package access
 
 import (
 	"github.com/advanced-go/stdlib/core"
-	"net/http"
 	"time"
 )
 
@@ -15,12 +14,6 @@ const (
 	XRelatesTo      = "x-relates-to"
 	TimeoutFlag     = "TO"
 )
-
-type Request interface {
-	Url() string
-	Header() http.Header
-	Method() string
-}
 
 // SetOrigin - initialize the origin
 func SetOrigin(o core.Origin) {
@@ -64,6 +57,10 @@ func Log(traffic string, start time.Time, duration time.Duration, req any, resp 
 		return
 	}
 	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
+}
+
+func LogEgress(start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
+	Log(EgressTraffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
 }
 
 /*
