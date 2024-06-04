@@ -132,3 +132,14 @@ func ExampleNewJsonResponse() {
 	//test: NewJsonResponse(testCore,nil) -> [status:OK] [status-code:200] [header:map[Content-Location:[http://localhost:8081/search?q=golang] Content-Type:[application/json]]] [content-length:272]
 
 }
+
+func ExampleNewResponseWithBody() {
+	h := make(http.Header)
+	h.Add(ContentType, ContentTypeJson)
+	resp := NewResponseWithBody[core.Output](h, http.StatusOK, testCore)
+	fmt.Printf("test: ResponseBody() -> [status-code:%v] [header:%v] [content-length:%v]\n", resp.StatusCode, resp.Header, resp.ContentLength)
+
+	//Output:
+	//test: ResponseBody() -> [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:272]
+	
+}

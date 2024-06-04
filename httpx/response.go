@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
-	"github.com/advanced-go/stdlib/json"
+	json2 "github.com/advanced-go/stdlib/json"
 	"io"
 	"net/http"
 )
@@ -43,6 +43,33 @@ func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *c
 	return NewResponse(status, content), status
 }
 
+func NewResponseWithBody[E core.ErrorHandler](h http.Header, statusCode int, content any) *http.Response {
+	var e E
+
+	resp := &http.Response{StatusCode: statusCode, Header: h}
+	switch ptr := (content).(type) {
+	case []byte:
+		resp.Body = io.NopCloser(bytes.NewReader(ptr))
+	case string:
+		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
+	case error:
+		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
+	default:
+		if h != nil && h.Get(ContentType) == ContentTypeJson {
+			var status *core.Status
+
+			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
+			if !status.OK() {
+				e.Handle(status, "")
+				resp.StatusCode = status.HttpCode()
+			}
+		} else {
+			//return 0, core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+		}
+	}
+	return resp
+}
+
 func NewVersionResponse(version string) *http.Response {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
@@ -69,7 +96,7 @@ func NewJsonResponse(content any, h http.Header) (*http.Response, *core.Status) 
 	if content == nil {
 		return &http.Response{StatusCode: http.StatusOK, Header: h}, core.StatusOK()
 	}
-	rc, length, status := json.NewReadCloser(content)
+	rc, length, status := json2.NewReadCloser(content)
 	if !status.OK() {
 		return NewResponseWithStatus(status, status.Err)
 	}
