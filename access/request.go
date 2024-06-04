@@ -1,24 +1,33 @@
 package access
 
-import "net/http"
+import (
+	"net/http"
+	"time"
+)
 
 type Request interface {
 	Url() string
 	Header() http.Header
 	Method() string
+	RouteName() string
+	Duration() time.Duration
 }
 
 type request struct {
-	url    string
-	header http.Header
-	method string
+	url       string
+	header    http.Header
+	method    string
+	duration  time.Duration
+	routeName string
 }
 
-func NewRequest(url, method string, h http.Header) Request {
+func NewRequest(method, url string, h http.Header, routeName string, duration time.Duration) Request {
 	r := new(request)
 	r.url = url
 	r.method = method
 	r.header = h
+	r.routeName = routeName
+	r.duration = duration
 	return r
 }
 
@@ -28,6 +37,14 @@ func (r *request) Url() string {
 
 func (r *request) Method() string {
 	return r.method
+}
+
+func (r *request) RouteName() string {
+	return r.routeName
+}
+
+func (r *request) Duration() time.Duration {
+	return r.duration
 }
 
 func (r *request) Header() http.Header {
