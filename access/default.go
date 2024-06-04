@@ -16,18 +16,16 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) {
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) {
 	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold int, thresholdFlags string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) string {
 	req = SafeRequest(req)
 	resp = SafeResponse(resp)
-	//url, host, path, query := CreateURLComponents(req)
 	url, parsed := uri.ParseURL(req.Host, req.URL)
 	o.Host = Conditional(o.Host, parsed.Host)
-	//authority = Conditional(authority, o.Host)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
@@ -61,7 +59,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(o.InstanceId),
 		traffic,
 		fmt2.FmtRFC3339Millis(start),
-		strconv.Itoa(Milliseconds(duration)),
+		strconv.Itoa(milliseconds(duration)),
 
 		// Request
 		fmt2.JsonString(req.Header.Get(XRequestId)),
@@ -84,15 +82,15 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		// Routing, controller threshold
 		fmt2.JsonString(routeName),
 		fmt2.JsonString(routeTo),
-		threshold,
+		Threshold(threshold),
 		fmt2.JsonString(thresholdFlags),
 	)
 
 	return s
 }
 
-// Milliseconds - convert time.Duration to milliseconds
-func Milliseconds(duration time.Duration) int {
+// milliseconds - convert time.Duration to milliseconds
+func milliseconds(duration time.Duration) int {
 	return int(duration / time.Duration(1e6))
 }
 
@@ -127,4 +125,17 @@ func Conditional(primary, secondary string) string {
 		return secondary
 	}
 	return primary
+}
+
+func Threshold(threshold any) int {
+	if threshold == nil {
+		return -1
+	}
+	if dur, ok := threshold.(time.Duration); ok {
+		return milliseconds(dur)
+	}
+	if i, ok1 := threshold.(int); ok1 {
+		return i
+	}
+	return -2
 }
