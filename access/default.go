@@ -17,12 +17,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) {
-	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
+	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) string {
 	newReq := NewRequest(req)
 	newResp := NewResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
@@ -84,7 +84,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(routeName),
 		fmt2.JsonString(routeTo),
 		Threshold(threshold),
-		fmt2.JsonString(thresholdFlags),
+		fmt2.JsonString(thresholdCode),
 	)
 
 	return s

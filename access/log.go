@@ -28,7 +28,7 @@ func SetOrigin(o core.Origin) {
 }
 
 // FormatFunc - formatting
-type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) string
+type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) string
 
 // SetFormatFunc - override formatting
 func SetFormatFunc(fn FormatFunc) {
@@ -38,7 +38,7 @@ func SetFormatFunc(fn FormatFunc) {
 }
 
 // LogFn - log function
-type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName string, routeTo string, threshold any, thresholdFlags string)
+type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName string, routeTo string, threshold any, thresholdCode string)
 
 // SetLogFn - override logging
 func SetLogFn(fn LogFn) {
@@ -59,19 +59,19 @@ var (
 )
 
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) {
+func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
 	if logger == nil || disabled {
 		return
 	}
-	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
 }
 
 /*
 // LogDeferred - deferred accessing logging
-func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdFlags string, statusCode func() int) func() {
+func LogDeferred(traffic string, req *http.Request, routeName, routeTo string, threshold int, thresholdCode string, statusCode func() int) func() {
 	start := time.Now().UTC()
 	return func() {
-		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode(), Status: ""}, routeName, routeTo, threshold, thresholdFlags)
+		Log(traffic, start, time.Since(start), req, &http.Response{StatusCode: statusCode(), Status: ""}, routeName, routeTo, threshold, thresholdCode)
 	}
 }
 

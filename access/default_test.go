@@ -175,6 +175,6 @@ func ExampleDefault_Threshold_Deadline() {
 
 }
 
-func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) {
-	Log(traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
+func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
+	Log(traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
 }
