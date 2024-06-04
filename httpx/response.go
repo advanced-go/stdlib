@@ -2,11 +2,13 @@ package httpx
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	json2 "github.com/advanced-go/stdlib/json"
 	"io"
 	"net/http"
+	"reflect"
 )
 
 const (
@@ -43,10 +45,11 @@ func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *c
 	return NewResponse(status, content), status
 }
 
-func NewResponseWithBody[E core.ErrorHandler](h http.Header, statusCode int, content any) *http.Response {
-	var e E
-
-	resp := &http.Response{StatusCode: statusCode, Header: h}
+func NewResponseWithBody(h http.Header, statusCode int, content any) (resp *http.Response, status *core.Status) {
+	resp = &http.Response{StatusCode: statusCode, Header: h}
+	if content == nil {
+		return resp, core.StatusOK()
+	}
 	switch ptr := (content).(type) {
 	case []byte:
 		resp.Body = io.NopCloser(bytes.NewReader(ptr))
@@ -56,18 +59,14 @@ func NewResponseWithBody[E core.ErrorHandler](h http.Header, statusCode int, con
 		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
 	default:
 		if h != nil && h.Get(ContentType) == ContentTypeJson {
-			var status *core.Status
-
 			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
-			if !status.OK() {
-				e.Handle(status, "")
-				resp.StatusCode = status.HttpCode()
-			}
+			return
 		} else {
-			//return 0, core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			status = core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			return
 		}
 	}
-	return resp
+	return resp, core.StatusOK()
 }
 
 func NewVersionResponse(version string) *http.Response {
