@@ -58,11 +58,11 @@ func (r *request) ContextTimeout(ctx context.Context) (context.Context, context.
 		ctx = context.Background()
 	} else {
 		if _, ok := ctx.Deadline(); ok {
-			return ctx, nil
+			return ctx, cancel
 		}
 	}
 	if r.duration == 0 {
-		return ctx, nil
+		return ctx, cancel
 	}
 	return context.WithTimeout(ctx, r.duration)
 }
