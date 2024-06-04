@@ -16,13 +16,19 @@ const (
 	TimeoutFlag     = "TO"
 )
 
+type Request interface {
+	Url() string
+	Header() http.Header
+	Method() string
+}
+
 // SetOrigin - initialize the origin
 func SetOrigin(o core.Origin) {
 	origin = o
 }
 
 // FormatFunc - formatting
-type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) string
+type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) string
 
 // SetFormatFunc - override formatting
 func SetFormatFunc(fn FormatFunc) {
@@ -32,7 +38,7 @@ func SetFormatFunc(fn FormatFunc) {
 }
 
 // LogFn - log function
-type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName string, routeTo string, threshold any, thresholdFlags string)
+type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName string, routeTo string, threshold any, thresholdFlags string)
 
 // SetLogFn - override logging
 func SetLogFn(fn LogFn) {
@@ -53,7 +59,7 @@ var (
 )
 
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) {
+func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) {
 	if logger == nil || disabled {
 		return
 	}

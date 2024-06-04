@@ -1,6 +1,7 @@
 package access
 
 import (
+	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
@@ -16,15 +17,15 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) {
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) {
 	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdFlags)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req *http.Request, resp *http.Response, routeName, routeTo string, threshold any, thresholdFlags string) string {
-	req = SafeRequest(req)
-	resp = SafeResponse(resp)
-	url, parsed := uri.ParseURL(req.Host, req.URL)
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdFlags string) string {
+	newReq := NewRequest(req)
+	newResp := NewResponse(resp)
+	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
 	o.Host = Conditional(o.Host, parsed.Host)
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
@@ -62,22 +63,22 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		strconv.Itoa(milliseconds(duration)),
 
 		// Request
-		fmt2.JsonString(req.Header.Get(XRequestId)),
-		fmt2.JsonString(req.Header.Get(XRelatesTo)),
-		fmt2.JsonString(req.Proto),
-		fmt2.JsonString(req.Method),
+		fmt2.JsonString(newReq.Header.Get(XRequestId)),
+		fmt2.JsonString(newReq.Header.Get(XRelatesTo)),
+		fmt2.JsonString(newReq.Proto),
+		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
-		fmt2.JsonString(req.Header.Get(core.XAuthority)),
-		fmt2.JsonString(uri.UprootAuthority(req.URL)),
+		fmt2.JsonString(newReq.Header.Get(core.XAuthority)),
+		fmt2.JsonString(uri.UprootAuthority(newReq.URL)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
 		fmt2.JsonString(parsed.Query),
 
 		// Response
-		resp.StatusCode,
+		newResp.StatusCode,
 		//fmt2.JsonString(resp.Status),
-		fmt2.JsonString(Encoding(resp)),
-		fmt.Sprintf("%v", resp.ContentLength),
+		fmt2.JsonString(Encoding(newResp)),
+		fmt.Sprintf("%v", newResp.ContentLength),
 
 		// Routing, controller threshold
 		fmt2.JsonString(routeName),
@@ -94,18 +95,39 @@ func milliseconds(duration time.Duration) int {
 	return int(duration / time.Duration(1e6))
 }
 
-func SafeRequest(r *http.Request) *http.Request {
+func NewRequest(r any) *http.Request {
 	if r == nil {
-		r, _ = http.NewRequest("", "https://somehost.com/search?q=test", nil)
+		newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
+		return newReq
 	}
-	return r
+	if req, ok := r.(*http.Request); ok {
+		return req
+	}
+	if req, ok := r.(Request); ok {
+		newReq, _ := http.NewRequest(req.Method(), req.Url(), nil)
+		newReq.Header = req.Header()
+		return newReq
+	}
+	newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
+	return newReq
 }
 
-func SafeResponse(r *http.Response) *http.Response {
+func NewResponse(r any) *http.Response {
 	if r == nil {
-		r = new(http.Response)
+		newResp := &http.Response{StatusCode: http.StatusOK}
+		return newResp
 	}
-	return r
+	if newResp, ok := r.(*http.Response); ok {
+		return newResp
+	}
+	if sc, ok := r.(int); ok {
+		return &http.Response{StatusCode: sc}
+	}
+	if status, ok := r.(*core.Status); ok {
+		return &http.Response{StatusCode: status.HttpCode()}
+	}
+	newResp := &http.Response{StatusCode: http.StatusOK}
+	return newResp
 }
 
 func Encoding(resp *http.Response) string {
@@ -129,7 +151,7 @@ func Conditional(primary, secondary string) string {
 
 func Threshold(threshold any) int {
 	if threshold == nil {
-		return -1
+		return 0
 	}
 	if dur, ok := threshold.(time.Duration); ok {
 		return milliseconds(dur)
@@ -140,5 +162,10 @@ func Threshold(threshold any) int {
 	if f, ok2 := threshold.(float64); ok2 {
 		return int(f)
 	}
-	return -2
+	if ctx, ok := threshold.(context.Context); ok {
+		if deadline, ok1 := ctx.Deadline(); ok1 {
+			return milliseconds(time.Until(deadline))
+		}
+	}
+	return 0
 }
