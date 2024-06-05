@@ -45,17 +45,20 @@ func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *c
 	return NewResponse(status, content), status
 }
 
-func NewResponseWithBody(h http.Header, statusCode int, content any) (resp *http.Response, status *core.Status) {
+func NewResponseWithBody(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	resp = &http.Response{StatusCode: statusCode, Header: h}
 	if content == nil {
 		return resp, core.StatusOK()
 	}
 	switch ptr := (content).(type) {
 	case []byte:
+		resp.ContentLength = int64(len(ptr))
 		resp.Body = io.NopCloser(bytes.NewReader(ptr))
 	case string:
+		resp.ContentLength = int64(len(ptr))
 		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
 	case error:
+		resp.ContentLength = int64(len(ptr.Error()))
 		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
 	default:
 		if h != nil && h.Get(ContentType) == ContentTypeJson {
