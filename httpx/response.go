@@ -50,11 +50,15 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 	}
 	switch ptr := (content).(type) {
 	case []byte:
-		resp.ContentLength = int64(len(ptr))
-		resp.Body = io.NopCloser(bytes.NewReader(ptr))
+		if len(ptr) > 0 {
+			resp.ContentLength = int64(len(ptr))
+			resp.Body = io.NopCloser(bytes.NewReader(ptr))
+		}
 	case string:
-		resp.ContentLength = int64(len(ptr))
-		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
+		if ptr != "" {
+			resp.ContentLength = int64(len(ptr))
+			resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
+		}
 	case error:
 		if ptr.Error() != "" {
 			resp.ContentLength = int64(len(ptr.Error()))
