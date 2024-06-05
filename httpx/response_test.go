@@ -34,12 +34,12 @@ var testCore = []core.Origin{
 
 func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
-	resp := NewResponse(status, status.Err)
+	resp, _ := NewResponse(status.HttpCode(), nil, status.Err)
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	status = core.NewStatusError(http.StatusGatewayTimeout, errors.New("Deadline Exceeded"))
-	resp = NewResponse(status, status.Err)
+	resp, _ = NewResponse(status.HttpCode(), nil, status.Err)
 	buf, _ = io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -50,18 +50,14 @@ func ExampleNewResponse_Error() {
 }
 
 func ExampleNewResponse() {
-	resp := NewResponse(nil, "")
+	resp, _ := NewResponse(http.StatusOK, nil, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v]\n", resp.StatusCode)
 
-	resp = NewResponse(core.StatusOK(), "")
-	fmt.Printf("test: NewResponse() -> [status-code:%v]\n", resp.StatusCode)
-
-	resp = NewResponse(core.StatusOK(), "version 1.2.35")
+	resp, _ = NewResponse(core.StatusOK().HttpCode(), nil, "version 1.2.35")
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	//Output:
-	//test: NewResponse() -> [status-code:400]
 	//test: NewResponse() -> [status-code:200]
 	//test: NewResponse() -> [status-code:200] [content:version 1.2.35]
 
@@ -101,15 +97,16 @@ func ExampleNewHealthResponseOK() {
 }
 
 func ExampleNewNotFoundResponseWithStatus() {
-	resp, status := NewNotFoundResponseWithStatus()
+	resp := NewNotFoundResponse()
 	buf, _ := io.ReadAll(resp.Body, nil)
-	fmt.Printf("test: NewNotFoundResponse() -> [status-code:%v] [status:%v] [content:%v]\n", resp.StatusCode, status, string(buf))
+	fmt.Printf("test: NewNotFoundResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	//Output:
-	//test: NewNotFoundResponse() -> [status-code:404] [status:Not Found] [content:Not Found]
+	//test: NewNotFoundResponse() -> [status-code:404] [content:Not Found]
 
 }
 
+/*
 func ExampleNewJsonResponse() {
 	resp, status := NewJsonResponse(nil, nil)
 	fmt.Printf("test: NewJsonResponse(nil,nil) -> [status:%v] [status-code:%v] [content-length:%v]\n", status, resp.StatusCode, resp.ContentLength)
@@ -133,10 +130,13 @@ func ExampleNewJsonResponse() {
 
 }
 
+
+*/
+
 func ExampleNewResponseWithBody() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
-	resp, status := NewResponseWithBody(h, http.StatusOK, testCore)
+	resp, status := NewResponse(http.StatusOK, h, testCore)
 	fmt.Printf("test: ResponseBody() -> [status:%v] [status-code:%v] [header:%v] [content-length:%v]\n", status, resp.StatusCode, resp.Header, resp.ContentLength)
 
 	//Output:

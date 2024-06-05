@@ -20,6 +20,7 @@ var (
 	healthLength = int64(len(healthOK))
 )
 
+/*
 func NewResponse2(status *core.Status, content any) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
@@ -38,12 +39,7 @@ func NewResponse2(status *core.Status, content any) *http.Response {
 	return &http.Response{StatusCode: http.StatusBadRequest, Header: h, Body: io.NopCloser(bytes.NewReader([]byte(fmt.Sprintf("invalid content : %v", core.NewInvalidBodyTypeError(content)))))}
 }
 
-func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *core.Status) {
-	if status == nil {
-		status = core.NewStatus(http.StatusBadRequest)
-	}
-	return NewResponse2(status, content), status
-}
+*/
 
 func NewResponse(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	resp = &http.Response{StatusCode: statusCode, Header: h}
@@ -73,27 +69,37 @@ func NewResponse(statusCode int, h http.Header, content any) (resp *http.Respons
 }
 
 func NewVersionResponse(version string) *http.Response {
-	h := make(http.Header)
-	h.Add(ContentType, ContentTypeJson)
+	h2 := make(http.Header)
+	h2.Add(ContentType, ContentTypeJson)
 	content := fmt.Sprintf(versionFmt, version)
-	return &http.Response{StatusCode: http.StatusOK, Header: h, Body: io.NopCloser(bytes.NewReader([]byte(content)))}
+	resp, _ := NewResponse(http.StatusOK, h2, content)
+	return resp
 }
 
 func NewAuthorityResponse(authority string) *http.Response {
-	h := make(http.Header)
-	h.Add(core.XAuthority, authority)
+	h2 := make(http.Header)
+	h2.Add(core.XAuthority, authority)
 	//h.Add(ContentType, ContentTypeJson)
-	return &http.Response{StatusCode: http.StatusOK, Header: h}
+	resp, _ := NewResponse(http.StatusOK, h2, nil)
+	return resp
 }
 
 func NewHealthResponseOK() *http.Response {
-	return &http.Response{StatusCode: http.StatusOK, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
+	h2 := make(http.Header)
+	h2.Add(ContentType, ContentTypeText)
+	resp, _ := NewResponse(http.StatusOK, h2, healthOK)
+	return resp
+	///&http.Response{StatusCode: http.StatusOK, Header: h2, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
 }
 
-func NewNotFoundResponseWithStatus() (*http.Response, *core.Status) {
-	return NewResponseWithStatus(core.StatusNotFound(), core.StatusNotFound().String())
+func NewNotFoundResponse() *http.Response {
+	h2 := make(http.Header)
+	h2.Add(ContentType, ContentTypeText)
+	resp, _ := NewResponse(http.StatusNotFound, h2, core.StatusNotFound().String())
+	return resp
 }
 
+/*
 func NewJsonResponse(content any, h http.Header) (*http.Response, *core.Status) {
 	if content == nil {
 		return &http.Response{StatusCode: http.StatusOK, Header: h}, core.StatusOK()
@@ -108,3 +114,6 @@ func NewJsonResponse(content any, h http.Header) (*http.Response, *core.Status) 
 	h.Add(ContentType, ContentTypeJson)
 	return &http.Response{StatusCode: status.HttpCode(), Status: status.String(), ContentLength: length, Header: h, Body: rc}, core.StatusOK()
 }
+
+
+*/

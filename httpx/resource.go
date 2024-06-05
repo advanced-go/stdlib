@@ -21,7 +21,9 @@ type Resource[T any, U any, V any] struct {
 func NewResource[T any, U any, V any](name string, content Content[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
 	r := new(Resource[T, U, V])
 	r.Identity = NewAuthorityResponse(name)
-	r.MethodNotAllowed = NewResponse(core.NewStatus(http.StatusMethodNotAllowed), nil)
+	h2 := make(http.Header)
+	h2.Add(ContentType, ContentTypeText)
+	r.MethodNotAllowed, _ = NewResponse(core.NewStatus(http.StatusMethodNotAllowed).HttpCode(), h2, nil)
 	r.Finalize = finalize
 	if r.Finalize == nil {
 		r.Finalize = defaultFinalize()
@@ -39,7 +41,11 @@ func (r *Resource[T, U, V]) Empty() {
 }
 
 func (r *Resource[T, U, V]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
-	resp := NewResponse(status, status.Err)
+	h2 := make(http.Header)
+	if !status.OK() && status.Err != nil {
+		h2.Add(ContentType, ContentTypeText)
+	}
+	resp, _ := NewResponse(status.HttpCode(), h2, status.Err)
 	resp.Request = req
 	r.Finalize(resp)
 	return resp, status
@@ -59,7 +65,9 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 		if !status1.OK() {
 			return r.finalize(req, status)
 		}
-		resp := &http.Response{StatusCode: status1.HttpCode(), Status: status1.String(), ContentLength: bytes, Body: reader}
+		h2 := make(http.Header)
+		h2.Add(ContentType, ContentTypeJson)
+		resp := &http.Response{StatusCode: status1.HttpCode(), Status: status1.String(), Header: h2, ContentLength: bytes, Body: reader}
 		resp.Request = req
 		r.Finalize(resp)
 		return resp, status1
@@ -85,7 +93,10 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 		return r.finalize(req, r.Content.Delete(req))
 	default:
 		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
-		return NewResponse(status, status.Err), core.NewStatus(http.StatusMethodNotAllowed)
+		h2 := make(http.Header)
+		h2.Add(ContentType, ContentTypeText)
+		resp, _ := NewResponse(status.HttpCode(), h2, status.Err)
+		return resp, status
 	}
 }
 
