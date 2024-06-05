@@ -41,10 +41,11 @@ func NewResponse2(status *core.Status, content any) *http.Response {
 
 */
 
-func NewResponse(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
+func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any) (resp *http.Response) {
+	var e E
 	resp = &http.Response{StatusCode: statusCode, Header: h}
 	if content == nil {
-		return resp, core.StatusOK()
+		return resp
 	}
 	switch ptr := (content).(type) {
 	case []byte:
@@ -58,21 +59,33 @@ func NewResponse(statusCode int, h http.Header, content any) (resp *http.Respons
 		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
 	default:
 		if h != nil && h.Get(ContentType) == ContentTypeJson {
+			var status *core.Status
 			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
+			if !status.OK() {
+				e.Handle(status, "")
+				h = make(http.Header)
+				h.Add(ContentType, ContentTypeText)
+				if status.Err != nil {
+					return &http.Response{StatusCode: http.StatusInternalServerError, Header: h, ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}
+				}
+				return &http.Response{StatusCode: http.StatusInternalServerError, Header: h}
+			}
 			return
 		} else {
-			status = core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
-			return
+			status := core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+			h = make(http.Header)
+			h.Add(ContentType, ContentTypeText)
+			return &http.Response{StatusCode: http.StatusInternalServerError, Header: h, ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}
 		}
 	}
-	return resp, core.StatusOK()
+	return resp
 }
 
 func NewVersionResponse(version string) *http.Response {
 	h2 := make(http.Header)
 	h2.Add(ContentType, ContentTypeJson)
 	content := fmt.Sprintf(versionFmt, version)
-	resp, _ := NewResponse(http.StatusOK, h2, content)
+	resp := NewResponse[core.Log](http.StatusOK, h2, content)
 	return resp
 }
 
@@ -80,14 +93,14 @@ func NewAuthorityResponse(authority string) *http.Response {
 	h2 := make(http.Header)
 	h2.Add(core.XAuthority, authority)
 	//h.Add(ContentType, ContentTypeJson)
-	resp, _ := NewResponse(http.StatusOK, h2, nil)
+	resp := NewResponse[core.Log](http.StatusOK, h2, nil)
 	return resp
 }
 
 func NewHealthResponseOK() *http.Response {
 	h2 := make(http.Header)
 	h2.Add(ContentType, ContentTypeText)
-	resp, _ := NewResponse(http.StatusOK, h2, healthOK)
+	resp := NewResponse[core.Log](http.StatusOK, h2, healthOK)
 	return resp
 	///&http.Response{StatusCode: http.StatusOK, Header: h2, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
 }
@@ -95,7 +108,7 @@ func NewHealthResponseOK() *http.Response {
 func NewNotFoundResponse() *http.Response {
 	h2 := make(http.Header)
 	h2.Add(ContentType, ContentTypeText)
-	resp, _ := NewResponse(http.StatusNotFound, h2, core.StatusNotFound().String())
+	resp := NewResponse[core.Log](http.StatusNotFound, h2, core.StatusNotFound().String())
 	return resp
 }
 

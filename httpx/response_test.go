@@ -34,12 +34,12 @@ var testCore = []core.Origin{
 
 func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
-	resp, _ := NewResponse(status.HttpCode(), nil, status.Err)
+	resp := NewResponse[core.Log](status.HttpCode(), nil, status.Err)
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	status = core.NewStatusError(http.StatusGatewayTimeout, errors.New("Deadline Exceeded"))
-	resp, _ = NewResponse(status.HttpCode(), nil, status.Err)
+	resp = NewResponse[core.Log](status.HttpCode(), nil, status.Err)
 	buf, _ = io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -50,10 +50,10 @@ func ExampleNewResponse_Error() {
 }
 
 func ExampleNewResponse() {
-	resp, _ := NewResponse(http.StatusOK, nil, nil)
+	resp := NewResponse[core.Log](http.StatusOK, nil, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v]\n", resp.StatusCode)
 
-	resp, _ = NewResponse(core.StatusOK().HttpCode(), nil, "version 1.2.35")
+	resp = NewResponse[core.Log](core.StatusOK().HttpCode(), nil, "version 1.2.35")
 	buf, _ := io.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -136,10 +136,10 @@ func ExampleNewJsonResponse() {
 func ExampleNewResponseWithBody() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
-	resp, status := NewResponse(http.StatusOK, h, testCore)
-	fmt.Printf("test: ResponseBody() -> [status:%v] [status-code:%v] [header:%v] [content-length:%v]\n", status, resp.StatusCode, resp.Header, resp.ContentLength)
+	resp := NewResponse[core.Log](http.StatusOK, h, testCore)
+	fmt.Printf("test: ResponseBody() -> [status-code:%v] [header:%v] [content-length:%v]\n", resp.StatusCode, resp.Header, resp.ContentLength)
 
 	//Output:
-	//test: ResponseBody() -> [status:OK] [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:272]
+	//test: ResponseBody() -> [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:272]
 
 }

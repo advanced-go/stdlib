@@ -23,7 +23,7 @@ func NewResource[T any, U any, V any](name string, content Content[T, U, V], fin
 	r.Identity = NewAuthorityResponse(name)
 	h2 := make(http.Header)
 	h2.Add(ContentType, ContentTypeText)
-	r.MethodNotAllowed, _ = NewResponse(core.NewStatus(http.StatusMethodNotAllowed).HttpCode(), h2, nil)
+	r.MethodNotAllowed = NewResponse[core.Log](core.NewStatus(http.StatusMethodNotAllowed).HttpCode(), h2, nil)
 	r.Finalize = finalize
 	if r.Finalize == nil {
 		r.Finalize = defaultFinalize()
@@ -45,7 +45,7 @@ func (r *Resource[T, U, V]) finalize(req *http.Request, status *core.Status) (*h
 	if !status.OK() && status.Err != nil {
 		h2.Add(ContentType, ContentTypeText)
 	}
-	resp, _ := NewResponse(status.HttpCode(), h2, status.Err)
+	resp := NewResponse[core.Log](status.HttpCode(), h2, status.Err)
 	resp.Request = req
 	r.Finalize(resp)
 	return resp, status
@@ -95,7 +95,7 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
 		h2 := make(http.Header)
 		h2.Add(ContentType, ContentTypeText)
-		resp, _ := NewResponse(status.HttpCode(), h2, status.Err)
+		resp := NewResponse[core.Log](status.HttpCode(), h2, status.Err)
 		return resp, status
 	}
 }

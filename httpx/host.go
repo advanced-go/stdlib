@@ -61,7 +61,7 @@ func (a *Host) Do(req *http.Request) (*http.Response, *core.Status) {
 	if req == nil {
 		h2 := make(http.Header)
 		h2.Add(ContentType, ContentTypeText)
-		resp, _ := NewResponse(http.StatusBadRequest, h2, errors.New("bad request: http.Request is nil"))
+		resp := NewResponse[core.Log](http.StatusBadRequest, h2, errors.New("bad request: http.Request is nil"))
 		return resp, core.StatusBadRequest()
 	}
 	if req.Method == http.MethodGet && req.URL.Path == core.AuthorityRootPath {
@@ -71,7 +71,7 @@ func (a *Host) Do(req *http.Request) (*http.Response, *core.Status) {
 	if ex == nil {
 		h2 := make(http.Header)
 		h2.Add(ContentType, ContentTypeText)
-		resp, _ := NewResponse(http.StatusBadRequest, h2, errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
+		resp := NewResponse[core.Log](http.StatusBadRequest, h2, errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
 		return resp, core.StatusBadRequest()
 	}
 	return ex(req)
