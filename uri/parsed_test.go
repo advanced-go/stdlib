@@ -68,17 +68,17 @@ func ExampleParsed_Version() {
 func ExampleParsed_PathURL() {
 	url := "https://www.google.com/github/advanced-go/search:google"
 	p := Uproot(url)
-	u := p.PathURL()
+	u := p.PathQuery()
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
 
 	url = "https://www.google.com/github/advanced-go/search:v2/google"
 	p = Uproot(url)
-	u = p.PathURL()
+	u = p.PathQuery()
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
 
 	url = "https://www.google.com/github/advanced-go/search:v2/google?" + BuildQuery("q=golang")
 	p = Uproot(url)
-	u = p.PathURL()
+	u = p.PathQuery()
 	fmt.Printf("test: Parsed(\"%v\") -> [pathURL:%v] [query:%v]\n", url, u, u.Query().Encode())
 
 	//Output:

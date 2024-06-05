@@ -17,7 +17,7 @@ type Parsed struct {
 	Err       error
 }
 
-func (p *Parsed) PathURL() *url.URL {
+func (p *Parsed) PathQuery() *url.URL {
 	rawURL := p.Path
 	if p.Query != "" {
 		rawURL = p.Path + "?" + p.Query

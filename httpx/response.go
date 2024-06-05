@@ -20,7 +20,7 @@ var (
 	healthLength = int64(len(healthOK))
 )
 
-func NewResponse(status *core.Status, content any) *http.Response {
+func NewResponse2(status *core.Status, content any) *http.Response {
 	if status == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}
 	}
@@ -42,10 +42,10 @@ func NewResponseWithStatus(status *core.Status, content any) (*http.Response, *c
 	if status == nil {
 		status = core.NewStatus(http.StatusBadRequest)
 	}
-	return NewResponse(status, content), status
+	return NewResponse2(status, content), status
 }
 
-func NewResponseWithBody(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
+func NewResponse(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	resp = &http.Response{StatusCode: statusCode, Header: h}
 	if content == nil {
 		return resp, core.StatusOK()
