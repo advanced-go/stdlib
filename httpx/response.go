@@ -56,8 +56,10 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 		resp.ContentLength = int64(len(ptr))
 		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
 	case error:
-		resp.ContentLength = int64(len(ptr.Error()))
-		resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
+		if ptr.Error() != "" {
+			resp.ContentLength = int64(len(ptr.Error()))
+			resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
+		}
 	default:
 		if h != nil && h.Get(ContentType) == ContentTypeJson {
 			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
