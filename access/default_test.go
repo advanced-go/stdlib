@@ -57,7 +57,7 @@ func ExampleDefault_Access_Request_Status() {
 	h := make(http.Header)
 	h.Add(XRequestId, "987-654")
 	h.Add(XRelatesTo, "test-request-interface")
-	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h, "google-search", 0)
+	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h)
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
@@ -69,14 +69,14 @@ func ExampleDefault_Access_Request_Status() {
 
 	//Output:
 	//test: Default-Access-Request-Status() -> success
-
+	
 }
 
 func ExampleDefault_Access_Request_Status_Code() {
 	h := make(http.Header)
 	h.Add(XRequestId, "987-654")
 	h.Add(XRelatesTo, "test-request-interface")
-	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h, "google-search", 0)
+	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h)
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
@@ -95,7 +95,7 @@ func ExampleDefault_Threshold_Duration() {
 	h := make(http.Header)
 	h.Add(XRequestId, "987-654")
 	h.Add(XRelatesTo, "test-request-interface")
-	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h, "", 0)
+	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h)
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
@@ -114,7 +114,7 @@ func ExampleDefault_Threshold_Int() {
 	h := make(http.Header)
 	h.Add(XRequestId, "987-654")
 	h.Add(XRelatesTo, "test-request-interface")
-	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h, "", 0)
+	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h)
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
@@ -133,7 +133,7 @@ func ExampleDefault_Threshold_Deadline() {
 	h := make(http.Header)
 	h.Add(XRequestId, "987-654")
 	h.Add(XRelatesTo, "test-request-interface")
-	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h, "", 0)
+	req := NewRequest(http.MethodPut, "https://www.google.com/search?q=test", h)
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
