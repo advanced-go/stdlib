@@ -32,7 +32,11 @@ func formatValues(values url.Values) string {
 	if values == nil {
 		return ""
 	}
-	return "?" + values.Encode()
+	encoded := values.Encode()
+	if encoded != "" {
+		return "?" + encoded
+	}
+	return ""
 }
 
 func formatVersion(version string) string {
