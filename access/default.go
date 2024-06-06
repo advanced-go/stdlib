@@ -40,8 +40,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
 		"\"host\":%v, "+
-		"\"auth-from\":%v, "+
-		"\"auth-to\":%v, "+
+		"\"from\":%v, "+
+		"\"to\":%v, "+
 		"\"uri\":%v, "+
 		"\"path\":%v, "+
 		"\"query\":%v, "+
