@@ -117,5 +117,5 @@ func ExampleResolve() {
 	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
 	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
 	//test: Resolve("www.google.com","","search") -> [https://www.google.com/search?q=golang]
-	
+
 }
