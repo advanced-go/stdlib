@@ -54,59 +54,68 @@ func ExampleBuildOrigin() {
 
 func ExampleBuildPath() {
 	auth := "github/advanced-go/timeseries"
-	vers := "v2"
 	rsc := "access"
 	values := make(url.Values)
-	p := BuildPath(auth, vers, rsc, values)
+	p := BuildPath(auth, rsc, values)
 
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
 
 	values.Add("region", "*")
-	p = BuildPath(auth, vers, rsc, values)
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
+	rsc = "v2/access"
+	p = BuildPath(auth, rsc, values)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
 
 	//Output:
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access]
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: BuildPath("github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: BuildPath("github/advanced-go/timeseries","v2/access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
 
 }
 
 func ExampleResolve() {
 	host := ""
 	auth := "github/advanced-go/timeseries"
-	vers := "v2"
 	rsc := "access"
 	values := make(url.Values)
 
-	url := Resolve(host, auth, vers, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	url := Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	values.Add("region", "*")
-	url = Resolve(host, auth, vers, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	url = Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "www.google.com"
-	url = Resolve(host, auth, vers, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	url = Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "localhost:8080"
-	url = Resolve(host, auth, vers, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	rsc = "v2/" + rsc
+	url = Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	h := make(http.Header)
-	url = Resolve(host, auth, vers, rsc, values, h)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	url = Resolve(host, auth, rsc, values, h)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
-	h.Add(BuildPath(auth, vers, rsc, values), testRespName)
-	url = Resolve(host, auth, vers, rsc, values, h)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
+	h.Add(BuildPath(auth, rsc, values), testRespName)
+	url = Resolve(host, auth, rsc, values, h)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	host = "www.google.com"
+	rsc = "search"
+	values.Del("region")
+	values.Add("q", "golang")
+	auth = ""
+	url = Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	//Output:
-	//test: Resolve("","github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access]
-	//test: Resolve("","github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("www.google.com","github/advanced-go/timeseries","v2","access") -> [https://www.google.com/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
-
+	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access?region=%2A]
+	//test: Resolve("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
+	//test: Resolve("www.google.com","","search") -> [https://www.google.com/search?q=golang]
+	
 }

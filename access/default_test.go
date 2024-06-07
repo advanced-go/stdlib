@@ -1,7 +1,6 @@
 package access
 
 import (
-	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/uri"
@@ -22,7 +21,7 @@ func ExampleDefault_Host() {
 	resp.Header = make(http.Header)
 	resp.Header.Add(ContentEncoding, "gzip")
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, "")
+	logTest(EgressTraffic, start, time.Since(start), req, &resp, "google-search", "secondary", -1, 0, 0, "")
 
 	fmt.Printf("test: Default-Host() -> %v\n", "success")
 
@@ -44,7 +43,7 @@ func ExampleDefault_Authority() {
 	req.Header.Add(core.XAuthority, "github/advanced-go/auth-from")
 	//fmt.Printf("test: NewRequest() -> [err:%v] [req:%v]\n", err, req != nil)
 	resp := http.Response{StatusCode: http.StatusOK}
-	logTest(InternalTraffic, start, time.Since(start), req, &resp, "route", "primary", -1, "")
+	logTest(InternalTraffic, start, time.Since(start), req, &resp, "route", "primary", -1, 0, 0, "")
 
 	fmt.Printf("test: Default-Authority() -> %v\n", "success")
 
@@ -63,13 +62,13 @@ func ExampleDefault_Access_Request_Status() {
 
 	resp := core.StatusNotFound()
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", -1, "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", -1, 0, 0, "")
 
 	fmt.Printf("test: Default-Access-Request-Status() -> %v\n", "success")
 
 	//Output:
 	//test: Default-Access-Request-Status() -> success
-	
+
 }
 
 func ExampleDefault_Access_Request_Status_Code() {
@@ -82,7 +81,7 @@ func ExampleDefault_Access_Request_Status_Code() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", -1, "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", -1, 0, 0, "")
 
 	fmt.Printf("test: Default-Access-Request-Status-Code() -> %v\n", "success")
 
@@ -101,7 +100,7 @@ func ExampleDefault_Threshold_Duration() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", time.Second*4, "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", time.Second*4, 0, 0, "")
 
 	fmt.Printf("test: Default-Threshold-Duration() -> %v\n", "success")
 
@@ -120,7 +119,7 @@ func ExampleDefault_Threshold_Int() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", 345, "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", 345, 0, 0, "")
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -137,10 +136,10 @@ func ExampleDefault_Threshold_Deadline() {
 	start := time.Now().UTC()
 	SetOrigin(core.Origin{Region: "us", Zone: "west", SubZone: "dc1", Host: "search-app", InstanceId: "123456789"})
 
-	ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(time.Second*2))
+	//ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(time.Second*2))
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", ctx, "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, "google-search", "secondary", 0, 0, 0, "")
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -149,6 +148,6 @@ func ExampleDefault_Threshold_Deadline() {
 
 }
 
-func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
-	Log(traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
+func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
+	Log(traffic, start, duration, req, resp, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
 }

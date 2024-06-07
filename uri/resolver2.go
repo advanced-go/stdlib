@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func Resolve(host, authority, version, resource string, values url.Values, h http.Header) string {
-	path := BuildPath(authority, version, resource, values)
+func Resolve(host, authority, resource string, values url.Values, h http.Header) string {
+	path := BuildPath(authority, resource, values)
 	if h != nil {
 		p2 := h.Get(path)
 		if p2 != "" {
@@ -23,12 +23,14 @@ func Resolve(host, authority, version, resource string, values url.Values, h htt
 	return BuildOrigin(host) + "/" + path
 }
 
-func BuildPath(authority, version, resource string, values url.Values) string {
+func BuildPath(authority, resourcePath string, values url.Values) string {
 	path := strings.Builder{}
-	path.WriteString(authority)
-	path.WriteString(":")
-	path.WriteString(formatVersion(version))
-	path.WriteString(resource)
+	if authority != "" {
+		path.WriteString(authority)
+		path.WriteString(":")
+	}
+	//path.WriteString(formatVersion(version))
+	path.WriteString(resourcePath)
 	path.WriteString(formatValues(values))
 	return path.String()
 }

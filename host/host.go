@@ -14,7 +14,7 @@ const (
 )
 
 func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, dur time.Duration, handler core.HttpExchange) {
-	flags := ""
+	reasonCode := ""
 	var start time.Time
 	var resp *http.Response
 	var status *core.Status
@@ -31,8 +31,8 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		resp, status = handler(r)
 	}
 	if status.Code == http.StatusGatewayTimeout {
-		flags = access.TimeoutFlag
+		reasonCode = access.TimeoutCode
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, RouteName, "", dur, flags)
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, RouteName, "", dur, 0, 0, reasonCode)
 }

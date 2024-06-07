@@ -36,13 +36,11 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if req == nil {
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
-	//authority := ""
 	traffic := access.EgressTraffic
 	rsc := c.Router.RouteTo()
 	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
 		do = rsc.Handler
-		//authority = core.Authority(do)
 	} else {
 		if do == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : core.HttpExchange is nil"))
@@ -50,7 +48,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	}
 	inDuration, outDuration := durations(rsc, req)
 	duration := time.Duration(0)
-	flags := ""
+	reasonCode := ""
 	newURL := rsc.BuildURL(req.URL)
 	req.URL = newURL
 	if req.URL != nil {
@@ -78,13 +76,13 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if resp != nil {
 		c.Router.UpdateStats(resp.StatusCode, rsc)
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			flags = access.TimeoutFlag
+			reasonCode = access.TimeoutCode
 		}
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, duration, flags)
+		access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, duration, 0, 0, reasonCode)
 	}
 	return
 }

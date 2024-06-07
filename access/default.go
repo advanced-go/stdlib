@@ -17,12 +17,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) {
-	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, threshold, thresholdCode)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
+	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, threshold any, thresholdCode string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string {
 	newReq := BuildRequest(req)
 	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
@@ -50,8 +50,10 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"bytes\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
-		"\"threshold\":%v, "+
-		"\"th-code\":%v }",
+		"\"timeout\":%v, "+
+		"\"rate-limit\":%v, "+
+		"\"rate-burst\":%v, "+
+		"\"rc\":%v }",
 
 		// Origin, traffic, timestamp, duration
 		fmt2.JsonString(o.Region),
@@ -80,11 +82,17 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(Encoding(newResp)),
 		fmt.Sprintf("%v", newResp.ContentLength),
 
-		// Routing, controller threshold
+		// Routing
 		fmt2.JsonString(routeName),
 		fmt2.JsonString(routeTo),
-		Threshold(threshold),
-		fmt2.JsonString(thresholdCode),
+
+		// Controller thresholds
+		//Threshold(threshold),
+		milliseconds(timeout),
+		fmt.Sprintf("%v", rateLimit),
+		strconv.Itoa(rateBurst),
+		//fmt2.JsonString(thresholdCode),
+		fmt2.JsonString(reasonCode),
 	)
 
 	return s
