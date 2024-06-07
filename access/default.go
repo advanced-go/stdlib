@@ -62,7 +62,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(o.InstanceId),
 		traffic,
 		fmt2.FmtRFC3339Millis(start),
-		strconv.Itoa(milliseconds(duration)),
+		strconv.Itoa(Milliseconds(duration)),
 
 		// Request
 		fmt2.JsonString(newReq.Header.Get(XRequestId)),
@@ -88,7 +88,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 
 		// Controller thresholds
 		//Threshold(threshold),
-		milliseconds(timeout),
+		Milliseconds(timeout),
 		fmt.Sprintf("%v", rateLimit),
 		strconv.Itoa(rateBurst),
 		//fmt2.JsonString(thresholdCode),
@@ -98,8 +98,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 	return s
 }
 
-// milliseconds - convert time.Duration to milliseconds
-func milliseconds(duration time.Duration) int {
+// Milliseconds - convert time.Duration to milliseconds
+func Milliseconds(duration time.Duration) int {
 	return int(duration / time.Duration(1e6))
 }
 
@@ -157,12 +157,12 @@ func Conditional(primary, secondary string) string {
 	return primary
 }
 
-func Threshold(threshold any) int {
+func threshold(threshold any) int {
 	if threshold == nil {
 		return 0
 	}
 	if dur, ok := threshold.(time.Duration); ok {
-		return milliseconds(dur)
+		return Milliseconds(dur)
 	}
 	if i, ok1 := threshold.(int); ok1 {
 		return i
@@ -172,7 +172,7 @@ func Threshold(threshold any) int {
 	}
 	if ctx, ok := threshold.(context.Context); ok {
 		if deadline, ok1 := ctx.Deadline(); ok1 {
-			return milliseconds(time.Until(deadline))
+			return Milliseconds(time.Until(deadline))
 		}
 	}
 	return 0
