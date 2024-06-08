@@ -10,7 +10,6 @@ import (
 
 const (
 	Authorization = "Authorization"
-	XRequestId    = "X-Request-Id"
 )
 
 func badRequest(msg string) (*http.Response, *core.Status) {
@@ -42,6 +41,8 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 			return badRequest("error: AccessLog Intermediary HttpExchange is nil")
 		}
 		reasonCode := ""
+		from := r.Header.Get(core.XFrom)
+
 		var dur time.Duration
 		if ct, ok := r.Context().Deadline(); ok {
 			dur = time.Until(ct) * -1
@@ -51,7 +52,7 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 		if status.Code == http.StatusGatewayTimeout {
 			reasonCode = access.TimeoutCode
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, routeName, "", dur, 0, 0, reasonCode)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, from, routeName, "", dur, 0, 0, reasonCode)
 		return
 	}
 }

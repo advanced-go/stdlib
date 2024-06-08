@@ -22,7 +22,7 @@ func SetOrigin(o core.Origin) {
 }
 
 // FormatFunc - formatting
-type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string
+type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string
 
 // SetFormatFunc - override formatting
 func SetFormatFunc(fn FormatFunc) {
@@ -32,7 +32,7 @@ func SetFormatFunc(fn FormatFunc) {
 }
 
 // LogFn - log function
-type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName string, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string)
+type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string)
 
 // SetLogFn - override logging
 func SetLogFn(fn LogFn) {
@@ -53,15 +53,15 @@ var (
 )
 
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
+func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
 	if logger == nil || disabled {
 		return
 	}
-	logger(origin, traffic, start, duration, req, resp, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
+	logger(origin, traffic, start, duration, req, resp, from, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
 }
 
-func LogEgress(start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
-	Log(EgressTraffic, start, duration, req, resp, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
+func LogEgress(start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
+	Log(EgressTraffic, start, duration, req, resp, from, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
 }
 
 /*

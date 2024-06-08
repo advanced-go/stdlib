@@ -17,12 +17,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
-	s := formatter(o, traffic, start, duration, req, resp, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
+	s := formatter(o, traffic, start, duration, req, resp, from, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string {
 	newReq := BuildRequest(req)
 	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
@@ -70,7 +70,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(newReq.Proto),
 		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
-		fmt2.JsonString(newReq.Header.Get(core.XAuthority)),
+		fmt2.JsonString(from),
 		fmt2.JsonString(uri.UprootAuthority(newReq.URL)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),

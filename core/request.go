@@ -12,6 +12,7 @@ const (
 	XVersion   = "x-version"
 	XURLPath   = "x-url-path"
 	XTest      = "x-test"
+	XFrom      = "x-from"
 )
 
 // AddRequestId - add a request to an http.Request or an http.Header

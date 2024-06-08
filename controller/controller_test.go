@@ -53,6 +53,7 @@ func ExampleDo_Exchange() {
 	ctrl := NewExchangeController("google-search", testDo)
 	uri := "http://localhost:8081/github/advanced-go/search:yahoo?" + uri2.BuildQuery("q=golang")
 	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	req.Header.Set(core.XFrom, "github/advanced-go/from")
 
 	resp, status := ctrl.Do(nil, req)
 	var buf []byte

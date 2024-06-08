@@ -20,6 +20,7 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	var status *core.Status
 
 	core.AddRequestId(r)
+	r.Header.Add(core.XFrom, RouteName)
 	if dur > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), dur)
 		defer cancel()
@@ -34,5 +35,5 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		reasonCode = access.TimeoutCode
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, RouteName, "", dur, 0, 0, reasonCode)
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, "", RouteName, "", dur, 0, 0, reasonCode)
 }

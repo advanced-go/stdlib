@@ -37,6 +37,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		return &http.Response{StatusCode: http.StatusBadRequest}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	traffic := access.EgressTraffic
+	from := req.Header.Get(core.XFrom)
 	rsc := c.Router.RouteTo()
 	if rsc.Handler != nil {
 		traffic = access.InternalTraffic
@@ -82,7 +83,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, c.RouteName, rsc.Name, duration, 0, 0, reasonCode)
+		access.Log(traffic, start, elapsed, req, resp, from, c.RouteName, rsc.Name, duration, 0, 0, reasonCode)
 	}
 	return
 }
