@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"time"
 )
@@ -34,7 +36,21 @@ func GetRoute(name string, config []Config) (Config, bool) {
 	return Config{}, false
 }
 
+func RegisterControllerFromRoute(routeName string, config []Config, ex core.HttpExchange) *core.Status {
+	cfg, ok := GetRoute(routeName, config)
+	if !ok {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: route name not found: %v\n", routeName)))
+	}
+	ctrl := New(cfg, ex)
+	err := RegisterController(ctrl)
+	if err != nil {
+		return core.NewStatusError(core.StatusInvalidArgument, err)
+	}
+	return core.StatusOK()
+}
+
 /*
+
 func registerControllers() error {
 	route := "test"
 	cfg, ok := searchmod.GetRoute(route)
@@ -46,16 +62,7 @@ func registerControllers() error {
 	if err0 != nil {
 		return err0
 	}
-	route = searchmod.YahooRouteName
-	cfg, ok = searchmod.GetRoute(route)
-	if !ok {
-		return errors.New(fmt.Sprintf("error: registerControllers() not found: %v\n", route))
-	}
-	ctrl = controller.New(cfg, nil)
-	err0 = controller.RegisterController(ctrl)
-	if err0 != nil {
-		return err0
-	}
+
 
 	return nil
 }
