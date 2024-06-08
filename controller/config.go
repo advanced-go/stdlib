@@ -36,17 +36,21 @@ func GetRoute(name string, config []Config) (Config, bool) {
 	return Config{}, false
 }
 
-func RegisterControllerFromRoute(routeName string, config []Config, ex core.HttpExchange) *core.Status {
-	cfg, ok := GetRoute(routeName, config)
-	if !ok {
-		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: route name not found: %v\n", routeName)))
-	}
-	ctrl := New(cfg, ex)
+func RegisterControllerFromConfig(config Config, ex core.HttpExchange) *core.Status {
+	ctrl := New(config, ex)
 	err := RegisterController(ctrl)
 	if err != nil {
 		return core.NewStatusError(core.StatusInvalidArgument, err)
 	}
 	return core.StatusOK()
+}
+
+func RegisterControllerFromRoutes(routeName string, config []Config, ex core.HttpExchange) *core.Status {
+	cfg, ok := GetRoute(routeName, config)
+	if !ok {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: route name not found: %v\n", routeName)))
+	}
+	return RegisterControllerFromConfig(cfg, ex)
 }
 
 /*
