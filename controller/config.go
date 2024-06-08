@@ -52,24 +52,3 @@ func RegisterControllerFromRoutes(routeName string, config []Config, ex core.Htt
 	}
 	return RegisterControllerFromConfig(cfg, ex)
 }
-
-/*
-
-func registerControllers() error {
-	route := "test"
-	cfg, ok := searchmod.GetRoute(route)
-	if !ok {
-		return errors.New(fmt.Sprintf("error: registerControllers() not found: %v\n", route))
-	}
-	ctrl := controller.New(cfg, nil)
-	err0 := controller.RegisterController(ctrl)
-	if err0 != nil {
-		return err0
-	}
-
-
-	return nil
-}
-
-
-*/
