@@ -23,7 +23,6 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	from := r.Header.Get(core.XFrom)
 	if from == "" {
 		r.Header.Set(core.XFrom, RouteName)
-		from = RouteName
 	}
 	if dur > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), dur)
