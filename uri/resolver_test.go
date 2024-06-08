@@ -20,7 +20,7 @@ const (
 )
 
 func Example_ExpandUrl() {
-	r := NewResolver()
+	r := NewResolver2()
 	path := ""
 
 	uri, ok := r.ExpandUrl(path)
@@ -44,7 +44,7 @@ func Example_ExpandUrl() {
 
 func ExampleBuild() {
 	path := ""
-	r := NewResolver()
+	r := NewResolver2()
 
 	uri := r.Build(path)
 	fmt.Printf("test: Build-Error(\"%v\") -> [uri:%v]\n", path, uri)
@@ -64,7 +64,7 @@ func ExampleBuild() {
 
 }
 
-func override(path string, r *Resolver) {
+func override(path string, r *Resolver2) {
 	defer r.SetTemplates([]Attr{{path, yahooSearch}})()
 	uri := r.Build(path)
 	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
@@ -72,7 +72,7 @@ func override(path string, r *Resolver) {
 
 func ExampleBuild_ResetTemplates() {
 	path := "/search?q=golang"
-	r := NewResolver()
+	r := NewResolver2()
 
 	uri := r.Build(path)
 	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
@@ -91,7 +91,7 @@ func ExampleBuild_ResetTemplates() {
 
 func ExampleBuild_Values() {
 	path := ""
-	r := NewResolver()
+	r := NewResolver2()
 
 	values := make(url.Values)
 	values.Add("q", "golang")

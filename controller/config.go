@@ -15,7 +15,7 @@ type Config struct {
 	Duration     time.Duration
 }
 
-func New(cfg Config, handler core.HttpExchange) *Controller {
+func New(cfg *Config, handler core.HttpExchange) *Controller {
 	var prime *Resource
 	var second *Resource
 	if handler == nil {
@@ -36,7 +36,7 @@ func GetRoute(name string, config []Config) (Config, bool) {
 	return Config{}, false
 }
 
-func RegisterControllerFromConfig(config Config, ex core.HttpExchange) *core.Status {
+func RegisterControllerFromConfig(config *Config, ex core.HttpExchange) *core.Status {
 	ctrl := New(config, ex)
 	err := RegisterController(ctrl)
 	if err != nil {
@@ -50,5 +50,5 @@ func RegisterControllerFromRoutes(routeName string, config []Config, ex core.Htt
 	if !ok {
 		return core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: route name not found: %v\n", routeName)))
 	}
-	return RegisterControllerFromConfig(cfg, ex)
+	return RegisterControllerFromConfig(&cfg, ex)
 }

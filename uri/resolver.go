@@ -26,18 +26,18 @@ func SetLocalAuthority(authority string) {
 	localAuthority = authority
 }
 
-// Resolver - type
-type Resolver struct {
+// Resolver2 - type
+type Resolver2 struct {
 	template *sync.Map
 }
 
 // NewResolver - create a resolver
-func NewResolver() *Resolver {
-	return new(Resolver)
+func NewResolver2() *Resolver2 {
+	return new(Resolver2)
 }
 
 // SetTemplates - configure templates
-func (r *Resolver) SetTemplates(values []Attr) func() {
+func (r *Resolver2) SetTemplates(values []Attr) func() {
 	if len(values) == 0 {
 		r.template = nil
 		return func() {}
@@ -54,7 +54,7 @@ func (r *Resolver) SetTemplates(values []Attr) func() {
 }
 
 // Build - perform resolution
-func (r *Resolver) Build(path string, values ...any) string {
+func (r *Resolver2) Build(path string, values ...any) string {
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
@@ -62,7 +62,7 @@ func (r *Resolver) Build(path string, values ...any) string {
 }
 
 // BuildWithAuthority - perform resolution
-func (r *Resolver) BuildWithAuthority(authority, path string, values ...any) string {
+func (r *Resolver2) BuildWithAuthority(authority, path string, values ...any) string {
 	if len(path) == 0 {
 		return "resolver error: invalid argument, path is empty"
 	}
@@ -90,7 +90,7 @@ func (r *Resolver) BuildWithAuthority(authority, path string, values ...any) str
 }
 
 // ExpandUrl - return the expanded URL
-func (r *Resolver) ExpandUrl(path string) (string, bool) {
+func (r *Resolver2) ExpandUrl(path string) (string, bool) {
 	if r.template == nil {
 		return "", false
 	}

@@ -20,10 +20,10 @@ func ExampleNew() {
 		Duration:     time.Second * 2,
 	}
 
-	ctrl := New(cfg, nil)
+	ctrl := New(&cfg, nil)
 	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.RouteName, ctrl.Router.Primary, ctrl.Router.Secondary)
 
-	ctrl = New(cfg, createTest)
+	ctrl = New(&cfg, createTest)
 	fmt.Printf("test: New() -> [name:%v] [prime:%v] [second:%v]\n", ctrl.RouteName, ctrl.Router.Primary, ctrl.Router.Secondary)
 
 	//Output:

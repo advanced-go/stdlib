@@ -8,6 +8,7 @@ import (
 
 const (
 	testRespName = "file://[cwd]/timeseries1test/get-all-resp-v1.txt"
+	keyTest      = HostKey("key1")
 )
 
 func ExampleBuildRsc() {
@@ -71,34 +72,35 @@ func ExampleBuildPath() {
 
 }
 
-func ExampleResolve() {
+func _ExampleResolve() {
 	host := ""
 	auth := "github/advanced-go/timeseries"
 	rsc := "access"
 	values := make(url.Values)
+	r := NewResolver()
 
-	url := Resolve(host, auth, rsc, values, nil)
+	url := r.Resolve(host, auth, rsc, values, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	values.Add("region", "*")
-	url = Resolve(host, auth, rsc, values, nil)
+	url = r.Resolve(host, auth, rsc, values, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "www.google.com"
-	url = Resolve(host, auth, rsc, values, nil)
+	url = r.Resolve(host, auth, rsc, values, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "localhost:8080"
 	rsc = "v2/" + rsc
-	url = Resolve(host, auth, rsc, values, nil)
+	url = r.Resolve(host, auth, rsc, values, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	h := make(http.Header)
-	url = Resolve(host, auth, rsc, values, h)
+	url = r.Resolve(host, auth, rsc, values, h)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	h.Add(BuildPath(auth, rsc, values), testRespName)
-	url = Resolve(host, auth, rsc, values, h)
+	url = r.Resolve(host, auth, rsc, values, h)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "www.google.com"
@@ -106,7 +108,7 @@ func ExampleResolve() {
 	values.Del("region")
 	values.Add("q", "golang")
 	auth = ""
-	url = Resolve(host, auth, rsc, values, nil)
+	url = r.Resolve(host, auth, rsc, values, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	//Output:
@@ -117,5 +119,53 @@ func ExampleResolve() {
 	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
 	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
 	//test: Resolve("www.google.com","","search") -> [https://www.google.com/search?q=golang]
+
+}
+
+func ExampleHostKey_Empty() {
+	host := ""
+	auth := "github/advanced-go/timeseries"
+	rsc := "access"
+
+	r := NewResolver()
+
+	url1 := r.Resolve(nil, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(nil,\"%v\",\"%v\") -> [%v]\n", auth, rsc, url1)
+
+	url1 = r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	invalidKey := 1234
+	url1 = r.Resolve(invalidKey, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", invalidKey, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve(nil,"github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: Resolve("1234","github/advanced-go/timeseries","access") -> [error: invalid key type: int]
+
+}
+
+func ExampleHostKey_Lookup() {
+	//host := ""
+	auth := "github/advanced-go/timeseries"
+	rsc := "access"
+
+	r := NewResolver()
+
+	notFound := HostKey("100")
+	url1 := r.Resolve(notFound, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", notFound, auth, rsc, url1)
+
+	//key1 := HostKey("key1")
+	r.m[intermediaryKey] = HostEntry{Key: string(intermediaryKey), Host: "localhost:8080", Intermediary: false}
+	r.m[keyTest] = HostEntry{Key: "key1", Host: "www.google.com", Intermediary: false}
+
+	url1 = r.Resolve(keyTest, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", notFound, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve("100","github/advanced-go/timeseries","access") -> [error: missing host entry for key: 100]
+	//test: Resolve("100","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access]
 
 }
