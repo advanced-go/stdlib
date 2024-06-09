@@ -80,7 +80,7 @@ func (r *Resolver) Host(host string) string {
 	return host
 }
 
-func (r *Resolver) Resolve(host string, authority, resourcePath string, values url.Values, h http.Header) string {
+func (r *Resolver) Url(host string, authority, resourcePath string, values url.Values, h http.Header) string {
 	path := BuildPath(authority, resourcePath, values)
 	if h != nil {
 		p2 := h.Get(path)

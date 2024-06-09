@@ -65,46 +65,46 @@ func _ExampleResolve() {
 	values := make(url.Values)
 	r := NewResolver(nil)
 
-	url := r.Resolve(host, auth, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url := r.Url(host, auth, rsc, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	values.Add("region", "*")
-	url = r.Resolve(host, auth, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "www.google.com"
-	url = r.Resolve(host, auth, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "localhost:8080"
 	rsc = "v2/" + rsc
-	url = r.Resolve(host, auth, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	h := make(http.Header)
-	url = r.Resolve(host, auth, rsc, values, h)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, h)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	h.Add(BuildPath(auth, rsc, values), testRespName)
-	url = r.Resolve(host, auth, rsc, values, h)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, h)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	host = "www.google.com"
 	rsc = "search"
 	values.Del("region")
 	values.Add("q", "golang")
 	auth = ""
-	url = r.Resolve(host, auth, rsc, values, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.Url(host, auth, rsc, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	//Output:
-	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
-	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access?region=%2A]
-	//test: Resolve("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
-	//test: Resolve("www.google.com","","search") -> [https://www.google.com/search?q=golang]
+	//test: Url("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: Url("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access?region=%2A]
+	//test: Url("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=%2A]
+	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
+	//test: Url("www.google.com","","search") -> [https://www.google.com/search?q=golang]
 
 }
 
@@ -133,31 +133,31 @@ func ExampleResolver() {
 	rsc := "access"
 	r := resolverWithProxy()
 
-	url1 := r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = "duckduckgo.com"
-	url1 = r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = defaultKey
-	url1 = r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Resolve("","github/advanced-go/search","access") -> [github/advanced-go/search:access]
-	//test: Resolve("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
-	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Resolve("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
-	//test: Resolve("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: Url("","github/advanced-go/search","access") -> [github/advanced-go/search:access]
+	//test: Url("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Url("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: Url("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
 
 }
 
@@ -168,27 +168,27 @@ func ExampleResolver_Overrides_Empty() {
 	r := resolverWithProxy()
 
 	host = "duckduckgo.com"
-	url1 := r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override(nil)
 	host = defaultKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Resolve("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
-	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Resolve2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
-	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: Url("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: Url2("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Url2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
@@ -199,27 +199,27 @@ func ExampleResolver_Overrides_No_Proxy() {
 	r := resolverWithProxy()
 
 	host = defaultKey
-	url1 := r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override([]HostEntry{{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false}})
 	host = defaultKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
-	//test: Resolve2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
-	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Url2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: Url2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
@@ -230,8 +230,8 @@ func ExampleResolver_Overrides_Proxy() {
 	r := resolverWithProxy()
 
 	host = defaultKey
-	url1 := r.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override([]HostEntry{
 		{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false},
@@ -239,22 +239,22 @@ func ExampleResolver_Overrides_Proxy() {
 		{Key: bingKey, Host: "www.bing.com", Proxy: true},
 	})
 	host = defaultKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Resolve(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.Url(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
-	//test: Resolve2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
-	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Url2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: Url2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
+	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
