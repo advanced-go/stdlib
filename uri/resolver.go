@@ -24,8 +24,6 @@ type Resolver struct {
 }
 
 func NewResolver(entries []HostEntry) *Resolver {
-	//var proxyEntry HostEntry
-
 	r := new(Resolver)
 	r.m = new(sync.Map)
 	for _, e := range entries {

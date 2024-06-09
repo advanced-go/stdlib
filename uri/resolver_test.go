@@ -298,5 +298,5 @@ func ExampleResolver_Host() {
 	//test: Host2("default") -> [www.duckduckgo.com]
 	//test: Host2("bing") -> [localhost:8888]
 	//test: Host2("yahoo") -> [localhost:8081]
-	
+
 }
