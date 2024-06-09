@@ -71,6 +71,16 @@ func (r *Resolver) Override(entries []HostEntry) *Resolver {
 	}
 	return r2
 }
+func (r *Resolver) Host(host string) string {
+	if host == "" {
+		return "error: host is empty"
+	}
+	e, ok := r.entryFn(host, r.m)
+	if ok {
+		return e.Host
+	}
+	return host
+}
 
 func (r *Resolver) Resolve(host string, authority, resourcePath string, values url.Values, h http.Header) string {
 	path := BuildPath(authority, resourcePath, values)

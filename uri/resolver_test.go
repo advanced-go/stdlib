@@ -108,7 +108,7 @@ func _ExampleResolve() {
 
 }
 
-func resolverWithEnvoy() *Resolver {
+func resolverWithProxy() *Resolver {
 	return NewResolver([]HostEntry{
 		{Key: proxyKey, Host: "localhost:8081", Proxy: false},
 		{Key: defaultKey, Host: "www.google.com", Proxy: false},
@@ -118,7 +118,7 @@ func resolverWithEnvoy() *Resolver {
 	)
 }
 
-func resolverWithoutEnvoy() *Resolver {
+func resolverWithoutProxy() *Resolver {
 	return NewResolver([]HostEntry{
 		{Key: defaultKey, Host: "www.google.com", Proxy: false},
 		{Key: yahooKey, Host: "www.search.yahoo.com", Proxy: false},
@@ -131,7 +131,7 @@ func ExampleResolver() {
 	host := ""
 	auth := "github/advanced-go/search"
 	rsc := "access"
-	r := resolverWithEnvoy()
+	r := resolverWithProxy()
 
 	url1 := r.Resolve(host, auth, rsc, nil, nil)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
@@ -165,7 +165,7 @@ func ExampleResolver_Overrides_Empty() {
 	host := ""
 	auth := "github/advanced-go/search"
 	rsc := "access"
-	r := resolverWithEnvoy()
+	r := resolverWithProxy()
 
 	host = "duckduckgo.com"
 	url1 := r.Resolve(host, auth, rsc, nil, nil)
@@ -196,7 +196,7 @@ func ExampleResolver_Overrides_No_Proxy() {
 	host := ""
 	auth := "github/advanced-go/search"
 	rsc := "access"
-	r := resolverWithEnvoy()
+	r := resolverWithProxy()
 
 	host = defaultKey
 	url1 := r.Resolve(host, auth, rsc, nil, nil)
@@ -227,7 +227,7 @@ func ExampleResolver_Overrides_Proxy() {
 	host := ""
 	auth := "github/advanced-go/search"
 	rsc := "access"
-	r := resolverWithEnvoy()
+	r := resolverWithProxy()
 
 	host = defaultKey
 	url1 := r.Resolve(host, auth, rsc, nil, nil)
@@ -256,4 +256,47 @@ func ExampleResolver_Overrides_Proxy() {
 	//test: Resolve2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
 	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
+}
+
+func ExampleResolver_Host() {
+	host := ""
+	r := resolverWithProxy()
+
+	//host = defaultKey
+	host2 := r.Host(host)
+	fmt.Printf("test: Host(\"%v\") -> [%v]\n", host, host2)
+
+	host = "www.duckduckgo.com"
+	host2 = r.Host(host)
+	fmt.Printf("test: Host(\"%v\") -> [%v]\n", host, host2)
+
+	host = defaultKey
+	host2 = r.Host(host)
+	fmt.Printf("test: Host(\"%v\") -> [%v]\n", host, host2)
+
+	r2 := r.Override([]HostEntry{
+		{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false},
+		{Key: proxyKey, Host: "localhost:8888", Proxy: false},
+		{Key: bingKey, Host: "www.bing.com", Proxy: true},
+	})
+	host = defaultKey
+	host2 = r2.Host(host)
+	fmt.Printf("test: Host2(\"%v\") -> [%v]\n", host, host2)
+
+	host = bingKey
+	host2 = r2.Host(host)
+	fmt.Printf("test: Host2(\"%v\") -> [%v]\n", host, host2)
+
+	host = yahooKey
+	host2 = r2.Host(host)
+	fmt.Printf("test: Host2(\"%v\") -> [%v]\n", host, host2)
+
+	//Output:
+	//test: Host("") -> [error: host is empty]
+	//test: Host("www.duckduckgo.com") -> [www.duckduckgo.com]
+	//test: Host("default") -> [www.google.com]
+	//test: Host2("default") -> [www.duckduckgo.com]
+	//test: Host2("bing") -> [localhost:8888]
+	//test: Host2("yahoo") -> [localhost:8081]
+	
 }
