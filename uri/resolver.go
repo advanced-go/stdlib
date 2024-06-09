@@ -1,103 +1,182 @@
 package uri
 
 import (
-	"fmt"
+	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 )
 
-var (
-	localAuthority = "localhost:8080"
-)
-
 const (
-	httpScheme  = "http"
-	httpsScheme = "https"
-	localHost   = "localhost"
+	proxyKey = "proxy-key"
 )
 
-// Attr - key, value pair
-type Attr struct {
-	Key, Value string
+type HostEntry struct {
+	Key   string `json:"key"`
+	Host  string `json:"host"`
+	Proxy bool   `json:"proxy"`
 }
 
-// SetLocalAuthority - set the local authority
-func SetLocalAuthority(authority string) {
-	localAuthority = authority
+type Resolver struct {
+	m       *sync.Map
+	proxy   HostEntry
+	entryFn func(host string, m *sync.Map) (HostEntry, bool)
 }
 
-// Resolver2 - type
-type Resolver2 struct {
-	template *sync.Map
-}
+func NewResolver(entries []HostEntry) *Resolver {
+	//var proxyEntry HostEntry
 
-// NewResolver - create a resolver
-func NewResolver2() *Resolver2 {
-	return new(Resolver2)
-}
-
-// SetTemplates - configure templates
-func (r *Resolver2) SetTemplates(values []Attr) func() {
-	if len(values) == 0 {
-		r.template = nil
-		return func() {}
-	}
-	m := r.template
-	r.template = new(sync.Map)
-	for _, attr := range values {
-		key, _ := TemplateToken(attr.Key)
-		r.template.Store(key, attr.Value)
-	}
-	return func() {
-		r.template = m
-	}
-}
-
-// Build - perform resolution
-func (r *Resolver2) Build(path string, values ...any) string {
-	if len(path) == 0 {
-		return "resolver error: invalid argument, path is empty"
-	}
-	return r.BuildWithAuthority(localAuthority, path, values...)
-}
-
-// BuildWithAuthority - perform resolution
-func (r *Resolver2) BuildWithAuthority(authority, path string, values ...any) string {
-	if len(path) == 0 {
-		return "resolver error: invalid argument, path is empty"
-	}
-	if r.template != nil {
-		if uri, ok := r.ExpandUrl(path); ok {
-			if len(values) > 0 && strings.Index(uri, "%v") != -1 {
-				uri = fmt.Sprintf(uri, values...)
-			}
-			return uri
+	r := new(Resolver)
+	r.m = new(sync.Map)
+	for _, e := range entries {
+		r.m.Store(e.Key, e)
+		if e.Key == proxyKey {
+			r.proxy = e
+			r.proxy.Proxy = false
 		}
 	}
-	if !strings.HasPrefix(path, "/") {
-		path += "/"
+	r.entryFn = func(host string, m *sync.Map) (HostEntry, bool) {
+		e, ok := load(host, m)
+		if !ok {
+			return e, ok
+		}
+		if !e.Proxy {
+			return e, ok
+		}
+		if r.proxy.Host != "" {
+			return r.proxy, true
+		}
+		return HostEntry{}, false
 	}
-	if len(values) > 0 {
-		path = fmt.Sprintf(path, values...)
-	}
-	scheme := httpsScheme
-	if len(authority) == 0 || strings.HasPrefix(authority, localHost) {
-		authority = localAuthority
-		scheme = httpScheme
-	}
-	url2 := scheme + "://" + authority + path
-	return url2
+	return r
 }
 
-// ExpandUrl - return the expanded URL
-func (r *Resolver2) ExpandUrl(path string) (string, bool) {
-	if r.template == nil {
-		return "", false
+func (r *Resolver) Override(entries []HostEntry) *Resolver {
+	r2 := NewResolver(entries)
+	r2.entryFn = func(host string, m *sync.Map) (HostEntry, bool) {
+		e, ok := load(host, m)
+		if !ok {
+			return r.entryFn(host, r.m)
+		}
+		if !e.Proxy {
+			return e, ok
+		}
+		if r2.proxy.Host != "" {
+			return r2.proxy, true
+		}
+		if r.proxy.Host != "" {
+			return r.proxy, true
+		}
+		return HostEntry{}, false
 	}
-	if v, ok := r.template.Load(path); ok {
-		if s, ok2 := v.(string); ok2 {
-			return s, true
+	return r2
+}
+
+func (r *Resolver) Resolve(host string, authority, resourcePath string, values url.Values, h http.Header) string {
+	path := BuildPath(authority, resourcePath, values)
+	if h != nil {
+		p2 := h.Get(path)
+		if p2 != "" {
+			return p2
 		}
 	}
-	return "", false
+	if host == "" {
+		return path
+	}
+	e, ok := r.entryFn(host, r.m)
+	if ok {
+		return Cat(e.Host, path)
+	}
+	return Cat(host, path)
 }
+
+func Cat(host, path string) string {
+	origin := BuildOrigin(host)
+	if path[0] == '/' {
+		return origin + path
+	}
+	return origin + "/" + path
+}
+
+func BuildPath(authority, resourcePath string, values url.Values) string {
+	path := strings.Builder{}
+	if authority != "" {
+		path.WriteString(authority)
+		path.WriteString(":")
+	}
+	path.WriteString(resourcePath)
+	path.WriteString(formatValues(values))
+	return path.String()
+}
+
+func BuildOrigin(host string) string {
+	if host == "" {
+		return ""
+	}
+	origin := strings.Builder{}
+	scheme := HttpsScheme
+	if strings.Contains(host, Localhost) || strings.Contains(host, Internalhost) {
+		scheme = HttpScheme
+	}
+	origin.WriteString(scheme)
+	origin.WriteString("://")
+	origin.WriteString(host)
+	return origin.String()
+}
+
+/*
+func entry(host string, m *sync.Map) (HostEntry, bool) {
+	e, ok := load(host, m)
+	if !ok {
+		return e, ok
+	}
+	return e, true
+}
+
+
+*/
+
+func load(host string, m *sync.Map) (HostEntry, bool) {
+	if m == nil {
+		return HostEntry{}, false
+	}
+	value, ok := m.Load(host)
+	if !ok {
+		return HostEntry{}, false
+	}
+	if e, ok1 := value.(HostEntry); ok1 {
+		return e, true
+	}
+	return HostEntry{}, false
+}
+
+/*
+newUrl := strings.Builder{}
+if host != "" {
+scheme := HttpsScheme
+if strings.Contains(host, Localhost) {
+scheme = HttpScheme
+}
+newUrl.WriteString(scheme)
+newUrl.WriteString("://")
+newUrl.WriteString(host)
+}
+newUrl.WriteString(fmt.Sprintf(path, formatVersion(version)))
+newUrl.WriteString(formatValues(values))
+return newUrl.String()
+newUrl := strings.Builder{}
+	if host != "" {
+		scheme := httpsScheme
+		if strings.Contains(host, localHost) {
+			scheme = httpScheme
+		}
+		newUrl.WriteString(scheme)
+		newUrl.WriteString("://")
+		newUrl.WriteString(host)
+	}
+	newUrl.WriteString(authority)
+	newUrl.WriteString(":")
+	newUrl.WriteString(path)
+	newUrl.WriteString(formatValues(values))
+	return newUrl.String()
+*/

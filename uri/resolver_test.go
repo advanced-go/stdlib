@@ -2,127 +2,258 @@ package uri
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 )
 
 const (
-	MSFTVariable  = "{MSFT}"
-	MSFTAuthority = "www.bing.com"
-
-	GOOGLVariable  = "{GOOGL}"
-	GOOGLAuthority = "www.google.com"
-
-	fileUrl   = "file:///c:/Users/markb/GitHub/core/uri/uritest/test-response.txt"
-	fileAttrs = "file://[cwd]/uritest/attrs.json"
-
-	yahooSearch         = "https://search.yahoo.com/search?p=golang"
-	yahooSearchTemplate = "https://search.yahoo.com/search?%v"
+	testRespName = "file://[cwd]/timeseries1test/get-all-resp-v1.txt"
+	defaultKey   = "default"
+	googleKey    = "google"
+	yahooKey     = "yahoo"
+	bingKey      = "bing"
 )
 
-func Example_ExpandUrl() {
-	r := NewResolver2()
-	path := ""
+func ExampleBuildOrigin() {
+	host := ""
+	o := BuildOrigin(host)
+	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
 
-	uri, ok := r.ExpandUrl(path)
-	fmt.Printf("test: ExpandUrl-Empty(\"\") ->  [uri:%v] [ok:%v]\n", uri, ok)
+	host = "www.google.com"
+	o = BuildOrigin(host)
+	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
 
-	path = "/search"
-	uri, ok = r.ExpandUrl(path)
-	fmt.Printf("test: ExpandUrl-Invalid-Path(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
+	host = "localhost:8080"
+	o = BuildOrigin(host)
+	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
 
-	path = "/search"
-	r.SetTemplates([]Attr{{path, yahooSearch}})
-	uri, ok = r.ExpandUrl(path)
-	fmt.Printf("test: ExpandUrl-Valid(\"%v\") ->  [uri:%v] [ok:%v]\n", path, uri, ok)
-
-	//Output:
-	//test: ExpandUrl-Empty("") ->  [uri:] [ok:false]
-	//test: ExpandUrl-Invalid-Path("/search") ->  [uri:] [ok:false]
-	//test: ExpandUrl-Valid("/search") ->  [uri:https://search.yahoo.com/search?p=golang] [ok:true]
-
-}
-
-func ExampleBuild() {
-	path := ""
-	r := NewResolver2()
-
-	uri := r.Build(path)
-	fmt.Printf("test: Build-Error(\"%v\") -> [uri:%v]\n", path, uri)
-
-	path = "/search?q=golang"
-	uri = r.Build(path)
-	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
-
-	r.SetTemplates([]Attr{{path, yahooSearch}})
-	uri = r.Build(path)
-	fmt.Printf("test: Build-Override(\"%v\") -> [uri:%v]\n", path, uri)
+	host = "internalhost"
+	o = BuildOrigin(host)
+	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
 
 	//Output:
-	//test: Build-Error("") -> [uri:resolver error: invalid argument, path is empty]
-	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build-Override("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
+	//test: BuildOrigin("") -> [origin:]
+	//test: BuildOrigin("www.google.com") -> [origin:https://www.google.com]
+	//test: BuildOrigin("localhost:8080") -> [origin:http://localhost:8080]
+	//test: BuildOrigin("internalhost") -> [origin:http://internalhost]
 
 }
 
-func override(path string, r *Resolver2) {
-	defer r.SetTemplates([]Attr{{path, yahooSearch}})()
-	uri := r.Build(path)
-	fmt.Printf("test: override(\"%v\") -> [uri:%v]\n", path, uri)
-}
-
-func ExampleBuild_ResetTemplates() {
-	path := "/search?q=golang"
-	r := NewResolver2()
-
-	uri := r.Build(path)
-	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
-
-	override(path, r)
-
-	uri = r.Build(path)
-	fmt.Printf("test: Build-Default(\"%v\") -> [uri:%v]\n", path, uri)
-
-	//Output:
-	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
-	//test: override("/search?q=golang") -> [uri:https://search.yahoo.com/search?p=golang]
-	//test: Build-Default("/search?q=golang") -> [uri:http://localhost:8080/search?q=golang]
-
-}
-
-func ExampleBuild_Values() {
-	path := ""
-	r := NewResolver2()
-
+func ExampleBuildPath() {
+	auth := "github/advanced-go/timeseries"
+	rsc := "access"
 	values := make(url.Values)
-	values.Add("q", "golang")
-	path = "/search?%v"
-	uri := r.Build(path, values.Encode())
-	fmt.Printf("test: Build-Values(\"%v\") -> [uri:%v]\n", path, uri)
+	p := BuildPath(auth, rsc, values)
 
-	r.SetTemplates([]Attr{{path, yahooSearchTemplate}})
-	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build-Override-Values(\"%v\") -> [uri:%v]\n", path, uri)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
 
-	r.SetTemplates([]Attr{{path, fileAttrs}})
-	uri = r.Build(path, values.Encode())
-	fmt.Printf("test: Build-Override-File-Scheme(\"%v\") -> [uri:%v]\n", path, uri)
+	values.Add("region", "*")
+	rsc = "v2/access"
+	p = BuildPath(auth, rsc, values)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
 
 	//Output:
-	//test: Build-Values("/search?%v") -> [uri:http://localhost:8080/search?q=golang]
-	//test: Build-Override-Values("/search?%v") -> [uri:https://search.yahoo.com/search?q=golang]
-	//test: Build-Override-File-Scheme("/search?%v") -> [uri:file://[cwd]/uritest/attrs.json]
+	//test: BuildPath("github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: BuildPath("github/advanced-go/timeseries","v2/access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
 
 }
 
-func Example_Values() {
-	v := make(url.Values)
+func _ExampleResolve() {
+	host := ""
+	auth := "github/advanced-go/timeseries"
+	rsc := "access"
+	values := make(url.Values)
+	r := NewResolver(nil)
 
-	v.Add("param-1", "value-1")
-	v.Add("param-2", "value-2")
+	url := r.Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
-	fmt.Printf("test: Values.Encode() -> %v\n", v.Encode())
+	values.Add("region", "*")
+	url = r.Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	host = "www.google.com"
+	url = r.Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	host = "localhost:8080"
+	rsc = "v2/" + rsc
+	url = r.Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	h := make(http.Header)
+	url = r.Resolve(host, auth, rsc, values, h)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	h.Add(BuildPath(auth, rsc, values), testRespName)
+	url = r.Resolve(host, auth, rsc, values, h)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+
+	host = "www.google.com"
+	rsc = "search"
+	values.Del("region")
+	values.Add("q", "golang")
+	auth = ""
+	url = r.Resolve(host, auth, rsc, values, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
 
 	//Output:
-	//test: Values.Encode() -> param-1=value-1&param-2=value-2
+	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
+	//test: Resolve("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access?region=%2A]
+	//test: Resolve("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
+	//test: Resolve("www.google.com","","search") -> [https://www.google.com/search?q=golang]
+
+}
+
+func resolverWithEnvoy() *Resolver {
+	return NewResolver([]HostEntry{
+		{Key: proxyKey, Host: "localhost:8081", Proxy: false},
+		{Key: defaultKey, Host: "www.google.com", Proxy: false},
+		{Key: yahooKey, Host: "www.search.yahoo.com", Proxy: true},
+		{Key: bingKey, Host: "www.bing.com", Proxy: false},
+	},
+	)
+}
+
+func resolverWithoutEnvoy() *Resolver {
+	return NewResolver([]HostEntry{
+		{Key: defaultKey, Host: "www.google.com", Proxy: false},
+		{Key: yahooKey, Host: "www.search.yahoo.com", Proxy: false},
+		{Key: bingKey, Host: "www.bing.com", Proxy: false},
+	},
+	)
+}
+
+func ExampleResolver() {
+	host := ""
+	auth := "github/advanced-go/search"
+	rsc := "access"
+	r := resolverWithEnvoy()
+
+	url1 := r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = "duckduckgo.com"
+	url1 = r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = defaultKey
+	url1 = r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = yahooKey
+	url1 = r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = bingKey
+	url1 = r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve("","github/advanced-go/search","access") -> [github/advanced-go/search:access]
+	//test: Resolve("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Resolve("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: Resolve("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+
+}
+
+func ExampleResolver_Overrides_Empty() {
+	host := ""
+	auth := "github/advanced-go/search"
+	rsc := "access"
+	r := resolverWithEnvoy()
+
+	host = "duckduckgo.com"
+	url1 := r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	r2 := r.Override(nil)
+	host = defaultKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = bingKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = yahooKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Resolve2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+
+}
+
+func ExampleResolver_Overrides_No_Proxy() {
+	host := ""
+	auth := "github/advanced-go/search"
+	rsc := "access"
+	r := resolverWithEnvoy()
+
+	host = defaultKey
+	url1 := r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	r2 := r.Override([]HostEntry{{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false}})
+	host = defaultKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = bingKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = yahooKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: Resolve2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+
+}
+
+func ExampleResolver_Overrides_Proxy() {
+	host := ""
+	auth := "github/advanced-go/search"
+	rsc := "access"
+	r := resolverWithEnvoy()
+
+	host = defaultKey
+	url1 := r.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	r2 := r.Override([]HostEntry{
+		{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false},
+		{Key: proxyKey, Host: "localhost:8888", Proxy: false},
+		{Key: bingKey, Host: "www.bing.com", Proxy: true},
+	})
+	host = defaultKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = bingKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	host = yahooKey
+	url1 = r2.Resolve(host, auth, rsc, nil, nil)
+	fmt.Printf("test: Resolve2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+
+	//Output:
+	//test: Resolve("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: Resolve2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: Resolve2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
+	//test: Resolve2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
