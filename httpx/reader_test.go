@@ -20,7 +20,7 @@ func readAll(body io.ReadCloser) ([]byte, *core.Status) {
 }
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/exchangetest/test-response.txt"
+	s := "file://[cwd]/httpxtest/resource/test-response.txt"
 	u, _ := url.Parse(s)
 
 	resp, status0 := readResponse(u)
@@ -30,8 +30,8 @@ func Example_ReadResponse() {
 	fmt.Printf("test: readAll() -> [status:%v] [content-length:%v]\n", status, len(buf)) //string(buf))
 
 	//Output:
-	//test: readResponse(file://[cwd]/exchangetest/test-response.txt) -> [status:OK] [statusCode:200]
-	//test: readAll() -> [status:OK] [content-length:58]
+	//test: readResponse(file://[cwd]/httpxtest/resource/test-response.txt) -> [status:OK] [statusCode:200]
+	//test: readAll() -> [status:OK] [content-length:56]
 
 }
 
@@ -57,37 +57,37 @@ func Example_ReadResponse_Invalid_Scheme() {
 }
 
 func Example_ReadResponse_HTTP_Error() {
-	s := "file://[cwd]/exchangetest/message.txt"
+	s := "file://[cwd]/httpxtest/resource/message.txt"
 	u, _ := url.Parse(s)
 
 	resp, status0 := readResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
-	//test: readResponse(file://[cwd]/exchangetest/message.txt) -> [error:[malformed HTTP status code "text"]] [statusCode:500]
+	//test: readResponse(file://[cwd]/httpxtest/resource/message.txt) -> [error:[malformed HTTP status code "text"]] [statusCode:500]
 
 }
 
 func Example_ReadResponse_NotFound() {
-	s := "file://[cwd]/exchangetest/not-found.txt"
+	s := "file://[cwd]/httpxtest/resource/not-found.txt"
 	u, _ := url.Parse(s)
 
 	resp, status0 := readResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
-	//test: readResponse(file://[cwd]/exchangetest/not-found.txt) -> [error:[open C:\Users\markb\GitHub\core\exchange\exchangetest\not-found.txt: The system cannot find the file specified.]] [statusCode:404]
+	//test: readResponse(file://[cwd]/httpxtest/resource/not-found.txt) -> [error:[open C:\Users\markb\GitHub\stdlib\httpx\httpxtest\resource\not-found.txt: The system cannot find the file specified.]] [statusCode:404]
 
 }
 
 func Example_ReadResponse_EOF_Error() {
-	s := "file://[cwd]/exchangetest/http-503-error.txt"
+	s := "file://[cwd]/httpxtest/resource/http-503-error.txt"
 	u, _ := url.Parse(s)
 
 	resp, status0 := readResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
-	//test: readResponse(file://[cwd]/exchangetest/http-503-error.txt) -> [error:[unexpected EOF]] [statusCode:500]
+	//test: readResponse(file://[cwd]/httpxtest/resource/http-503-error.txt) -> [error:[unexpected EOF]] [statusCode:500]
 
 }

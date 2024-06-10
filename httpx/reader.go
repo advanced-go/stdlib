@@ -9,13 +9,11 @@ import (
 	io2 "github.com/advanced-go/stdlib/io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
 const (
-	readResponseLocation = PkgPath + ":readResponse"
-	fileExistsError      = "The system cannot find the file specified"
+	fileExistsError = "The system cannot find the file specified"
 )
 
 // readResponse - read a Http response given a URL
@@ -28,12 +26,12 @@ func readResponse(u *url.URL) (*http.Response, *core.Status) {
 	if u.Scheme != fileScheme {
 		return serverErr, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	}
-	buf, err := os.ReadFile(io2.FileName(u))
-	if err != nil {
-		if strings.Contains(err.Error(), fileExistsError) {
-			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, core.NewStatusError(core.StatusInvalidArgument, err)
+	buf, status := io2.ReadFile(u.String())
+	if !status.OK() {
+		if strings.Contains(status.Err.Error(), fileExistsError) {
+			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, core.NewStatusError(core.StatusInvalidArgument, status.Err)
 		}
-		return serverErr, core.NewStatusError(core.StatusIOError, err)
+		return serverErr, core.NewStatusError(core.StatusIOError, status.Err)
 	}
 	resp1, err2 := http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 	if err2 != nil {
