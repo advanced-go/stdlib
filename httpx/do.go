@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"github.com/advanced-go/stdlib/controller"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"time"
@@ -74,19 +73,6 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 		return resp, core.NewStatusError(resp.StatusCode, err)
 	}
 	return resp, core.NewStatus(resp.StatusCode)
-}
-
-// DoExchange - process an HTTP call utilizing a controller if configured
-func DoExchange(req *http.Request) (*http.Response, *core.Status) {
-	//req, _ := http.NewRequestWithContext(ctx, method, url, body)
-	//if h != nil {
-	//	req.Header = h
-	//}
-	ctrl, status := controller.Lookup(req)
-	if status.OK() {
-		return ctrl.Do(Do, req)
-	}
-	return Do(req)
 }
 
 func serverErrorResponse() *http.Response {

@@ -116,6 +116,7 @@ func (a *agent) Add(f func()) {
 	if a.shutdown == nil {
 		a.shutdown = f
 	} else {
+		// !panic
 		prev := a.shutdown
 		a.shutdown = func() {
 			prev()
