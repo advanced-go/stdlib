@@ -53,3 +53,39 @@ func ExampleExchange_Internal() {
 	//test: Exchange_5ms() -> [status-code:504] [status:Timeout] [buf:false]
 
 }
+
+func ExampleExchange_Egress() {
+	var buf []byte
+	ctrl := NewController("google-search", NewPrimaryResource("www.google.com", "", 0, nil), nil)
+	uri := "https://www.google.com/search?" + uri2.BuildQuery("q=golang")
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	ctrlMap.remove("www.google.com")
+
+	//resp, status := ctrl.Do(testDo, req)
+	err := RegisterController(ctrl)
+	if err != nil {
+		fmt.Printf("test: RegisterController() -> [err:%v]\n", err)
+	}
+	resp, status := Exchange(req)
+	if status.OK() {
+		buf, _ = io.ReadAll(resp.Body)
+	}
+	fmt.Printf("test: Exchange_0s() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
+
+	ctrlMap.remove("www.google.com")
+	ctrl = NewController("google-search", NewPrimaryResource("www.google.com", "", time.Millisecond*5, nil), nil)
+	err = RegisterController(ctrl)
+	if err != nil {
+		fmt.Printf("test: RegisterController() -> [err:%v]\n", err)
+	}
+	resp, status = Exchange(req)
+	if status.OK() {
+		buf, _ = io.ReadAll(resp.Body)
+	}
+	fmt.Printf("test: Exchange_5ms() -> [status-code:%v] [status:%v] [buf:%v]\n", resp.StatusCode, status, len(buf) > 0)
+
+	//Output:
+	//test: Exchange_0s() -> [status-code:200] [status:OK] [buf:true]
+	//test: Exchange_5ms() -> [status-code:504] [status:Deadline Exceeded [context deadline exceeded]] [buf:true]
+
+}
