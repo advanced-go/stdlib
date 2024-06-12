@@ -56,7 +56,7 @@ func Exchange(req *http.Request) (resp *http.Response, status *core.Status) {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	access.Log(traffic, start, time.Since(start), req, resp, from, ctrl.RouteName, rsc.Name, duration, 0, 0, reasonCode)
-	return resp, core.StatusOK()
+	return
 }
 
 func durations(rsc *Resource, req *http.Request) (in time.Duration, out time.Duration) {
