@@ -9,17 +9,15 @@ import (
 	"time"
 )
 
-func Exchange(r *http.Request) (*http.Response, *core.Status) {
-	if r == nil {
+func Exchange(req *http.Request) (resp *http.Response, status *core.Status) {
+	if req == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
-	ctrl, status := lookup(r)
+	var ctrl *Controller
+	ctrl, status = lookup(req)
 	if !status.OK() {
-		return httpx.Do(r)
+		return httpx.Do(req)
 	}
-	var resp *http.Response
-	var req *http.Request
-
 	localDo := httpx.Do
 	traffic := access.EgressTraffic
 	rsc := ctrl.Primary
@@ -36,7 +34,7 @@ func Exchange(r *http.Request) (*http.Response, *core.Status) {
 		req.Host = req.URL.Host
 	}
 	start := time.Now().UTC()
-	from := r.Header.Get(core.XFrom)
+	from := req.Header.Get(core.XFrom)
 
 	// if no timeout or an existing deadline and existing deadline is <= timeout, then use the existing request
 	if outDuration == 0 || (inDuration > 0 && inDuration <= outDuration) {
@@ -62,9 +60,11 @@ func Exchange(r *http.Request) (*http.Response, *core.Status) {
 }
 
 func durations(rsc *Resource, req *http.Request) (in time.Duration, out time.Duration) {
-	deadline, ok := req.Context().Deadline()
-	if ok {
-		in = time.Until(deadline) // * -1
+	if req != nil && req.Context() != nil {
+		deadline, ok := req.Context().Deadline()
+		if ok {
+			in = time.Until(deadline) // * -1
+		}
 	}
 	if rsc.Duration > 0 {
 		out = rsc.Duration
