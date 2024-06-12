@@ -7,12 +7,12 @@ import (
 	"sync"
 )
 
-// Exchange - exchange directory
+// Exchange - controller2 directory
 type Exchange struct {
 	m *sync.Map
 }
 
-// NewExchange - create a new exchange
+// NewExchange - create a new controller2
 func NewExchange() *Exchange {
 	e := new(Exchange)
 	e.m = new(sync.Map)
@@ -49,11 +49,11 @@ func (d *Exchange) Send(msg *Message) error {
 		return nil
 	}
 	if msg == nil {
-		return errors.New(fmt.Sprintf("error: exchange.Send() failed as message is nil"))
+		return errors.New(fmt.Sprintf("error: controller2.Send() failed as message is nil"))
 	}
 	a := d.Get(msg.To())
 	if a == nil {
-		return errors.New(fmt.Sprintf("error: exchange.Send() failed as the message To is empty or invalid : [%v]", msg.To()))
+		return errors.New(fmt.Sprintf("error: controller2.Send() failed as the message To is empty or invalid : [%v]", msg.To()))
 	}
 	a.Message(msg)
 	return nil
@@ -62,11 +62,11 @@ func (d *Exchange) Send(msg *Message) error {
 // Register - register an agent
 func (d *Exchange) Register(agent Agent) error {
 	if agent == nil {
-		return errors.New("error: exchange.Register() agent is nil")
+		return errors.New("error: controller2.Register() agent is nil")
 	}
 	_, ok := d.m.Load(agent.Uri())
 	if ok {
-		return errors.New(fmt.Sprintf("error: exchange.Register() agent already exists: [%v]", agent.Uri()))
+		return errors.New(fmt.Sprintf("error: controller2.Register() agent already exists: [%v]", agent.Uri()))
 	}
 	d.m.Store(agent.Uri(), agent)
 	if sd, ok1 := agent.(OnShutdown); ok1 {
@@ -102,7 +102,7 @@ func (d *Exchange) shutdown(msg Message) error {
 */
 
 /*
-func (d *exchange) shutdown(uri string) runtime.Status {
+func (d *controller2) shutdown(uri string) runtime.Status {
 	//d.mu.RLock()
 	//defer d.mu.RUnlock()
 	//for _, e := range d.m {

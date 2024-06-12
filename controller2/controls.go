@@ -1,4 +1,4 @@
-package exchange
+package controller2
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ type controls struct {
 	m *sync.Map
 }
 
-func Lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
+func lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
 	if req == nil || req.URL == nil {
 		return nil, core.NewStatus(http.StatusNotFound)
 	}

@@ -61,7 +61,7 @@ func ExampleRegisterError() {
 
 	//Output:
 	//test: Register(urn:agent007) -> [<nil>]
-	//test: Register(urn:agent007) -> [error: exchange.Register() agent already exists: [urn:agent007]]
+	//test: Register(urn:agent007) -> [error: controller2.Register() agent already exists: [urn:agent007]]
 
 }
 
@@ -74,9 +74,9 @@ func ExampleSendError() {
 	fmt.Printf("test: Send(%v) -> : %v\n", uri, ex.Send(NewControlMessage(uri, "", "")))
 
 	//Output:
-	//test: Send(urn:test) -> : error: exchange.Send() failed as message is nil
-	//test: Send(urn:test) -> : error: exchange.Send() failed as the message To is empty or invalid : []
-	//test: Send(urn:test) -> : error: exchange.Send() failed as the message To is empty or invalid : [urn:test]
+	//test: Send(urn:test) -> : error: controller2.Send() failed as message is nil
+	//test: Send(urn:test) -> : error: controller2.Send() failed as the message To is empty or invalid : []
+	//test: Send(urn:test) -> : error: controller2.Send() failed as the message To is empty or invalid : [urn:test]
 
 }
 

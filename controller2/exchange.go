@@ -1,35 +1,26 @@
-package exchange
+package controller2
 
 import (
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"net/http"
 	"time"
 )
 
-type Proxy struct {
-	do core.HttpExchange
-}
-
-func NewProxy(do core.HttpExchange) *Proxy {
-	p := new(Proxy)
-	p.do = do
-	return p
-}
-
-func (p *Proxy) Exchange(r *http.Request) (*http.Response, *core.Status) {
+func Exchange(r *http.Request) (*http.Response, *core.Status) {
 	if r == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
-	ctrl, status := Lookup(r)
+	ctrl, status := lookup(r)
 	if !status.OK() {
-		return p.do(r)
+		return httpx.Do(r)
 	}
 	var resp *http.Response
 	var req *http.Request
 
-	localDo := p.do
+	localDo := httpx.Do
 	traffic := access.EgressTraffic
 	rsc := ctrl.Primary
 	if rsc.Handler != nil {

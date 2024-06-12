@@ -27,7 +27,7 @@ func ExampleNewControlAgent() {
 	//if !status.OK() {
 	//	fmt.Printf("test: Register() -> [status:%v]\n", status)
 	//}
-	// 1 -10 Nanoseconds works for a direct send to a channel, sending via an exchange needs a longer sleep time
+	// 1 -10 Nanoseconds works for a direct send to a channel, sending via an controller2 needs a longer sleep time
 	//d := time.Nanosecond * 10
 	// Needed time.Nanoseconds * 50 for directory send with mutex
 	// Needed time.Nanoseconds * 1 for directory send via sync.Map

@@ -12,7 +12,7 @@ const (
 	startupLocation = PkgPath + ":Startup"
 )
 
-// Exchange - host package exchange
+// Exchange - host package controller2
 var Exchange = messaging.NewExchange()
 
 // ContentMap - slice of any content to be included in a message
