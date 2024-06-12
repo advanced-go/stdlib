@@ -4,21 +4,20 @@ import (
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
-	"github.com/advanced-go/stdlib/httpx"
 	"net/http"
 	"time"
 )
 
-func Exchange(req *http.Request) (resp *http.Response, status *core.Status) {
-	if req == nil {
+func Exchange(req *http.Request, do core.HttpExchange, ctrl *Controller) (resp *http.Response, status *core.Status) {
+	if req == nil || do == nil || ctrl == nil {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
-	var ctrl *Controller
-	ctrl, status = lookup(req)
-	if !status.OK() {
-		return httpx.Do(req)
-	}
-	localDo := httpx.Do
+	//var ctrl *Controller
+	//ctrl, status = lookup(req)
+	//if !status.OK() {
+	//	return do(req)
+	//}
+	localDo := do
 	traffic := access.EgressTraffic
 	rsc := ctrl.Primary
 	if rsc.Handler != nil {

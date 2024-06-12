@@ -19,7 +19,7 @@ type controls struct {
 	m *sync.Map
 }
 
-func lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
+func Lookup(req *http.Request) (ctrl *Controller, status *core.Status) {
 	if req == nil || req.URL == nil {
 		return nil, core.NewStatus(http.StatusNotFound)
 	}
