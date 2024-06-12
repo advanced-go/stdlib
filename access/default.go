@@ -71,7 +71,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
 		fmt2.JsonString(from),
-		fmt2.JsonString(uri.UprootAuthority(newReq.URL)),
+		fmt2.JsonString(CreateTo(newReq)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
 		fmt2.JsonString(parsed.Query),
@@ -176,4 +176,15 @@ func threshold(threshold any) int {
 		}
 	}
 	return 0
+}
+
+func CreateTo(req *http.Request) string {
+	if req == nil {
+		return ""
+	}
+	to := req.Header.Get(core.XTo)
+	if to != "" {
+		return to
+	}
+	return uri.UprootAuthority(req.URL)
 }

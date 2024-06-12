@@ -38,8 +38,6 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		reasonCode = access.TimeoutCode
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	// Set the request url to the host authority
-	//u, _ := url.Parse("/host:")
-	//r.URL = u
+	r.Header.Set(core.XTo, RouteName)
 	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, from, RouteName, "", dur, 0, 0, reasonCode)
 }
