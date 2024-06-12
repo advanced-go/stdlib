@@ -1,20 +1,24 @@
 package httpx
 
 import (
-	"github.com/advanced-go/stdlib/controller"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 )
 
-// Exchange - process an HTTP call utilizing a controller if configured
+var (
+	exchangeProxy = core.NewExchangeProxy()
+)
+
+// RegisterExchange - add an authority and Http Exchange handler to the proxy
+func RegisterExchange(authority string, handler core.HttpExchange) error {
+	return exchangeProxy.Register(authority, handler)
+}
+
+// Exchange - process an HTTP call utilizing an Exchange
 func Exchange(req *http.Request) (*http.Response, *core.Status) {
-	//req, _ := http.NewRequestWithContext(ctx, method, url, body)
-	//if h != nil {
-	//	req.Header = h
-	//}
-	ctrl, status := controller.Lookup(req)
-	if status.OK() {
-		return ctrl.Do(Do, req)
+	ex := exchangeProxy.LookupByRequest(req)
+	if ex != nil {
+		return ex(req)
 	}
 	return Do(req)
 }

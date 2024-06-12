@@ -12,13 +12,13 @@ func ContextWithTimeout(ctx context.Context, duration time.Duration) (context.Co
 		ctx = context.Background()
 	} else {
 		if _, ok := ctx.Deadline(); ok {
-			return ctx, cancel
+			return ctx, cancel1
 		}
 	}
 	if duration == 0 {
-		return ctx, cancel
+		return ctx, cancel1
 	}
 	return context.WithTimeout(ctx, duration)
 }
 
-func cancel() {}
+func cancel1() {}
