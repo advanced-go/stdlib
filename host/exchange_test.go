@@ -75,7 +75,7 @@ func ExampleRegisterExchange() {
 	err = RegisterExchange(a, appHttpExchange)
 	fmt.Printf("test: RegisterExchange(\"%v\",appHttpExchange) -> [err:%v]\n", a, err)
 
-	h := exchangeProxy.lookup(a)
+	h := exchangeProxy.Lookup(a)
 	fmt.Printf("test: Lookup(\"%v\") -> [ok:%v]\n", a, h != nil)
 
 	err = RegisterExchange(a, appHttpExchange)
@@ -91,8 +91,8 @@ func ExampleRegisterExchange() {
 }
 
 func ExampleHttpHandler() {
-	pattern := "github/advanced-go/host/HttpHandler"
-	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host/HttpHandler:entry", nil)
+	pattern := "github/advanced-go/host"
+	r, _ := http.NewRequest("PUT", "http://localhost:8080/github/advanced-go/host:entry", nil)
 
 	RegisterExchange(pattern, appHttpExchange)
 

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	exchangeProxy = NewProxy()
+	exchangeProxy = core.NewExchangeProxy()
 	hostDuration  time.Duration
 	authExchange  core.HttpExchange
 	okFunc        = func(code int) bool { return code == http.StatusOK }
@@ -33,7 +33,7 @@ func RegisterExchange(authority string, handler core.HttpExchange) error {
 	if authExchange != nil {
 		h = NewConditionalIntermediary(authExchange, handler, okFunc)
 	}
-	return exchangeProxy.register(authority, h)
+	return exchangeProxy.Register(authority, h)
 }
 
 // HttpHandler - process an HTTP request
@@ -47,7 +47,7 @@ func HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	handler := exchangeProxy.lookup(p.Authority)
+	handler := exchangeProxy.Lookup(p.Authority)
 	if handler == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -17,18 +17,18 @@ type HttpHandler func(w http.ResponseWriter, r *http.Request)
 type HttpExchange func(r *http.Request) (*http.Response, *Status)
 
 var (
-	req *http.Request
+	authorityReq *http.Request
 )
 
 func init() {
-	req, _ = http.NewRequest(http.MethodGet, AuthorityRootPath, nil)
+	authorityReq, _ = http.NewRequest(http.MethodGet, AuthorityRootPath, nil)
 }
 
 func Authority(h HttpExchange) string {
 	if h == nil {
 		return ""
 	}
-	resp, status := h(req)
+	resp, status := h(authorityReq)
 	if status.OK() {
 		return resp.Header.Get(XAuthority)
 	}

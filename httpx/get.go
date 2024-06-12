@@ -31,6 +31,7 @@ func Get(ctx context.Context, uri string, h http.Header) (resp *http.Response, s
 }
 
 // GetExchange - process an HTTP Get using an exchange if available
+/*
 func GetExchange(ctx context.Context, uri string, h http.Header) (resp *http.Response, status *core.Status) {
 	if len(uri) == 0 {
 		return serverErrorResponse(), core.NewStatusError(http.StatusBadRequest, errors.New("error: URI is empty"))
@@ -52,3 +53,6 @@ func GetExchange(ctx context.Context, uri string, h http.Header) (resp *http.Res
 	}
 	return
 }
+
+
+*/
