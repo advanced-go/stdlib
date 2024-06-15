@@ -22,6 +22,20 @@ type Origin struct {
 	InstanceId string `json:"instance-id"`
 }
 
+func (o Origin) Tag() string {
+	tag := o.Region
+	if o.Zone != "" {
+		tag += ":" + o.Zone
+	}
+	if o.SubZone != "" {
+		tag += ":" + o.SubZone
+	}
+	if o.Host != "" {
+		tag += ":" + o.Host
+	}
+	return tag
+}
+
 func NewValues(o Origin) url.Values {
 	values := make(url.Values)
 	if o.Region != "" {

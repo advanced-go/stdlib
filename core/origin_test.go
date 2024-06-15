@@ -15,7 +15,7 @@ func ExampleNewValues() {
 
 	//Output:
 	//test: NewValues() -> [map[host:[host] region:[region] sub-zone:[sub-zone] zone:[zone]]]
-	
+
 }
 
 func ExampleNewOrigin() {
@@ -32,6 +32,33 @@ func ExampleNewOrigin() {
 
 	//Output:
 	//test: NewOrigin() -> [{region zone sub-zone host }]
+
+}
+
+func ExampleOrigin_Tag() {
+	o := Origin{
+		Region:     "region",
+		Zone:       "zone",
+		SubZone:    "sub-zone",
+		Host:       "host",
+		InstanceId: "",
+	}
+	fmt.Printf("test: Tag() -> [%v]\n", o.Tag())
+
+	o.Zone = ""
+	fmt.Printf("test: Tag() -> [%v]\n", o.Tag())
+
+	o.Host = ""
+	fmt.Printf("test: Tag() -> [%v]\n", o.Tag())
+
+	o.SubZone = ""
+	fmt.Printf("test: Tag() -> [%v]\n", o.Tag())
+
+	//Output:
+	//test: Tag() -> [region:zone:sub-zone:host]
+	//test: Tag() -> [region:sub-zone:host]
+	//test: Tag() -> [region:sub-zone]
+	//test: Tag() -> [region]
 
 }
 
