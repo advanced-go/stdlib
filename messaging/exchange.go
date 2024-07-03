@@ -64,8 +64,8 @@ func (d *Exchange) Send(msg *Message) error {
 	return nil
 }
 
-// Register - register an agent
-func (d *Exchange) Register(m Mailbox) error {
+// RegisterMailbox - register a mailbox
+func (d *Exchange) RegisterMailbox(m Mailbox) error {
 	if m == nil {
 		return errors.New("error: controller2.Register() agent is nil")
 	}
@@ -82,7 +82,8 @@ func (d *Exchange) Register(m Mailbox) error {
 	return nil
 }
 
-func (d *Exchange) Get(uri string) Mailbox {
+// GetMailbox - find a mailbox
+func (d *Exchange) GetMailbox(uri string) Mailbox {
 	if len(uri) == 0 {
 		return nil
 	}
@@ -96,7 +97,8 @@ func (d *Exchange) Get(uri string) Mailbox {
 	return nil
 }
 
-func (d *Exchange) RegisterAgent(agent Agent) error {
+// Register - register an agent
+func (d *Exchange) Register(agent Agent) error {
 	if agent == nil {
 		return errors.New("error: controller2.Register() agent is nil")
 	}
@@ -113,7 +115,8 @@ func (d *Exchange) RegisterAgent(agent Agent) error {
 	return nil
 }
 
-func (d *Exchange) GetAgent(uri string) Agent {
+// Get - find an agent
+func (d *Exchange) Get(uri string) Agent {
 	if len(uri) == 0 {
 		return nil
 	}
