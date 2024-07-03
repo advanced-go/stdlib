@@ -15,11 +15,12 @@ type OnShutdown interface {
 
 // Agent - intelligent agent
 // TODO : Track agent assignment as part of the URI or separate identifier??
+// //Uri() string
 //
+//	//Message(m *Message)
 //	Track agent NID or class/type?
 type Agent interface {
-	Uri() string
-	Message(m *Message)
+	Mailbox
 	Run()
 	Shutdown()
 }
