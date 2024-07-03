@@ -7,6 +7,11 @@ import (
 	"sync"
 )
 
+type Mailbox interface {
+	Uri() string
+	Message(m *Message)
+}
+
 // Exchange - controller2 directory
 type Exchange struct {
 	m *sync.Map
@@ -60,7 +65,38 @@ func (d *Exchange) Send(msg *Message) error {
 }
 
 // Register - register an agent
-func (d *Exchange) Register(agent Agent) error {
+func (d *Exchange) Register(m Mailbox) error {
+	if m == nil {
+		return errors.New("error: controller2.Register() agent is nil")
+	}
+	_, ok := d.m.Load(m.Uri())
+	if ok {
+		return errors.New(fmt.Sprintf("error: controller2.Register() agent already exists: [%v]", m.Uri()))
+	}
+	d.m.Store(m.Uri(), m)
+	if sd, ok1 := m.(OnShutdown); ok1 {
+		sd.Add(func() {
+			d.m.Delete(m.Uri())
+		})
+	}
+	return nil
+}
+
+func (d *Exchange) Get(uri string) Mailbox {
+	if len(uri) == 0 {
+		return nil
+	}
+	v, ok1 := d.m.Load(uri)
+	if !ok1 {
+		return nil
+	}
+	if a, ok2 := v.(Mailbox); ok2 {
+		return a
+	}
+	return nil
+}
+
+func (d *Exchange) RegisterAgent(agent Agent) error {
 	if agent == nil {
 		return errors.New("error: controller2.Register() agent is nil")
 	}
@@ -77,7 +113,7 @@ func (d *Exchange) Register(agent Agent) error {
 	return nil
 }
 
-func (d *Exchange) Get(uri string) Agent {
+func (d *Exchange) GetAgent(uri string) Agent {
 	if len(uri) == 0 {
 		return nil
 	}

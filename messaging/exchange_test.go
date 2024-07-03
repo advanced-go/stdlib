@@ -22,16 +22,16 @@ func ExampleRegister() {
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri1, err)
 
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	a1 = testDir.Get(uri1)
-	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a1)
+	m1 := testDir.Get(uri1)
+	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, m1.Uri())
 
 	uri2 := "urn:test:two"
 	a2, _ := NewAgent(uri2, emptyRun, nil)
 	err = testDir.Register(a2)
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri2, err)
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
-	a2 = testDir.Get(uri2)
-	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri2, a2)
+	m2 := testDir.Get(uri2)
+	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri2, m2.Uri())
 
 	fmt.Printf("test: List() -> : %v\n", testDir.List())
 
