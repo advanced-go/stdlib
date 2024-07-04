@@ -29,6 +29,7 @@ type Agent interface {
 type AgentFunc func(uri string, ctrl, data <-chan *Message, state any)
 
 type agent struct {
+	running  bool
 	uri      string
 	state    any
 	ctrl     chan *Message
@@ -83,11 +84,18 @@ func (a *agent) Message(msg *Message) {
 
 // Run - run the agent
 func (a *agent) Run() {
+	if a.running {
+		return
+	}
+	a.running = true
 	go a.run(a.uri, a.ctrl, a.data, a.state)
 }
 
 // Shutdown - shutdown the agent
 func (a *agent) Shutdown() {
+	if !a.running {
+		return
+	}
 	if a.shutdown != nil {
 		a.shutdown()
 	}

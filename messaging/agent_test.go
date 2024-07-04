@@ -68,6 +68,9 @@ func ExampleOnShutdown() {
 	uri := "urn:agent007"
 
 	a, _ := NewAgent(uri, printAgentRun, nil)
+	if a1, ok := any(a).(*agent); ok {
+		a1.running = true
+	}
 	a.Shutdown()
 
 	a, _ = NewAgent(uri, printAgentRun, nil)
@@ -75,6 +78,9 @@ func ExampleOnShutdown() {
 		sd.Add(func() { fmt.Printf("test: OnShutdown() -> func-1()\n") })
 		sd.Add(func() { fmt.Printf("test: OnShutdown() -> func-2()\n") })
 		sd.Add(func() { fmt.Printf("test: OnShutdown() -> func-3()\n") })
+	}
+	if a1, ok := any(a).(*agent); ok {
+		a1.running = true
 	}
 	a.Shutdown()
 
