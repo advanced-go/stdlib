@@ -79,29 +79,7 @@ func (a *agent) String() string {
 
 // Message - message an agent
 func (a *agent) Message(t any) {
-	if t == nil {
-		return
-	}
-
-	if msg, ok := t.(*Message); ok {
-		switch msg.Channel() {
-		case ChannelControl:
-			if a.ctrl != nil {
-				a.ctrl <- msg
-			}
-		case ChannelData:
-			if a.data != nil {
-				a.data <- msg
-			}
-		default:
-		}
-		return
-	}
-	if status, ok := t.(*core.Status); ok {
-		if a.status != nil {
-			a.status <- status
-		}
-	}
+	Mux(t, a.ctrl, a.data, a.status)
 }
 
 // Run - run the agent
@@ -142,3 +120,30 @@ func (a *agent) Add(f func()) {
 	}()
 
 */
+
+// Mux - multiplex a message over channels
+func Mux(t any, ctrl, data chan *Message, status chan *core.Status) {
+	if t == nil {
+		return
+	}
+
+	if msg, ok := t.(*Message); ok {
+		switch msg.Channel() {
+		case ChannelControl:
+			if ctrl != nil {
+				ctrl <- msg
+			}
+		case ChannelData:
+			if data != nil {
+				data <- msg
+			}
+		default:
+		}
+		return
+	}
+	if msg1, ok := t.(*core.Status); ok {
+		if status != nil {
+			status <- msg1
+		}
+	}
+}
