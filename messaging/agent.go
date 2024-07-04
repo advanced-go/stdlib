@@ -96,6 +96,7 @@ func (a *agent) Shutdown() {
 	if !a.running {
 		return
 	}
+	a.running = false
 	if a.shutdown != nil {
 		a.shutdown()
 	}
