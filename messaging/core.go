@@ -69,6 +69,13 @@ func NewDataMessage(to, from, event string) *Message {
 	return NewMessage(ChannelData, to, from, event)
 }
 
+func NewStatusMessage(to, from, event string, status *core.Status) *Message {
+	m := NewMessage(ChannelStatus, to, from, event)
+	m.SetContent(ContentTypeStatus, status)
+	m.Body = status
+	return m
+}
+
 func NewMessageWithReply(channel, to, from, event string, replyTo Handler) *Message {
 	m := NewMessage(channel, to, from, event)
 	m.ReplyTo = replyTo
