@@ -9,7 +9,7 @@ import (
 
 type Mailbox interface {
 	Uri() string
-	Message(m *Message)
+	Message(m any)
 }
 
 // Exchange - controller2 directory

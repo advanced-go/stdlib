@@ -74,6 +74,7 @@ type Status struct {
 	Err      error `json:"err"`
 	Handled  bool  `json:"handled"`
 	Duration time.Duration
+	Content  any
 	trace    []string `json:"location"`
 }
 

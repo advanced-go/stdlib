@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"errors"
+	"github.com/advanced-go/stdlib/core"
 )
 
 const (
@@ -33,19 +34,20 @@ type agent struct {
 	state    any
 	ctrl     chan *Message
 	data     chan *Message
+	status   chan *core.Status
 	run      AgentFunc
 	shutdown func()
 }
 
 func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
-	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
+	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), make(chan *core.Status, ChannelSize), run, state)
 }
 
-func NewAgentWithChannels(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
-	return newAgent(uri, ctrl, data, run, state)
+func NewAgentWithChannels(uri string, ctrl, data chan *Message, status chan *core.Status, run AgentFunc, state any) (Agent, error) {
+	return newAgent(uri, ctrl, data, status, run, state)
 }
 
-func newAgent(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
+func newAgent(uri string, ctrl, data chan *Message, status chan *core.Status, run AgentFunc, state any) (Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
@@ -60,6 +62,7 @@ func newAgent(uri string, ctrl, data chan *Message, run AgentFunc, state any) (A
 	a.state = state
 	a.ctrl = ctrl
 	a.data = data
+	a.status = status
 	a.run = run
 	return a, nil
 }
@@ -75,23 +78,28 @@ func (a *agent) String() string {
 }
 
 // Message - message an agent
-func (a *agent) Message(msg *Message) {
-	if msg == nil {
+func (a *agent) Message(t any) {
+	if t == nil {
 		return
 	}
-	/*
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Printf("recovered in agent.Shutdown() : %v\n", r)
-			}
-		}()
 
-	*/
-	if msg.Channel() == ChannelControl && a.ctrl != nil {
-		a.ctrl <- msg
-	} else {
-		if msg.Channel() == ChannelData && a.data != nil {
-			a.data <- msg
+	if msg, ok := t.(*Message); ok {
+		switch msg.Channel() {
+		case ChannelControl:
+			if a.ctrl != nil {
+				a.ctrl <- msg
+			}
+		case ChannelData:
+			if a.data != nil {
+				a.data <- msg
+			}
+		default:
+		}
+		return
+	}
+	if status, ok := t.(*core.Status); ok {
+		if a.status != nil {
+			a.status <- status
 		}
 	}
 }
@@ -125,3 +133,12 @@ func (a *agent) Add(f func()) {
 		}
 	}
 }
+
+/*
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("recovered in agent.Shutdown() : %v\n", r)
+		}
+	}()
+
+*/

@@ -10,7 +10,7 @@ func NewControlAgent(uri string, ctrlHandler Handler) (Agent, error) {
 	if ctrlHandler == nil {
 		return nil, errors.New("error: control agent message handler is nil")
 	}
-	return NewAgentWithChannels(uri, nil, nil, controlAgentRun, ctrlHandler)
+	return NewAgentWithChannels(uri, nil, nil, nil, controlAgentRun, ctrlHandler)
 }
 
 // controlAgentRun - a simple run function that only handles control messages, and dispatches via a message handler

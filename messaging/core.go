@@ -28,6 +28,7 @@ const (
 	ContentTypeConfig = "application/config"
 	ChannelData       = "DATA"
 	ChannelControl    = "CTRL"
+	ChannelStatus     = "STATUS"
 	ChannelNone       = "NONE"
 )
 

@@ -19,7 +19,7 @@ func ExamplePing_Good() {
 	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgentWithChannels(uri1, c, nil, emptyRun, nil)
+	a, _ := NewAgentWithChannels(uri1, c, nil, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingGood(c)
 	status := Ping(ex, uri1)
@@ -35,7 +35,7 @@ func ExamplePing_Timeout() {
 	c := make(chan *Message, 16)
 
 	ex := NewExchange()
-	a, _ := NewAgentWithChannels(uri2, c, nil, emptyRun, nil)
+	a, _ := NewAgentWithChannels(uri2, c, nil, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingTimeout(c)
 	status := Ping(ex, uri2)
@@ -51,7 +51,7 @@ func ExamplePing_Error() {
 	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgentWithChannels(uri3, c, nil, emptyRun, nil)
+	a, _ := NewAgentWithChannels(uri3, c, nil, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingError(c, errors.New("ping response error"))
 	status := Ping(ex, uri3)
@@ -68,7 +68,7 @@ func ExamplePing_Delay() {
 	ex := NewExchange()
 
 	c := make(chan *Message, 16)
-	a, _ := NewAgentWithChannels(uri4, c, nil, emptyRun, nil)
+	a, _ := NewAgentWithChannels(uri4, c, nil, nil, emptyRun, nil)
 	ex.Register(a)
 	go pingDelay(c)
 	status := Ping(ex, uri4)
