@@ -2,7 +2,6 @@ package messaging
 
 import (
 	"errors"
-	"github.com/advanced-go/stdlib/core"
 )
 
 const (
@@ -34,20 +33,20 @@ type agent struct {
 	state    any
 	ctrl     chan *Message
 	data     chan *Message
-	status   chan *core.Status
+	status   chan *Message
 	run      AgentFunc
 	shutdown func()
 }
 
 func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
-	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), make(chan *core.Status, ChannelSize), run, state)
+	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
 }
 
-func NewAgentWithChannels(uri string, ctrl, data chan *Message, status chan *core.Status, run AgentFunc, state any) (Agent, error) {
+func NewAgentWithChannels(uri string, ctrl, data, status chan *Message, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, ctrl, data, status, run, state)
 }
 
-func newAgent(uri string, ctrl, data chan *Message, status chan *core.Status, run AgentFunc, state any) (Agent, error) {
+func newAgent(uri string, ctrl, data, status chan *Message, run AgentFunc, state any) (Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
@@ -78,8 +77,8 @@ func (a *agent) String() string {
 }
 
 // Message - message an agent
-func (a *agent) Message(t any) {
-	Mux(t, a.ctrl, a.data, a.status)
+func (a *agent) Message(msg *Message) {
+	Mux(msg, a.ctrl, a.data, a.status)
 }
 
 // Run - run the agent
@@ -122,28 +121,36 @@ func (a *agent) Add(f func()) {
 */
 
 // Mux - multiplex a message over channels
-func Mux(t any, ctrl, data chan *Message, status chan *core.Status) {
-	if t == nil {
+func Mux(msg *Message, ctrl, data, status chan *Message) {
+	if msg == nil {
 		return
 	}
 
-	if msg, ok := t.(*Message); ok {
-		switch msg.Channel() {
-		case ChannelControl:
-			if ctrl != nil {
-				ctrl <- msg
-			}
-		case ChannelData:
-			if data != nil {
-				data <- msg
-			}
-		default:
+	switch msg.Channel() {
+	case ChannelControl:
+		if ctrl != nil {
+			ctrl <- msg
 		}
-		return
+	case ChannelData:
+		if data != nil {
+			data <- msg
+		}
+	case ChannelStatus:
+		if status != nil {
+			status <- msg
+		}
+	default:
 	}
+}
+
+//	return
+//}
+/*
 	if msg1, ok := t.(*core.Status); ok {
 		if status != nil {
 			status <- msg1
 		}
 	}
-}
+
+*/
+//}

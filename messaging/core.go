@@ -48,12 +48,6 @@ type Message struct {
 	ReplyTo Handler
 }
 
-// StatusRelatesTo - combine a status with a relates to
-type StatusRelatesTo struct {
-	RelatesTo any
-	Status    *core.Status
-}
-
 func NewMessage(channel, to, from, event string) *Message {
 	m := new(Message)
 	if len(channel) == 0 {
