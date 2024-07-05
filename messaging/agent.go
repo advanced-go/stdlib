@@ -105,36 +105,14 @@ func (a *agent) Shutdown() {
 
 // Add - add a shutdown function
 func (a *agent) Add(f func()) {
-	if f == nil {
-		return
-	}
-	if a.shutdown == nil {
-		a.shutdown = f
-	} else {
-		// !panic
-		prev := a.shutdown
-		a.shutdown = func() {
-			prev()
-			f()
-		}
-	}
+	a.shutdown = AddShutdown(a.shutdown, f)
 }
-
-/*
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("recovered in agent.Shutdown() : %v\n", r)
-		}
-	}()
-
-*/
 
 // Mux - multiplex a message over channels
 func Mux(msg *Message, ctrl, data, status chan *Message) {
 	if msg == nil {
 		return
 	}
-
 	switch msg.Channel() {
 	case ChannelControl:
 		if ctrl != nil {
@@ -152,6 +130,23 @@ func Mux(msg *Message, ctrl, data, status chan *Message) {
 	}
 }
 
+func AddShutdown(curr, next func()) func() {
+	if next == nil {
+		return nil
+	}
+	if curr == nil {
+		curr = next
+	} else {
+		// !panic
+		prev := curr
+		curr = func() {
+			prev()
+			next()
+		}
+	}
+	return curr
+}
+
 //	return
 //}
 /*
@@ -163,3 +158,12 @@ func Mux(msg *Message, ctrl, data, status chan *Message) {
 
 */
 //}
+
+/*
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("recovered in agent.Shutdown() : %v\n", r)
+		}
+	}()
+
+*/
