@@ -50,9 +50,9 @@ func (d *Exchange) List() []string {
 // Send - send a message
 func (d *Exchange) Send(msg *Message) error {
 	// TO DO : authenticate shutdown control message
-	if msg != nil && msg.Event() == ShutdownEvent {
-		return nil
-	}
+	//if msg != nil && msg.Event() == ShutdownEvent {
+	//	return nil
+	//}
 	if msg == nil {
 		return errors.New(fmt.Sprintf("error: controller2.Send() failed as message is nil"))
 	}
@@ -62,6 +62,22 @@ func (d *Exchange) Send(msg *Message) error {
 	}
 	a.Message(msg)
 	return nil
+}
+
+// Broadcast - broadcast a message to all entries
+func (d *Exchange) Broadcast(msg *Message) error {
+	if msg == nil {
+		return errors.New(fmt.Sprintf("error: exchange.Broadcast() failed as message is nil"))
+	}
+	var err error
+	for _, uri := range d.List() {
+		a := d.Get(uri)
+		if a == nil {
+			continue
+		}
+		a.Message(msg)
+	}
+	return err
 }
 
 // RegisterMailbox - register a mailbox

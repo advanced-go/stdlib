@@ -142,7 +142,13 @@ func ExampleExchangeOnShutdown() {
 	fmt.Printf("test: Get(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get(%v) -> : %v\n", uri2, ex.Get(uri2))
 
+	if t, ok := any(a1).(*agent); ok {
+		t.running = true
+	}
 	a1.Shutdown()
+	if t, ok := any(a2).(*agent); ok {
+		t.running = true
+	}
 	a2.Shutdown()
 
 	fmt.Printf("test: Get-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
@@ -154,6 +160,10 @@ func ExampleExchangeOnShutdown() {
 
 	fmt.Printf("test: Get-Ex1(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get-Ex2(%v) -> : %v\n", uri1, ex.Get(uri1))
+
+	if t, ok := any(a1).(*agent); ok {
+		t.running = true
+	}
 	a1.Shutdown()
 	fmt.Printf("test: Get-Ex1-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get-Ex2-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
