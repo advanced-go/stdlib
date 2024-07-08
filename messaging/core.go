@@ -13,6 +13,7 @@ const (
 	PingEvent        = "event:ping"
 	ReconfigureEvent = "event:reconfigure"
 	DataEvent        = "event:data"
+	StatusEvent      = "event:status"
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
