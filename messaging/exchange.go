@@ -76,6 +76,7 @@ func (d *Exchange) Broadcast(msg *Message) error {
 			continue
 		}
 		a.Message(msg)
+		d.m.Delete(uri)
 	}
 	return err
 }
