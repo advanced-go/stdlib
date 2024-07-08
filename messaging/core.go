@@ -92,7 +92,11 @@ func NewMessageWithStatus(channel, to, from, event string, status *core.Status) 
 }
 
 func (m *Message) String() string {
-	return fmt.Sprintf("[chan:%v] [from:%v] [to:%v] [%v]", m.Channel(), m.From(), m.To(), m.Event())
+	status := m.Status()
+	if status != nil {
+		return fmt.Sprintf("[chan:%v] [from:%v] [to:%v] [%v] [status:%v]\n", m.Channel(), m.From(), m.To(), m.Event(), status)
+	}
+	return fmt.Sprintf("[chan:%v] [from:%v] [to:%v] [%v]\n", m.Channel(), m.From(), m.To(), m.Event())
 }
 
 func (m *Message) To() string {
