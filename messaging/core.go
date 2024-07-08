@@ -71,8 +71,8 @@ func NewDataMessage(to, from, event string) *Message {
 	return NewMessage(ChannelData, to, from, event)
 }
 
-func NewStatusMessage(to, from, event string, status *core.Status) *Message {
-	m := NewMessage(ChannelStatus, to, from, event)
+func NewStatusMessage(to, from string, status *core.Status) *Message {
+	m := NewMessage(ChannelStatus, to, from, StatusEvent)
 	m.SetContent(ContentTypeStatus, status)
 	m.Body = status
 	return m
