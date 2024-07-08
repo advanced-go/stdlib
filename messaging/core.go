@@ -24,6 +24,7 @@ const (
 	XFrom             = "x-from"
 	XEvent            = "x-event"
 	XChannel          = "x-channel"
+	XAgentId          = "x-agent-id"
 	ContentTypeStatus = "application/status"
 	ContentTypeConfig = "application/config"
 	ChannelData       = "DATA"
