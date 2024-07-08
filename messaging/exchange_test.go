@@ -61,7 +61,7 @@ func ExampleRegisterError() {
 
 	//Output:
 	//test: Register(urn:agent007) -> [<nil>]
-	//test: Register(urn:agent007) -> [error: controller2.Register() agent already exists: [urn:agent007]]
+	//test: Register(urn:agent007) -> [error: exchange.Register() agent already exists: [urn:agent007]]
 
 }
 

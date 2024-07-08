@@ -117,11 +117,11 @@ func (d *Exchange) GetMailbox(uri string) Mailbox {
 // Register - register an agent
 func (d *Exchange) Register(agent Agent) error {
 	if agent == nil {
-		return errors.New("error: controller2.Register() agent is nil")
+		return errors.New("error: exchange.Register() agent is nil")
 	}
 	_, ok := d.m.Load(agent.Uri())
 	if ok {
-		return errors.New(fmt.Sprintf("error: controller2.Register() agent already exists: [%v]", agent.Uri()))
+		return errors.New(fmt.Sprintf("error: exchange.Register() agent already exists: [%v]", agent.Uri()))
 	}
 	d.m.Store(agent.Uri(), agent)
 	if sd, ok1 := agent.(OnShutdown); ok1 {
