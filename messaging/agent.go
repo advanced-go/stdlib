@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"errors"
+	"github.com/advanced-go/stdlib/core"
 )
 
 const (
@@ -23,6 +24,11 @@ type Agent interface {
 	Mailbox
 	Run()
 	Shutdown()
+}
+
+type AgentWithHandler interface {
+	Agent
+	Handle(s *core.Status, requestId string) *core.Status
 }
 
 // AgentFunc - agent function
