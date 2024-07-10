@@ -26,7 +26,7 @@ type Agent interface {
 	Shutdown()
 }
 
-type AgentWithHandler interface {
+type OpsAgent interface {
 	Agent
 	Handle(s *core.Status, requestId string) *core.Status
 }
