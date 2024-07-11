@@ -11,6 +11,7 @@ const (
 	SubZoneKey    = "sub-zone"
 	HostKey       = "host"
 	InstanceIdKey = "id"
+	RouteKey      = "route"
 )
 
 // Origin - location
@@ -20,6 +21,7 @@ type Origin struct {
 	SubZone    string `json:"sub-zone"`
 	Host       string `json:"host"`
 	InstanceId string `json:"instance-id"`
+	Route      string `json:"route"`
 }
 
 func (o Origin) Tag() string {
