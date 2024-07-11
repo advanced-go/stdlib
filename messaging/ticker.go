@@ -15,9 +15,8 @@ func NewTicker(duration time.Duration) *Ticker {
 	return t
 }
 
-func (t *Ticker) C() <-chan time.Time {
-	return t.ticker.C
-}
+func (t *Ticker) Duration() time.Duration { return t.duration }
+func (t *Ticker) C() <-chan time.Time     { return t.ticker.C }
 
 func (t *Ticker) Start(newDuration time.Duration) {
 	if newDuration <= 0 {
