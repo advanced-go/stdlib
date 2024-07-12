@@ -117,6 +117,10 @@ func (m *Message) RelatesTo() string {
 	return m.Header.Get(XRelatesTo)
 }
 
+func (m *Message) ForwardTo() string {
+	return m.Header.Get(XForwardTo)
+}
+
 func (m *Message) Channel() string {
 	return m.Header.Get(XChannel)
 }
