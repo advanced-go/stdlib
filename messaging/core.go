@@ -14,6 +14,7 @@ const (
 	ReconfigureEvent = "event:reconfigure"
 	DataEvent        = "event:data"
 	StatusEvent      = "event:status"
+	DataChangeEvent  = "event:data-change"
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
