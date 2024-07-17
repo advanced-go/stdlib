@@ -10,16 +10,16 @@ import (
 // TODO : add support for control messages or restart, apply-changes, rollback-changes
 
 const (
-	StartupEvent         = "event:startup"
-	ShutdownEvent        = "event:shutdown"
-	RestartEvent         = "event:restart"
-	PingEvent            = "event:ping"
-	ReconfigureEvent     = "event:reconfigure"
-	ApplyChangesEvent    = "event:apply-changes"
-	RollbackChangesEvent = "event:rollback-changes"
-	DataEvent            = "event:data"
-	StatusEvent          = "event:status"
-	DataChangeEvent      = "event:data-change"
+	StartupEvent           = "event:startup"
+	ShutdownEvent          = "event:shutdown"
+	RestartEvent           = "event:restart"
+	PingEvent              = "event:ping"
+	ReconfigureEvent       = "event:reconfigure"
+	ApplyChangesetEvent    = "event:apply-changeset"
+	RollbackChangesetEvent = "event:rollback-changeset"
+	DataEvent              = "event:data"
+	StatusEvent            = "event:status"
+	DataChangeEvent        = "event:data-change"
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
