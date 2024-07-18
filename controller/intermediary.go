@@ -12,7 +12,7 @@ func NewControllerIntermediary(routeName string, c2 core.HttpExchange) core.Http
 		if c2 == nil {
 			return &http.Response{StatusCode: http.StatusBadRequest}, core.StatusBadRequest() //errors.New("error: AccessLog Intermediary HttpExchange is nil")
 		}
-		reasonCode := ""
+		controllerCode := ""
 		from := r.Header.Get(core.XFrom)
 
 		var dur time.Duration
@@ -22,9 +22,9 @@ func NewControllerIntermediary(routeName string, c2 core.HttpExchange) core.Http
 		start := time.Now().UTC()
 		resp, status = c2(r)
 		if status.Code == http.StatusGatewayTimeout {
-			reasonCode = access.TimeoutCode
+			controllerCode = access.TimeoutCode
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, from, routeName, "", dur, 0, 0, reasonCode)
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, from, routeName, "", -1, dur, 0, 0, controllerCode, "")
 		return
 	}
 }

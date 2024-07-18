@@ -49,7 +49,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	}
 	inDuration, outDuration := durations(rsc, req)
 	duration := time.Duration(0)
-	reasonCode := ""
+	controllerCode := ""
 	newURL := rsc.BuildURL(req.URL)
 	req.URL = newURL
 	if req.URL != nil {
@@ -77,13 +77,13 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 	if resp != nil {
 		c.Router.UpdateStats(resp.StatusCode, rsc)
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			reasonCode = access.TimeoutCode
+			controllerCode = access.TimeoutCode
 		}
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, from, c.RouteName, rsc.Name, duration, 0, 0, reasonCode)
+		access.Log(traffic, start, elapsed, req, resp, from, c.RouteName, rsc.Name, -1, duration, -1, 0, controllerCode, "")
 	}
 	return
 }

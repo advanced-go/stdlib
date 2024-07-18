@@ -17,12 +17,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) {
-	s := formatter(o, traffic, start, duration, req, resp, from, routeName, routeTo, timeout, rateLimit, rateBurst, reasonCode)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) {
+	s := formatter(o, traffic, start, duration, req, resp, from, routeName, routeTo, routingPercent, timeout, rateLimit, rateBurst, controllerCode, routingCode)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, timeout time.Duration, rateLimit float64, rateBurst int, reasonCode string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) string {
 	newReq := BuildRequest(req)
 	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
@@ -50,9 +50,11 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"bytes\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
+		"\"route-pcent\":%v, "+
 		"\"timeout\":%v, "+
 		"\"rate-limit\":%v, "+
 		"\"rate-burst\":%v, "+
+		"\"cc\":%v, "+
 		"\"rc\":%v }",
 
 		// Origin, traffic, timestamp, duration
@@ -85,6 +87,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		// Routing
 		fmt2.JsonString(routeName),
 		fmt2.JsonString(routeTo),
+		fmt.Sprintf("%v", routingPercent),
 
 		// Controller thresholds
 		//Threshold(threshold),
@@ -92,7 +95,8 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt.Sprintf("%v", rateLimit),
 		strconv.Itoa(rateBurst),
 		//fmt2.JsonString(thresholdCode),
-		fmt2.JsonString(reasonCode),
+		fmt2.JsonString(controllerCode),
+		fmt2.JsonString(routingCode),
 	)
 
 	return s
