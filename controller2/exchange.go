@@ -54,7 +54,7 @@ func Exchange(req *http.Request, do core.HttpExchange, ctrl *Controller) (resp *
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
-	access.Log(traffic, start, time.Since(start), req, resp, from, ctrl.RouteName, rsc.Name, -1, duration, 0, 0, reasonCode, "")
+	access.Log(traffic, start, time.Since(start), req, resp, access.Routing{FromAuthority: from, RouteName: ctrl.RouteName, To: rsc.Name, Percent: -1}, access.Controller{Timeout: duration, Code: reasonCode})
 	return
 }
 

@@ -29,7 +29,6 @@ type Agent interface {
 type OpsAgent interface {
 	Agent
 	core.ErrorHandler
-	//Handle(s *core.Status, requestId string) *core.Status
 }
 
 // AgentFunc - agent function

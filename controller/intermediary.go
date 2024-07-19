@@ -24,7 +24,7 @@ func NewControllerIntermediary(routeName string, c2 core.HttpExchange) core.Http
 		if status.Code == http.StatusGatewayTimeout {
 			controllerCode = access.TimeoutCode
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, from, routeName, "", -1, dur, 0, 0, controllerCode, "")
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{FromAuthority: from, RouteName: routeName, Percent: -1}, access.Controller{Timeout: dur, Code: controllerCode})
 		return
 	}
 }

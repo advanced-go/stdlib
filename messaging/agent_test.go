@@ -2,8 +2,22 @@ package messaging
 
 import (
 	"fmt"
+	"github.com/advanced-go/stdlib/core"
 	"time"
 )
+
+type testAgent struct{}
+
+func newTestAgent() *testAgent          { return new(testAgent) }
+func (t *testAgent) Uri() string        { return "testAgent" }
+func (t *testAgent) Message(m *Message) { fmt.Printf("test: testAgent.Message() -> %v\n", m) }
+func (t *testAgent) Handle(status *core.Status, _ string) *core.Status {
+	fmt.Printf("test: opsAgent.Handle() -> [status:%v]\n", status)
+	status.Handled = true
+	return status
+}
+func (t *testAgent) Run()      {}
+func (t *testAgent) Shutdown() {}
 
 func printAgentRun(uri string, ctrl, data <-chan *Message, state any) {
 	fmt.Printf("test: AgentRun() -> [uri:%v] [ctrl:%v] [data:%v] [state:%v]\n", uri, ctrl != nil, data != nil, state != nil)
@@ -31,6 +45,19 @@ func testAgentRun(uri string, ctrl, data <-chan *Message, _ any) {
 		default:
 		}
 	}
+}
+
+func ExampleNewOpsAgent() {
+	a := newTestAgent()
+	if _, ok := any(a).(OpsAgent); ok {
+		fmt.Printf("test: OpsAgent() -> ok\n")
+	} else {
+		fmt.Printf("test: OpsAgent() -> fail\n")
+	}
+
+	//Output:
+	//test: OpsAgent() -> ok
+
 }
 
 func ExampleNewAgent_Error() {

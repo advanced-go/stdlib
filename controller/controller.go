@@ -83,7 +83,7 @@ func (c *Controller) Do(do core.HttpExchange, req *http.Request) (resp *http.Res
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
 	if !disableLogging {
-		access.Log(traffic, start, elapsed, req, resp, from, c.RouteName, rsc.Name, -1, duration, -1, 0, controllerCode, "")
+		access.Log(traffic, start, elapsed, req, resp, access.Routing{FromAuthority: from, RouteName: c.RouteName, To: rsc.Name, Percent: -1}, access.Controller{Timeout: duration, RateLimit: -1, RateBurst: 0, Code: controllerCode})
 	}
 	return
 }

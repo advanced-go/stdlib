@@ -39,5 +39,5 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
 	r.Header.Set(core.XTo, RouteName)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, from, RouteName, "", -1, dur, 0, 0, controllerCode, "")
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, access.Routing{FromAuthority: from, RouteName: RouteName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: controllerCode})
 }
