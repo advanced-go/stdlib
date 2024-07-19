@@ -28,7 +28,8 @@ type Agent interface {
 
 type OpsAgent interface {
 	Agent
-	Handle(s *core.Status, requestId string) *core.Status
+	core.ErrorHandler
+	//Handle(s *core.Status, requestId string) *core.Status
 }
 
 // AgentFunc - agent function

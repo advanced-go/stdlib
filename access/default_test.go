@@ -21,7 +21,7 @@ func ExampleDefault_Host() {
 	resp.Header = make(http.Header)
 	resp.Header.Add(ContentEncoding, "gzip")
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, &resp, "", "google-search", "secondary", -1, -1, 0, 0, "", "")
+	logTest(EgressTraffic, start, time.Since(start), req, &resp, Routing{RouteName: "google-search", To: "secondary", Percent: -1}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Host() -> %v\n", "success")
 
@@ -43,7 +43,7 @@ func ExampleDefault_Authority() {
 	req.Header.Add(core.XAuthority, "github/advanced-go/auth-from")
 	//fmt.Printf("test: NewRequest() -> [err:%v] [req:%v]\n", err, req != nil)
 	resp := http.Response{StatusCode: http.StatusOK}
-	logTest(InternalTraffic, start, time.Since(start), req, &resp, "", "route", "primary", -1, -1, 0, 0, "", "")
+	logTest(InternalTraffic, start, time.Since(start), req, &resp, Routing{RouteName: "route", To: "primary", Percent: -1}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Authority() -> %v\n", "success")
 
@@ -62,7 +62,7 @@ func ExampleDefault_Access_Request_Status() {
 
 	resp := core.StatusNotFound()
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "", "google-search", "secondary", -1, -1, 0, 0, "", "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary", Percent: -1}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Access-Request-Status() -> %v\n", "success")
 
@@ -81,7 +81,7 @@ func ExampleDefault_Access_Request_Status_Code() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "", "google-search", "secondary", 20, -1, 0, 0, "", "UP")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary", Percent: 20, Code: "UP"}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Access-Request-Status-Code() -> %v\n", "success")
 
@@ -100,7 +100,7 @@ func ExampleDefault_Threshold_Duration() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "", "google-search", "secondary", 40, time.Second*4, 0, 0, "", "FO")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary", Percent: 40, Code: "FO"}, Controller{Timeout: time.Second * 4})
 
 	fmt.Printf("test: Default-Threshold-Duration() -> %v\n", "success")
 
@@ -119,7 +119,7 @@ func ExampleDefault_Threshold_Int() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "", "google-search", "secondary", -1, 345, 0, 0, "", "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary"}, Controller{Timeout: -1, RateLimit: 345})
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -139,7 +139,7 @@ func ExampleDefault_Threshold_Deadline() {
 	//ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(time.Second*2))
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, "", "google-search", "secondary", 0, 0, 0, 0, "", "")
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary"}, Controller{})
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -148,6 +148,6 @@ func ExampleDefault_Threshold_Deadline() {
 
 }
 
-func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) {
-	Log(traffic, start, duration, req, resp, from, routeName, routeTo, routingPercent, timeout, rateLimit, rateBurst, controllerCode, routingCode)
+func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
+	Log(traffic, start, duration, req, resp, routing, controller)
 }

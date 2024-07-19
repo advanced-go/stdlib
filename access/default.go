@@ -17,12 +17,12 @@ const (
 	ContentEncoding = "Content-Encoding"
 )
 
-var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) {
-	s := formatter(o, traffic, start, duration, req, resp, from, routeName, routeTo, routingPercent, timeout, rateLimit, rateBurst, controllerCode, routingCode)
+var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
+	s := formatter(o, traffic, start, duration, req, resp, routing, controller)
 	log.Default().Printf("%v\n", s)
 }
 
-func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) string {
+func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) string {
 	newReq := BuildRequest(req)
 	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
@@ -72,7 +72,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(newReq.Proto),
 		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
-		fmt2.JsonString(from),
+		fmt2.JsonString(routing.FromAuthority),
 		fmt2.JsonString(CreateTo(newReq)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
@@ -85,18 +85,18 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt.Sprintf("%v", newResp.ContentLength),
 
 		// Routing
-		fmt2.JsonString(routeName),
-		fmt2.JsonString(routeTo),
-		fmt.Sprintf("%v", routingPercent),
+		fmt2.JsonString(routing.RouteName),
+		fmt2.JsonString(routing.To),
+		fmt.Sprintf("%v", routing.Percent),
 
 		// Controller thresholds
 		//Threshold(threshold),
-		Milliseconds(timeout),
-		fmt.Sprintf("%v", rateLimit),
-		strconv.Itoa(rateBurst),
+		Milliseconds(controller.Timeout),
+		fmt.Sprintf("%v", controller.RateLimit),
+		strconv.Itoa(controller.RateBurst),
 		//fmt2.JsonString(thresholdCode),
-		fmt2.JsonString(controllerCode),
-		fmt2.JsonString(routingCode),
+		fmt2.JsonString(controller.Code),
+		fmt2.JsonString(routing.Code),
 	)
 
 	return s

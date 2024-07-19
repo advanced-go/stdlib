@@ -16,13 +16,30 @@ const (
 	RateLimitCode   = "RL"
 )
 
+// Routing - routing attributes
+type Routing struct {
+	FromAuthority string // Authority
+	RouteName     string
+	To            string // Primary, secondary
+	Percent       int
+	Code          string
+}
+
+// Controller - controller attributes
+type Controller struct {
+	Timeout   time.Duration
+	RateLimit float64
+	RateBurst int
+	Code      string
+}
+
 // SetOrigin - initialize the origin
 func SetOrigin(o core.Origin) {
 	origin = o
 }
 
 // FormatFunc - formatting
-type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) string
+type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) string
 
 // SetFormatFunc - override formatting
 func SetFormatFunc(fn FormatFunc) {
@@ -32,7 +49,7 @@ func SetFormatFunc(fn FormatFunc) {
 }
 
 // LogFn - log function
-type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string)
+type LogFn func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller)
 
 // SetLogFn - override logging
 func SetLogFn(fn LogFn) {
@@ -53,15 +70,15 @@ var (
 )
 
 // Log - access logging
-func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) {
+func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
 	if logger == nil || disabled {
 		return
 	}
-	logger(origin, traffic, start, duration, req, resp, from, routeName, routeTo, routingPercent, timeout, rateLimit, rateBurst, controllerCode, routingCode)
+	logger(origin, traffic, start, duration, req, resp, routing, controller)
 }
 
-func LogEgress(start time.Time, duration time.Duration, req any, resp any, from, routeName, routeTo string, routingPercent int, timeout time.Duration, rateLimit float64, rateBurst int, controllerCode, routingCode string) {
-	Log(EgressTraffic, start, duration, req, resp, from, routeName, routeTo, routingPercent, timeout, rateLimit, rateBurst, controllerCode, routingCode)
+func LogEgress(start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
+	Log(EgressTraffic, start, duration, req, resp, routing, controller)
 }
 
 /*
