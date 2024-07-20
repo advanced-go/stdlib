@@ -10,11 +10,14 @@ type testAgent struct{}
 
 func newTestAgent() *testAgent          { return new(testAgent) }
 func (t *testAgent) Uri() string        { return "testAgent" }
-func (t *testAgent) Message(m *Message) { fmt.Printf("test: testAgent.Message() -> %v\n", m) }
+func (t *testAgent) Message(m *Message) { fmt.Printf("test: opsAgent.Message() -> %v\n", m) }
 func (t *testAgent) Handle(status *core.Status, _ string) *core.Status {
 	fmt.Printf("test: opsAgent.Handle() -> [status:%v]\n", status)
 	status.Handled = true
 	return status
+}
+func (t *testAgent) AddActivity(content any) {
+	fmt.Printf("test: opsAgent.AddActivity() -> %v]\n", content)
 }
 func (t *testAgent) Run()      {}
 func (t *testAgent) Shutdown() {}

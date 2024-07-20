@@ -29,6 +29,7 @@ type Agent interface {
 type OpsAgent interface {
 	Agent
 	core.ErrorHandler
+	AddActivity(content any)
 }
 
 // AgentFunc - agent function
