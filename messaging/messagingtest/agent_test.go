@@ -23,5 +23,5 @@ func ExampleOld() {
 
 	//Output:
 	//test
-	
+
 }
