@@ -3,6 +3,7 @@ package messaging
 import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	fmt2 "github.com/advanced-go/stdlib/fmt"
 	"time"
 )
 
@@ -16,8 +17,8 @@ func (t *testAgent) Handle(status *core.Status, _ string) *core.Status {
 	status.Handled = true
 	return status
 }
-func (t *testAgent) AddActivity(content any) {
-	fmt.Printf("test: opsAgent.AddActivity() -> %v]\n", content)
+func (t *testAgent) AddActivity(agentId string, content any) {
+	fmt.Printf("test: opsAgent.AddActivity() -> %v : %v -> %v]\n", fmt2.FmtRFC3339Millis(time.Now().UTC()), agentId, content)
 }
 func (t *testAgent) Run()      {}
 func (t *testAgent) Shutdown() {}
