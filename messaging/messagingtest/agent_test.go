@@ -17,3 +17,11 @@ func ExampleNewAgent() {
 	//test: OpsAgent() -> ok
 
 }
+
+func ExampleOld() {
+	fmt.Printf("test")
+
+	//Output:
+	//test
+	
+}
