@@ -81,7 +81,7 @@ func ExampleDefault_Access_Request_Status_Code() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary", Percent: 20, Code: "UP"}, Controller{Timeout: -1})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{RouteName: "google-search", To: "secondary", Percent: 20, Code: "RD"}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Access-Request-Status-Code() -> %v\n", "success")
 
