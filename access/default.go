@@ -15,6 +15,7 @@ import (
 
 const (
 	ContentEncoding = "Content-Encoding"
+	LocationHeader  = "Location"
 )
 
 var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
@@ -37,6 +38,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"duration\":%v, "+
 		"\"request-id\":%v, "+
 		"\"relates-to\":%v, "+
+		"\"location\":%v, "+
 		"\"protocol\":%v, "+
 		"\"method\":%v, "+
 		"\"host\":%v, "+
@@ -69,6 +71,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		// Request
 		fmt2.JsonString(newReq.Header.Get(XRequestId)),
 		fmt2.JsonString(newReq.Header.Get(XRelatesTo)),
+		fmt2.JsonString(newReq.Header.Get(LocationHeader)),
 		fmt2.JsonString(newReq.Proto),
 		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
