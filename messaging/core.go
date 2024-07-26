@@ -13,6 +13,7 @@ const (
 	StartupEvent           = "event:startup"
 	ShutdownEvent          = "event:shutdown"
 	RestartEvent           = "event:restart"
+	ClientStartupEvent     = "event:client-startup"
 	PingEvent              = "event:ping"
 	ReconfigureEvent       = "event:reconfigure"
 	ChangesetApplyEvent    = "event:changeset-apply"
