@@ -52,7 +52,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"bytes\":%v, "+
 		"\"route\":%v, "+
 		"\"route-to\":%v, "+
-		"\"route-pcent\":%v, "+
+		"\"route-percent\":%v, "+
 		"\"timeout\":%v, "+
 		"\"rate-limit\":%v, "+
 		"\"rate-burst\":%v, "+
