@@ -131,6 +131,10 @@ func (m *Message) Channel() string {
 	return m.Header.Get(XChannel)
 }
 
+func (m *Message) IsContentType(ct string) bool {
+	return m.Header.Get(ContentType) == ct
+}
+
 func (m *Message) Status() *core.Status {
 	ct := m.Header.Get(ContentType)
 	if ct != ContentTypeStatus || m.Body == nil {
