@@ -181,6 +181,13 @@ func (m *Message) SetContent(contentType string, content any) error {
 	return nil
 }
 
+func (m *Message) SetContentType(contentType string) {
+	if len(contentType) == 0 {
+		return //errors.New("error: content type is empty")
+	}
+	m.Header.Add(ContentType, contentType)
+}
+
 // SendReply - function used by message recipient to reply with a Status
 func SendReply(msg *Message, status *core.Status) {
 	if msg == nil || msg.ReplyTo == nil {
