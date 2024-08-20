@@ -108,3 +108,21 @@ func ExampleOriginMatch() {
 	//test: OriginMatch({Region zonE sub-zone hOst },{region zone invalid host }) -> [match:false]
 
 }
+
+func ExampleOrigin_Uri() {
+	target := Origin{
+		Region:     "region",
+		Zone:       "zone",
+		SubZone:    "sub-zone",
+		Host:       "host",
+		InstanceId: "",
+	}
+
+	fmt.Printf("test: Origin_Uri_SubZone()    -> [%v]\n", target.Uri("class"))
+
+	target.SubZone = ""
+	fmt.Printf("test: Origin_Uri_No_SubZone() -> [%v]\n", target.Uri("class"))
+
+	//Output:
+	//fail
+}

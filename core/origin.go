@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 )
@@ -36,6 +37,13 @@ func (o Origin) Tag() string {
 		tag += ":" + o.Host
 	}
 	return tag
+}
+
+func (o Origin) Uri(class string) string {
+	if o.SubZone == "" {
+		return fmt.Sprintf("%v:%v.%v.%v", class, o.Region, o.Zone, o.Host)
+	}
+	return fmt.Sprintf("%v:%v.%v.%v.%v", class, o.Region, o.Zone, o.SubZone, o.Host)
 }
 
 func NewValues(o Origin) url.Values {
