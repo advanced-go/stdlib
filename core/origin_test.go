@@ -124,5 +124,7 @@ func ExampleOrigin_Uri() {
 	fmt.Printf("test: Origin_Uri_No_SubZone() -> [%v]\n", target.Uri("class"))
 
 	//Output:
-	//fail
+	//test: Origin_Uri_SubZone()    -> [class:region.zone.sub-zone.host]
+	//test: Origin_Uri_No_SubZone() -> [class:region.zone.host]
+	
 }

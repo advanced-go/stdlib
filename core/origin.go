@@ -7,12 +7,14 @@ import (
 )
 
 const (
-	RegionKey     = "region"
-	ZoneKey       = "zone"
-	SubZoneKey    = "sub-zone"
-	HostKey       = "host"
-	InstanceIdKey = "id"
-	RouteKey      = "route"
+	RegionKey                = "region"
+	ZoneKey                  = "zone"
+	SubZoneKey               = "sub-zone"
+	HostKey                  = "host"
+	InstanceIdKey            = "id"
+	RouteKey                 = "route"
+	RegionZoneHostFmt        = "%v:%v.%v.%v"
+	RegionZoneSubZoneHostFmt = "%v:%v.%v.%v.%v"
 )
 
 // Origin - location
@@ -41,9 +43,9 @@ func (o Origin) Tag() string {
 
 func (o Origin) Uri(class string) string {
 	if o.SubZone == "" {
-		return fmt.Sprintf("%v:%v.%v.%v", class, o.Region, o.Zone, o.Host)
+		return fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
 	}
-	return fmt.Sprintf("%v:%v.%v.%v.%v", class, o.Region, o.Zone, o.SubZone, o.Host)
+	return fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
 }
 
 func NewValues(o Origin) url.Values {
