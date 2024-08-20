@@ -64,21 +64,23 @@ func (d *Exchange) Send(msg *Message) error {
 	return nil
 }
 
-// Broadcast - broadcast a message to all entries
-func (d *Exchange) Broadcast(msg *Message) error {
+// Broadcast - broadcast a message to all entries, deleting the entry if the message event is Shutdown
+func (d *Exchange) Broadcast(msg *Message) {
 	if msg == nil {
-		return errors.New(fmt.Sprintf("error: exchange.Broadcast() failed as message is nil"))
+		return //errors.New(fmt.Sprintf("error: exchange.Broadcast() failed as message is nil"))
 	}
-	var err error
-	for _, uri := range d.List() {
-		a := d.Get(uri)
-		if a == nil {
-			continue
+	go func() {
+		for _, uri := range d.List() {
+			a := d.Get(uri)
+			if a == nil {
+				continue
+			}
+			a.Message(msg)
+			if msg.Event() == ShutdownEvent {
+				d.m.Delete(uri)
+			}
 		}
-		a.Message(msg)
-		d.m.Delete(uri)
-	}
-	return err
+	}()
 }
 
 // RegisterMailbox - register a mailbox
