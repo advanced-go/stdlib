@@ -188,6 +188,10 @@ func (m *Message) SetContentType(contentType string) {
 	m.Header.Add(ContentType, contentType)
 }
 
+func (m *Message) ContentType() string {
+	return m.Header.Get(ContentType)
+}
+
 // SendReply - function used by message recipient to reply with a Status
 func SendReply(msg *Message, status *core.Status) {
 	if msg == nil || msg.ReplyTo == nil {
