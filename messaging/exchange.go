@@ -69,6 +69,10 @@ func (d *Exchange) Broadcast(msg *Message) {
 	if msg == nil {
 		return //errors.New(fmt.Sprintf("error: exchange.Broadcast() failed as message is nil"))
 	}
+	// TODO : Need to disallow shutdown message??
+	if msg.Event() == ShutdownEvent {
+		return
+	}
 	go func() {
 		for _, uri := range d.List() {
 			a := d.Get(uri)
@@ -76,9 +80,9 @@ func (d *Exchange) Broadcast(msg *Message) {
 				continue
 			}
 			a.Message(msg)
-			if msg.Event() == ShutdownEvent {
-				d.m.Delete(uri)
-			}
+			//if msg.Event() == ShutdownEvent {
+			//	d.m.Delete(uri)
+			//}
 		}
 	}()
 }
@@ -149,15 +153,18 @@ func (d *Exchange) Get(uri string) Agent {
 	return nil
 }
 
-// Shutdown - shutdown an agent
-/*
-func (d *Exchange) shutdown(msg Message) error {
-	// TO DO: add authentication
-	return nil
+// Shutdown - shutdown all agents
+func (d *Exchange) Shutdown() {
+	go func() {
+		for _, uri := range d.List() {
+			a := d.Get(uri)
+			if a == nil {
+				continue
+			}
+			a.Shutdown()
+		}
+	}()
 }
-
-
-*/
 
 /*
 func (d *controller2) shutdown(uri string) runtime.Status {
