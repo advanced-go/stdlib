@@ -112,8 +112,16 @@ func (m *Message) To() string {
 	return m.Header.Get(XTo)
 }
 
+func (m *Message) SetTo(uri string) {
+	m.Header.Set(XTo, uri)
+}
+
 func (m *Message) From() string {
 	return m.Header.Get(XFrom)
+}
+
+func (m *Message) SetFrom(uri string) {
+	m.Header.Set(XFrom, uri)
 }
 
 func (m *Message) Event() string {
