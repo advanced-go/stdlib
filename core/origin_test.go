@@ -118,13 +118,16 @@ func ExampleOrigin_Uri() {
 		InstanceId: "",
 	}
 
-	fmt.Printf("test: Origin_Uri_SubZone()    -> [%v]\n", target.Uri("class"))
+	fmt.Printf("test: Origin_Uri_SubZone()       -> [%v]\n", target.Uri("class"))
+	target.Route = "route"
+	fmt.Printf("test: Origin_Uri_SubZone_Route() -> [%v]\n", target.Uri("class"))
 
 	target.SubZone = ""
-	fmt.Printf("test: Origin_Uri_No_SubZone() -> [%v]\n", target.Uri("class"))
+	target.Route = ""
+	fmt.Printf("test: Origin_Uri_No_SubZone()    -> [%v]\n", target.Uri("class"))
 
 	//Output:
 	//test: Origin_Uri_SubZone()    -> [class:region.zone.sub-zone.host]
 	//test: Origin_Uri_No_SubZone() -> [class:region.zone.host]
-	
+
 }

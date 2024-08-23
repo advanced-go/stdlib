@@ -42,10 +42,16 @@ func (o Origin) Tag() string {
 }
 
 func (o Origin) Uri(class string) string {
+	var uri string
 	if o.SubZone == "" {
-		return fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
+		uri = fmt.Sprintf(RegionZoneHostFmt, class, o.Region, o.Zone, o.Host)
+	} else {
+		uri = fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
 	}
-	return fmt.Sprintf(RegionZoneSubZoneHostFmt, class, o.Region, o.Zone, o.SubZone, o.Host)
+	if o.Route != "" {
+		uri += "." + o.Route
+	}
+	return uri
 }
 
 func NewValues(o Origin) url.Values {
