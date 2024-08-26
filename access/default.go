@@ -1,7 +1,6 @@
 package access
 
 import (
-	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
@@ -13,10 +12,7 @@ import (
 	"time"
 )
 
-const (
-	ContentEncoding = "Content-Encoding"
-	LocationHeader  = "Location"
-)
+const ()
 
 var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
 	s := formatter(o, traffic, start, duration, req, resp, routing, controller)
@@ -75,7 +71,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(newReq.Proto),
 		fmt2.JsonString(newReq.Method),
 		fmt2.JsonString(o.Host),
-		fmt2.JsonString(routing.FromAuthority),
+		fmt2.JsonString(routing.From),
 		fmt2.JsonString(CreateTo(newReq)),
 		fmt2.JsonString(url),
 		fmt2.JsonString(parsed.Path),
@@ -88,7 +84,7 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt.Sprintf("%v", newResp.ContentLength),
 
 		// Routing
-		fmt2.JsonString(routing.RouteName),
+		fmt2.JsonString(routing.Route),
 		fmt2.JsonString(routing.To),
 		fmt.Sprintf("%v", routing.Percent),
 
@@ -112,15 +108,15 @@ func Milliseconds(duration time.Duration) int {
 
 func BuildRequest(r any) *http.Request {
 	if r == nil {
-		newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
+		newReq, _ := http.NewRequest("", failsafeUri, nil)
 		return newReq
 	}
 	if req, ok := r.(*http.Request); ok {
 		return req
 	}
-	if req, ok := r.(Request); ok {
-		newReq, _ := http.NewRequest(req.Method(), req.Url(), nil)
-		newReq.Header = req.Header()
+	if req, ok := r.(*Request); ok {
+		newReq, _ := http.NewRequest(req.Method, req.Url, nil)
+		newReq.Header = req.Header
 		return newReq
 	}
 	newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
@@ -164,6 +160,7 @@ func Conditional(primary, secondary string) string {
 	return primary
 }
 
+/*
 func threshold(threshold any) int {
 	if threshold == nil {
 		return 0
@@ -184,6 +181,9 @@ func threshold(threshold any) int {
 	}
 	return 0
 }
+
+
+*/
 
 func CreateTo(req *http.Request) string {
 	if req == nil {

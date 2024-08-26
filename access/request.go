@@ -2,55 +2,29 @@ package access
 
 import (
 	"net/http"
+	"time"
 )
 
-type Request interface {
-	Url() string
-	Header() http.Header
-	Method() string
-	//RouteName() string
-	//Duration() time.Duration
-	//ContextTimeout(ctx context.Context) (context.Context, context.CancelFunc)
+// Routing - routing attributes
+type Routing struct {
+	From    string // Authority
+	Route   string
+	To      string // Primary, secondary
+	Percent int
+	Code    string
 }
 
-type request struct {
-	url    string
-	header http.Header
-	method string
-	//duration  time.Duration
-	//routeName string
+// Request - non HTTP request attributes
+type Request struct {
+	Url    string
+	Header http.Header
+	Method string
 }
 
-func NewRequest(method, url string, h http.Header) Request {
-	r := new(request)
-	r.url = url
-	r.method = method
-	r.header = h
-	//r.routeName = routeName
-	//r.duration = duration
-	return r
-}
-
-func (r *request) Url() string {
-	return r.url
-}
-
-func (r *request) Method() string {
-	return r.method
-}
-
-/*
-func (r *request) RouteName() string {
-	return r.routeName
-}
-
-func (r *request) Duration() time.Duration {
-	return r.duration
-}
-
-
-*/
-
-func (r *request) Header() http.Header {
-	return r.header
+// Controller - controller attributes
+type Controller struct {
+	Timeout   time.Duration
+	RateLimit float64
+	RateBurst int
+	Code      string
 }
