@@ -2,6 +2,7 @@ package core
 
 import (
 	"net/http"
+	"time"
 )
 
 const (
@@ -12,9 +13,27 @@ const (
 	AuthorityRootPath   = "/authority"
 )
 
+// Routing - routing attributes
+type Routing struct {
+	FromAuthority string // Authority
+	RouteName     string
+	To            string // Primary, secondary
+	Percent       int
+	Code          string
+}
+
+// Controller - controller attributes
+type Controller struct {
+	Timeout   time.Duration
+	RateLimit float64
+	RateBurst int
+	Code      string
+}
+
 type HttpHandler func(w http.ResponseWriter, r *http.Request)
 
 type HttpExchange func(r *http.Request) (*http.Response, *Status)
+type HttpAccess func(o Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller)
 
 var (
 	authorityReq *http.Request
