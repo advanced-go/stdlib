@@ -2,7 +2,6 @@ package access
 
 import (
 	"github.com/advanced-go/stdlib/core"
-	"net/http"
 	"time"
 )
 
@@ -62,20 +61,20 @@ var (
 )
 
 // RequestConstraints - Request constraints
-type RequestConstraints interface {
-	*http.Request | Request
-}
+//type RequestConstraints interface {
+//	*http.Request | Request
+//}
 
 // ResponseConstraints - Response constraints
-type ResponseConstraints interface {
-	*http.Response | *core.Status | int
-}
+//type ResponseConstraints interface {
+//	*http.Response | *core.Status | int
+//}
 
 // Log - access logging.
 // Header.Get(XRequestId)),
 // Header.Get(XRelatesTo)),
 // Header.Get(LocationHeader)
-func Log[T RequestConstraints, U ResponseConstraints](traffic string, start time.Time, duration time.Duration, req T, resp U, routing Routing, controller Controller) {
+func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
 	if logger == nil || disabled {
 		return
 	}

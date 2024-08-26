@@ -62,7 +62,7 @@ func ExampleDefault_Access_Request_Status() {
 
 	resp := core.StatusNotFound()
 	time.Sleep(time.Millisecond * 500)
-	logTest[Request, *core.Status](EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: -1}, Controller{Timeout: -1})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: -1}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Access-Request-Status() -> %v\n", "success")
 
@@ -81,7 +81,7 @@ func ExampleDefault_Access_Request_Status_Code() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest[Request, int](EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: 20, Code: RoutingRedirect}, Controller{Timeout: -1})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: 20, Code: RoutingRedirect}, Controller{Timeout: -1})
 
 	fmt.Printf("test: Default-Access-Request-Status-Code() -> %v\n", "success")
 
@@ -100,7 +100,7 @@ func ExampleDefault_Threshold_Duration() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest[Request, int](EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: 40, Code: RoutingFailover}, Controller{Timeout: time.Second * 4})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary, Percent: 40, Code: RoutingFailover}, Controller{Timeout: time.Second * 4})
 
 	fmt.Printf("test: Default-Threshold-Duration() -> %v\n", "success")
 
@@ -119,7 +119,7 @@ func ExampleDefault_Threshold_Int() {
 
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest[Request, int](EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary}, Controller{Timeout: -1, RateLimit: 345})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary}, Controller{Timeout: -1, RateLimit: 345})
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -139,7 +139,7 @@ func ExampleDefault_Threshold_Deadline() {
 	//ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(time.Second*2))
 	resp := http.StatusGatewayTimeout
 	time.Sleep(time.Millisecond * 500)
-	logTest[Request, int](EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary}, Controller{})
+	logTest(EgressTraffic, start, time.Since(start), req, resp, Routing{Route: "google-search", To: Secondary}, Controller{})
 
 	fmt.Printf("test: Default-Threshold-Int() -> %v\n", "success")
 
@@ -148,6 +148,6 @@ func ExampleDefault_Threshold_Deadline() {
 
 }
 
-func logTest[T RequestConstraints, U ResponseConstraints](traffic string, start time.Time, duration time.Duration, req T, resp U, routing Routing, controller Controller) {
+func logTest(traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
 	Log(traffic, start, duration, req, resp, routing, controller)
 }
