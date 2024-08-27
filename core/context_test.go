@@ -15,5 +15,5 @@ func ExampleUrlContext() {
 
 	//Output:
 	//test: NewUrlContext("https://google.com/search?q=test") -> https://google.com/search?q=test
-	
+
 }
