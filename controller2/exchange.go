@@ -49,12 +49,12 @@ func Exchange(req *http.Request, do core.HttpExchange, ctrl *Controller) (resp *
 	}
 	if resp != nil {
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			reasonCode = access.TimeoutCode
+			reasonCode = access.ControllerTimeout
 		}
 	} else {
 		resp = &http.Response{StatusCode: status.HttpCode()}
 	}
-	access.Log(traffic, start, time.Since(start), req, resp, access.Routing{FromAuthority: from, RouteName: ctrl.RouteName, To: rsc.Name, Percent: -1}, access.Controller{Timeout: duration, Code: reasonCode})
+	access.Log(traffic, start, time.Since(start), req, resp, access.Routing{From: from, Route: ctrl.RouteName, To: rsc.Name, Percent: -1}, access.Controller{Timeout: duration, Code: reasonCode})
 	return
 }
 
