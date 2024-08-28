@@ -35,9 +35,9 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		resp, status = handler(r)
 	}
 	if status.Code == http.StatusGatewayTimeout {
-		controllerCode = access.TimeoutCode
+		controllerCode = access.ControllerTimeout
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
 	r.Header.Set(core.XTo, RouteName)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, access.Routing{FromAuthority: from, RouteName: RouteName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: controllerCode})
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: RouteName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: controllerCode})
 }

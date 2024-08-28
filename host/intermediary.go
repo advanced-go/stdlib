@@ -50,9 +50,9 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 		start := time.Now().UTC()
 		resp, status = c2(r)
 		if status.Code == http.StatusGatewayTimeout {
-			reasonCode = access.TimeoutCode
+			reasonCode = access.ControllerTimeout
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{FromAuthority: from, RouteName: routeName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: routeName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
 		return
 	}
 }
