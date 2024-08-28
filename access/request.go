@@ -14,11 +14,9 @@ type Routing struct {
 	Code    string
 }
 
-// Request - non HTTP request attributes
-type Request struct {
-	Url    string
-	Header http.Header
-	Method string
+// NilRouting - used when Routing is not applicable
+func NilRouting() Routing {
+	return Routing{Percent: -1}
 }
 
 // Controller - controller attributes
@@ -27,4 +25,16 @@ type Controller struct {
 	RateLimit float64
 	RateBurst int
 	Code      string
+}
+
+// NilController - used when Controller is not applicable
+func NilController() Controller {
+	return Controller{RateLimit: -1, RateBurst: -1}
+}
+
+// Request - non HTTP request attributes
+type Request struct {
+	Url    string
+	Header http.Header
+	Method string
 }
