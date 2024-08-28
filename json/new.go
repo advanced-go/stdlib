@@ -23,9 +23,9 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 
 	switch ptr := v.(type) {
 	case string:
-		//if isStatusURL(ptr) {
-		//	return t, NewStatusFrom(ptr)
-		//}
+		if isStatusURL(ptr) {
+			return t, NewStatusFrom(ptr)
+		}
 		buf, status = io2.ReadFileWithEncoding(ptr, h)
 		if !status.OK() {
 			return
@@ -36,9 +36,9 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		}
 		return
 	case *url.URL:
-		//if isStatusURL(ptr.String()) {
-		//	return t, NewStatusFrom(ptr.String())
-		//}
+		if isStatusURL(ptr.String()) {
+			return t, NewStatusFrom(ptr.String())
+		}
 		buf, status = io2.ReadFileWithEncoding(ptr.String(), h)
 		if !status.OK() {
 			return
