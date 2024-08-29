@@ -1,12 +1,16 @@
 package io
 
 import (
+	"embed"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 )
+
+//go:embed iotest
+var tf embed.FS
 
 // parseRaw - parse a raw Uri without error
 func parseRaw(rawUri string) *url.URL {
@@ -143,5 +147,27 @@ func ExampleReadFileWithEncoding() {
 	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.gz",nil) -> [buf:Hello World!!] [status:OK]
 	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.gz",h) -> [buf:Hello World!!] [status:OK]
 	//test: ReadFileWithEncoding("file://[cwd]/iotest/hello-world.txt",nil) -> [buf:Hello World!!] [status:OK]
+
+}
+
+func ExampleReadFileEmbedded() {
+	name := "file:///f:/iotest/hello-world.txt"
+
+	bytes, status := ReadFile(name)
+	fmt.Printf("test: ReadFileEmbedded(\"%v\") -> [buf:%v] [status:%v]\n", name, string(bytes), status)
+
+	Mount(tf)
+
+	name2 := "file:///f:/iotest/invalid-file-name"
+	bytes, status = ReadFile(name2)
+	fmt.Printf("test: ReadFileEmbedded(\"%v\") -> [buf:%v] [status:%v]\n", name2, string(bytes), status)
+
+	bytes, status = ReadFile(name)
+	fmt.Printf("test: ReadFileEmbedded(\"%v\") -> [buf:%v] [status:%v]\n", name, string(bytes), status)
+
+	//Output:
+	//test: ReadFileEmbedded("file:///f:/iotest/hello-world.txt") -> [buf:] [status:I/O Failure [open iotest/hello-world.txt: file does not exist]]
+	//test: ReadFileEmbedded("file:///f:/iotest/invalid-file-name") -> [buf:] [status:I/O Failure [open iotest/invalid-file-name: file does not exist]]
+	//test: ReadFileEmbedded("file:///f:/iotest/hello-world.txt") -> [buf:Hello World!!] [status:OK]
 
 }

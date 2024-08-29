@@ -1,6 +1,7 @@
 package io
 
 import (
+	"embed"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
@@ -13,11 +14,13 @@ import (
 const (
 	CwdVariable = "[cwd]"
 	fileScheme  = "file"
+	embeddedFS  = "file:///f:/"
 )
 
 var (
 	basePath = ""
 	win      = false
+	f        embed.FS
 )
 
 // init - set the base path and windows flag
@@ -30,6 +33,10 @@ func init() {
 		win = true
 	}
 	basePath = cwd
+}
+
+func Mount(fs embed.FS) {
+	f = fs
 }
 
 // FileName - return the OS correct file name from a URI
@@ -71,6 +78,14 @@ func ReadFile(uri string) ([]byte, *core.Status) {
 	status := ValidateUri(uri)
 	if !status.OK() {
 		return nil, status
+	}
+	if strings.HasPrefix(uri, embeddedFS) {
+		name := uri[len(embeddedFS):]
+		buf, err := f.ReadFile(name)
+		if err == nil {
+			return buf, core.StatusOK()
+		}
+		return nil, core.NewStatusError(core.StatusIOError, err)
 	}
 	buf, err := os.ReadFile(FileName(uri))
 	if err != nil {
