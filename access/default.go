@@ -46,13 +46,13 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		"\"status-code\":%v, "+
 		"\"encoding\":%v, "+
 		"\"bytes\":%v, "+
-		"\"route\":%v, "+
-		"\"route-to\":%v, "+
-		"\"route-percent\":%v, "+
 		"\"timeout\":%v, "+
 		"\"rate-limit\":%v, "+
 		"\"rate-burst\":%v, "+
 		"\"cc\":%v, "+
+		"\"route\":%v, "+
+		"\"route-to\":%v, "+
+		"\"route-percent\":%v, "+
 		"\"rc\":%v }",
 
 		// Origin, traffic, timestamp, duration
@@ -83,18 +83,16 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 		fmt2.JsonString(Encoding(newResp)),
 		fmt.Sprintf("%v", newResp.ContentLength),
 
+		// Controller
+		Milliseconds(controller.Timeout),
+		fmt.Sprintf("%v", controller.RateLimit),
+		strconv.Itoa(controller.RateBurst),
+		fmt2.JsonString(controller.Code),
+
 		// Routing
 		fmt2.JsonString(routing.Route),
 		fmt2.JsonString(routing.To),
 		fmt.Sprintf("%v", routing.Percent),
-
-		// Controller thresholds
-		//Threshold(threshold),
-		Milliseconds(controller.Timeout),
-		fmt.Sprintf("%v", controller.RateLimit),
-		strconv.Itoa(controller.RateBurst),
-		//fmt2.JsonString(thresholdCode),
-		fmt2.JsonString(controller.Code),
 		fmt2.JsonString(routing.Code),
 	)
 

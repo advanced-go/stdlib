@@ -16,6 +16,6 @@ func ExampleLogAccess() {
 	fmt.Printf("test: log() -> %v\n", s)
 
 	//Output:
-	//test: log() -> {"region":"us", "zone":"zone", "sub-zone":null, "instance-id":"id-012", "traffic":"egress", "start":0001-01-01T00:00:00.000Z, "duration":345, "request-id":null, "relates-to":null, "location":null, "protocol":"HTTP/1.1", "method":"PUT", "host":"localhost:8080", "from":"from", "to":"github/advanced-go/example-domain/activity", "uri":"http://localhost:8080/github/advanced-go/example-domain/activity:entry", "path":"entry", "query":null, "status-code":200, "encoding":null, "bytes":0, "route":"route", "route-to":"primary", "route-percent":10, "timeout":0, "rate-limit":0, "rate-burst":0, "cc":"TO", "rc":"FO" }
+	//test: log() -> {"region":"us", "zone":"zone", "sub-zone":null, "instance-id":"id-012", "traffic":"egress", "start":0001-01-01T00:00:00.000Z, "duration":345, "request-id":null, "relates-to":null, "location":null, "protocol":"HTTP/1.1", "method":"PUT", "host":"localhost:8080", "from":"from", "to":"github/advanced-go/example-domain/activity", "uri":"http://localhost:8080/github/advanced-go/example-domain/activity:entry", "path":"entry", "query":null, "status-code":200, "encoding":null, "bytes":0, "timeout":0, "rate-limit":0, "rate-burst":0, "cc":"TO", "route":"route", "route-to":"primary", "route-percent":10, "rc":"FO" }
 
 }
