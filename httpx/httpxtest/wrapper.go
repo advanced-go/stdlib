@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func readRequest(uri any, t *testing.T) *http.Request {
+func ReadRequestT(uri any, t *testing.T) *http.Request {
 	req, status := ReadRequest(uri)
 	if status.OK() {
 		return req
@@ -15,7 +15,7 @@ func readRequest(uri any, t *testing.T) *http.Request {
 	return req2
 }
 
-func readResponse(uri any, t *testing.T) *http.Response {
+func ReadResponseT(uri any, t *testing.T) *http.Response {
 	resp, status := ReadResponse(uri)
 	if status.OK() {
 		return resp
