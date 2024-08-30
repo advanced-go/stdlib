@@ -12,6 +12,7 @@ func Content[T any](body io.Reader) (t T, status *core.Status) {
 	if body == nil {
 		return t, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: body is nil"))
 	}
+	status = core.StatusOK()
 	switch p := any(&t).(type) {
 	case *[]byte:
 		var buf []byte
