@@ -7,7 +7,6 @@ import (
 	"github.com/advanced-go/stdlib/core"
 	io2 "github.com/advanced-go/stdlib/io"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -16,21 +15,20 @@ const (
 )
 
 // ReadResponse - read a Http response given a URL
-func ReadResponse(u any) (*http.Response, *core.Status) {
+func ReadResponse(uri any) (*http.Response, *core.Status) {
 	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: internalError}
-
-	if u == nil {
+	if uri == nil {
 		return serverErr, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
 	}
 	//if u.Scheme != fileScheme {
 	//	return serverErr, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: Invalid URL scheme : %v", u.Scheme)))
 	//}
-	buf, err := os.ReadFile(io2.FileName(u))
-	if err != nil {
-		if strings.Contains(err.Error(), fileExistsError) {
-			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, core.NewStatusError(core.StatusInvalidArgument, err)
+	buf, status := io2.ReadFile(uri)
+	if !status.OK() {
+		if strings.Contains(status.Err.Error(), fileExistsError) {
+			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, core.NewStatusError(core.StatusInvalidArgument, status.Err)
 		}
-		return serverErr, core.NewStatusError(core.StatusIOError, err)
+		return serverErr, core.NewStatusError(core.StatusIOError, status.Err)
 	}
 	resp1, err2 := http.ReadResponse(bufio.NewReader(bytes.NewReader(buf)), nil)
 	if err2 != nil {

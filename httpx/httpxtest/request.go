@@ -9,7 +9,6 @@ import (
 	io2 "github.com/advanced-go/stdlib/io"
 	"io"
 	"net/http"
-	"os"
 )
 
 func ReadRequest(uri any) (*http.Request, *core.Status) {
@@ -19,9 +18,9 @@ func ReadRequest(uri any) (*http.Request, *core.Status) {
 	//if u.Scheme != fileScheme {
 	//	return nil, errors.New(fmt.Sprintf("error: invalid URL scheme : %v", u.Scheme))
 	//}
-	buf, err := os.ReadFile(io2.FileName(uri))
-	if err != nil {
-		return nil, core.NewStatusError(core.StatusIOError, err)
+	buf, status := io2.ReadFile(uri)
+	if !status.OK() {
+		return nil, status
 	}
 	byteReader := bytes.NewReader(buf)
 	reader := bufio.NewReader(byteReader)

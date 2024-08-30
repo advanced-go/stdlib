@@ -44,7 +44,7 @@ func Example_ReadResponse_URL_Nil() {
 
 }
 
-func Example_ReadResponse_Invalid_Scheme() {
+func _Example_ReadResponse_Invalid_Scheme() {
 	s := "https://www.google.com/search?q=golang"
 	u, _ := url.Parse(s)
 

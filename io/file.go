@@ -15,6 +15,7 @@ const (
 	CwdVariable = "[cwd]"
 	fileScheme  = "file"
 	embeddedFS  = "file:///f:/"
+	//embeddedFS = "f:/"
 )
 
 var (
@@ -74,14 +75,19 @@ func fileName(u *url.URL) string {
 }
 
 // ReadFile - read a file with a Status
-func ReadFile(uri string) ([]byte, *core.Status) {
-	status := ValidateUri(uri)
-	if !status.OK() {
-		return nil, status
+func ReadFile(uri any) ([]byte, *core.Status) {
+	rawUri := ""
+	if s, ok := uri.(string); ok {
+		rawUri = s
+	} else {
+		if u, ok2 := uri.(*url.URL); ok2 {
+			rawUri = u.String()
+		}
 	}
-	if strings.HasPrefix(uri, embeddedFS) {
-		name := uri[len(embeddedFS):]
-		buf, err := f.ReadFile(name)
+	//name := FileName(uri)
+	if strings.HasPrefix(rawUri, embeddedFS) {
+		rawUri = rawUri[len(embeddedFS):]
+		buf, err := f.ReadFile(rawUri)
 		if err == nil {
 			return buf, core.StatusOK()
 		}
