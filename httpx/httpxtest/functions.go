@@ -29,7 +29,7 @@ func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: status}}, nil, nil
 	}
 	path = basePath + respName
-	resp, status1 := readResponse(ParseRaw(path))
+	resp, status1 := ReadResponse(ParseRaw(path))
 	if !status1.OK() {
 		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1}}, nil, nil
 	}
