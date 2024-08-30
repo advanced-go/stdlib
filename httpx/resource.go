@@ -15,10 +15,10 @@ type Resource[T any, U any, V any] struct {
 	Identity         *http.Response
 	MethodNotAllowed *http.Response
 	Finalize         FinalizeFunc
-	Content          Content[T, U, V]
+	Content          Content2[T, U, V]
 }
 
-func NewResource[T any, U any, V any](name string, content Content[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
+func NewResource[T any, U any, V any](name string, content Content2[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
 	r := new(Resource[T, U, V])
 	r.Identity = NewAuthorityResponse(name)
 	h2 := make(http.Header)
