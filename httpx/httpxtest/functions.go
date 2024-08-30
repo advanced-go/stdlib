@@ -55,7 +55,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	return failures
 }
 
-func Content(got *http.Response, want *http.Response) (failures []Args, gotBuf []byte, wantBuf []byte) {
+func ContentT(got *http.Response, want *http.Response) (failures []Args, gotBuf []byte, wantBuf []byte) {
 	// validate content type matches
 	fails, _ := validateContentType(got, want)
 	if fails != nil {

@@ -6,7 +6,6 @@ import (
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -45,9 +44,9 @@ func NewStatusFrom(uri string) *core.Status {
 	//if !status.OK() {
 	//	return status
 	//}
-	buf, err1 := os.ReadFile(io.FileName(uri))
-	if err1 != nil {
-		return core.NewStatusError(core.StatusIOError, err1)
+	buf, status1 := io.ReadFile(uri) //io.FileName(uri))
+	if !status1.OK() {
+		return status1 //core.NewStatusError(core.StatusIOError, err1)
 	}
 	var status2 serializedStatusState
 	err := json.Unmarshal(buf, &status2)

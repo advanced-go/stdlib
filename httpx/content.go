@@ -10,7 +10,7 @@ type MatchFunc[T any] func(r *http.Request, item *T) bool
 type PatchProcessFunc[T any, U any] func(r *http.Request, list *[]T, content *U) *core.Status
 type PostProcessFunc[T any, V any] func(r *http.Request, list *[]T, content *V) *core.Status
 
-type Content[T any, U any, V any] interface {
+type Content2[T any, U any, V any] interface {
 	//Count2(string) int
 	Count() int
 	Empty()
@@ -30,7 +30,7 @@ type ListContent[T any, U any, V any] struct {
 	post  PostProcessFunc[T, V]
 }
 
-func NewListContent[T any, U any, V any](mutex bool, match MatchFunc[T], patch PatchProcessFunc[T, U], post PostProcessFunc[T, V]) Content[T, U, V] {
+func NewListContent[T any, U any, V any](mutex bool, match MatchFunc[T], patch PatchProcessFunc[T, U], post PostProcessFunc[T, V]) Content2[T, U, V] {
 	c := new(ListContent[T, U, V])
 	c.mutex = mutex
 	c.match = match
