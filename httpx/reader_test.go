@@ -23,7 +23,7 @@ func Example_ReadResponse() {
 	s := "file://[cwd]/httpxtest/resource/test-response.txt"
 	u, _ := url.Parse(s)
 
-	resp, status0 := readResponse(u)
+	resp, status0 := ReadResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [status:%v] [statusCode:%v]\n", s, status0, resp.StatusCode)
 
 	buf, status := readAll(resp.Body)
@@ -36,7 +36,7 @@ func Example_ReadResponse() {
 }
 
 func Example_ReadResponse_URL_Nil() {
-	resp, status0 := readResponse(nil)
+	resp, status0 := ReadResponse(nil)
 	fmt.Printf("test: readResponse(nil) -> [error:[%v]] [statusCode:%v]\n", status0.Err, resp.StatusCode)
 
 	//Output:
@@ -48,7 +48,7 @@ func Example_ReadResponse_Invalid_Scheme() {
 	s := "https://www.google.com/search?q=golang"
 	u, _ := url.Parse(s)
 
-	resp, status0 := readResponse(u)
+	resp, status0 := ReadResponse(u)
 	fmt.Printf("test: readResponse(%vl) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
@@ -60,7 +60,7 @@ func Example_ReadResponse_HTTP_Error() {
 	s := "file://[cwd]/httpxtest/resource/message.txt"
 	u, _ := url.Parse(s)
 
-	resp, status0 := readResponse(u)
+	resp, status0 := ReadResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
@@ -72,7 +72,7 @@ func Example_ReadResponse_NotFound() {
 	s := "file://[cwd]/httpxtest/resource/not-found.txt"
 	u, _ := url.Parse(s)
 
-	resp, status0 := readResponse(u)
+	resp, status0 := ReadResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:
@@ -84,7 +84,7 @@ func Example_ReadResponse_EOF_Error() {
 	s := "file://[cwd]/httpxtest/resource/http-503-error.txt"
 	u, _ := url.Parse(s)
 
-	resp, status0 := readResponse(u)
+	resp, status0 := ReadResponse(u)
 	fmt.Printf("test: readResponse(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
 	//Output:

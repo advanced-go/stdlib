@@ -25,13 +25,14 @@ type entryTest struct {
 func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
 	req, err := ReadRequest(ParseRaw(s))
+	fmt.Printf("test: ReadRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
-	//buf,status :=
-
-	fmt.Printf("test: ReadRequest(%v) -> [err:%v] [content-location:%v]\n", s, err, req.Header.Get("Content-Location"))
+	req, err = ReadRequest(s)
+	fmt.Printf("test: ReadRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [err:<nil>] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlContextKey, val github/advanced-go/example-domain/activity/EntryV1)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlContextKey, val github/advanced-go/example-domain/activity/EntryV1)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
 
 }
 
@@ -43,19 +44,19 @@ func Example_ReadRequest_Baseline() {
 	}
 	// print content
 	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
-	fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
+	fmt.Printf("test: ReadRequest(%v) -> [status:%v]\n", s, err)
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/baseline-request.txt) -> [err:<nil>]
+	//test: ReadRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
 
 }
 
 func Example_ReadRequest_PUT() {
 	s := "file://[cwd]/resource/put-req.txt"
-	req, err := ReadRequest(ParseRaw(s))
+	req, status := ReadRequest(ParseRaw(s))
 
-	if err != nil {
-		fmt.Printf("test: ReadRequest(%v) -> [err:%v]\n", s, err)
+	if !status.OK() {
+		fmt.Printf("test: ReadRequest(%v) -> [status:%v]\n", s, status)
 	} else {
 		buf, err1 := io.ReadAll(req.Body, nil)
 		if err1 != nil {

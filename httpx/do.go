@@ -52,7 +52,7 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 		return &http.Response{StatusCode: http.StatusInternalServerError}, core.NewStatusError(core.StatusInvalidArgument, errors.New("invalid argument : request is nil"))
 	}
 	if req.URL.Scheme == fileScheme {
-		resp1, status1 := readResponse(req.URL)
+		resp1, status1 := ReadResponse(req.URL)
 		if !status1.OK() {
 			return resp1, status1.AddLocation()
 		}

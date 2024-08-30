@@ -19,19 +19,19 @@ type Args struct {
 	Item string
 	Got  string
 	Want string
-	Err  error
+	Err  *core.Status
 }
 
 func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
 	path := basePath + reqName
-	req, err := ReadRequest(ParseRaw(path))
-	if err != nil {
-		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: err}}, nil, nil
+	req, status := ReadRequest(ParseRaw(path))
+	if !status.OK() {
+		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: status}}, nil, nil
 	}
 	path = basePath + respName
 	resp, status1 := readResponse(ParseRaw(path))
 	if !status1.OK() {
-		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1.Err}}, nil, nil
+		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1}}, nil, nil
 	}
 	return nil, req, resp
 }
@@ -45,7 +45,7 @@ func Headers(got *http.Response, want *http.Response, names ...string) (failures
 	for _, name := range names {
 		wantVal := want.Header.Get(name)
 		if wantVal == "" {
-			return []Args{{Item: name, Got: "", Want: "", Err: errors.New(fmt.Sprintf("want header [%v] is missing or empty", name))}}
+			return []Args{{Item: name, Got: "", Want: "", Err: core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("want header [%v] is missing or empty", name)))}}
 		}
 		gotVal := got.Header.Get(name)
 		if wantVal != gotVal {
@@ -67,12 +67,12 @@ func Content(got *http.Response, want *http.Response) (failures []Args, gotBuf [
 	// validate body IO
 	wantBuf, status = io.ReadAll(want.Body, nil)
 	if status.Err != nil {
-		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status.Err}}
+		failures = []Args{{Item: "want.Body", Got: "", Want: "", Err: status}}
 		return
 	}
 	gotBuf, status = io.ReadAll(got.Body, nil)
 	if status.Err != nil {
-		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status.Err}}
+		failures = []Args{{Item: "got.Body", Got: "", Want: "", Err: status}}
 	}
 	return
 }
@@ -81,12 +81,12 @@ func Content(got *http.Response, want *http.Response) (failures []Args, gotBuf [
 func Unmarshal[T any](gotBuf, wantBuf []byte) (failures []Args, gotT []T, wantT []T) {
 	err := json.Unmarshal(wantBuf, &wantT)
 	if err != nil {
-		failures = []Args{{Item: "want.Unmarshal()", Got: "", Want: "", Err: err}}
+		failures = []Args{{Item: "want.Unmarshal()", Got: "", Want: "", Err: core.NewStatusError(core.StatusJsonDecodeError, err)}}
 		return
 	}
 	err = json.Unmarshal(gotBuf, &gotT)
 	if err != nil {
-		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: err}}
+		failures = []Args{{Item: "got.Unmarshal()", Got: "", Want: "", Err: core.NewStatusError(core.StatusInvalidArgument, err)}}
 	}
 	return
 }
@@ -100,7 +100,7 @@ func Errorf(t *testing.T, failures []Args) {
 func validateContentType(got *http.Response, want *http.Response) (failures []Args, ct string) {
 	ct = want.Header.Get(contentType)
 	if ct == "" {
-		return []Args{{Item: contentType, Got: "", Want: "", Err: errors.New("want Response header Content-Type is empty")}}, ct
+		return []Args{{Item: contentType, Got: "", Want: "", Err: core.NewStatusError(core.StatusInvalidArgument, errors.New("want Response header Content-Type is empty"))}}, ct
 	}
 	gotCt := got.Header.Get(contentType)
 	if gotCt != ct {
