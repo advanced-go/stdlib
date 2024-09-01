@@ -17,13 +17,11 @@ func ExampleUrlContext() {
 
 func ExampleUrlMapContext() {
 	url := "https://google.com/search?q=test"
-	urls := make(map[string]string)
-	urls[ContextRequestKey] = url
-	urls[ContextResponseKey] = "CommandTag"
-	ctx := NewUrlMapContext(context.Background(), urls)
-	fmt.Printf("test: NewUrlMapContext(%v) -> %v\n", urls, UrlMapFromContext(ctx))
+	urls := NewExchangeMap(url, "response-url", "status-url")
+	ctx := NewExchangeMapContext(context.Background(), urls)
+	fmt.Printf("test: NewExchangeMapContext(%v) -> %v\n", urls, ExchangeMapFromContext(ctx))
 
 	//Output:
-	//test: NewUrlMapContext(map[request:https://google.com/search?q=test response:CommandTag]) -> map[request:https://google.com/search?q=test response:CommandTag]
+	//test: NewExchangeMapContext(&{map[request:https://google.com/search?q=test response:response-url status:status-url]}) -> &{map[request:https://google.com/search?q=test response:response-url status:status-url]}
 
 }

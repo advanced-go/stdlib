@@ -5,16 +5,48 @@ import (
 )
 
 const (
-	ContextRequestKey  = "request"
-	ContextResponseKey = "response"
+	requestKey  = "request"
+	responseKey = "response"
+	statusKey   = "status"
 )
 
+type ExchangeMap struct {
+	m map[string]string
+}
+
+func NewExchangeMap(request, response, status string) *ExchangeMap {
+	e := new(ExchangeMap)
+	e.m = make(map[string]string)
+	if request != "" {
+		e.m[requestKey] = request
+	}
+	if response != "" {
+		e.m[responseKey] = response
+	}
+	if status != "" {
+		e.m[statusKey] = status
+	}
+	return e
+}
+
+func (e *ExchangeMap) Request() string {
+	return e.m[requestKey]
+}
+
+func (e *ExchangeMap) Response() string {
+	return e.m[responseKey]
+}
+
+func (e *ExchangeMap) Status() string {
+	return e.m[statusKey]
+}
+
 type urlContextKey struct{}
-type urlMapContextKey struct{}
+type urlExchangeContextKey struct{}
 
 var (
-	urlKey    = urlContextKey{}
-	urlMapKey = urlMapContextKey{}
+	urlKey         = urlContextKey{}
+	urlExchangeKey = urlExchangeContextKey{}
 )
 
 // NewUrlContext - creates a new Context with an url
@@ -44,27 +76,27 @@ func UrlFromContext(ctx context.Context) string {
 	return ""
 }
 
-// NewUrlMapContext - creates a new Context with an url map
-func NewUrlMapContext(ctx context.Context, url map[string]string) context.Context {
+// NewExchangeMapContext - creates a new Context with an exchange map
+func NewExchangeMapContext(ctx context.Context, ex *ExchangeMap) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
-		i := ctx.Value(urlMapKey)
+		i := ctx.Value(urlExchangeKey)
 		if i != nil {
 			return ctx
 		}
 	}
-	return context.WithValue(ctx, urlMapKey, url)
+	return context.WithValue(ctx, urlExchangeKey, ex)
 }
 
-// UrlMapFromContext - return a url map from a context
-func UrlMapFromContext(ctx context.Context) map[string]string {
+// ExchangeMapFromContext - return a url map from a context
+func ExchangeMapFromContext(ctx context.Context) *ExchangeMap {
 	if ctx == nil {
 		return nil
 	}
-	v := ctx.Value(urlMapKey)
+	v := ctx.Value(urlExchangeKey)
 	if v != nil {
-		if url, ok := v.(map[string]string); ok {
+		if url, ok := v.(*ExchangeMap); ok {
 			return url
 		}
 	}
