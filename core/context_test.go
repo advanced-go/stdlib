@@ -15,13 +15,13 @@ func ExampleUrlContext() {
 
 }
 
-func ExampleUrlMapContext() {
+func ExampleExchangeContext() {
 	url := "https://google.com/search?q=test"
-	urls := NewExchangeMap(url, "response-url", "status-url")
-	ctx := NewExchangeMapContext(context.Background(), urls)
-	fmt.Printf("test: NewExchangeMapContext(%v) -> %v\n", urls, ExchangeMapFromContext(ctx))
+	urls := NewExchange(url, "response-url", "status-url")
+	ctx := NewExchangeContext(context.Background(), urls)
+	fmt.Printf("test: NewExchangeContext(%v) -> %v\n", urls, ExchangeFromContext(ctx))
 
 	//Output:
-	//test: NewExchangeMapContext(&{map[request:https://google.com/search?q=test response:response-url status:status-url]}) -> &{map[request:https://google.com/search?q=test response:response-url status:status-url]}
+	//test: NewExchangeContext(&{map[request:https://google.com/search?q=test response:response-url status:status-url]}) -> &{map[request:https://google.com/search?q=test response:response-url status:status-url]}
 
 }

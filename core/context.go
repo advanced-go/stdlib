@@ -10,12 +10,12 @@ const (
 	statusKey   = "status"
 )
 
-type ExchangeMap struct {
+type Exchange struct {
 	m map[string]string
 }
 
-func NewExchangeMap(request, response, status string) *ExchangeMap {
-	e := new(ExchangeMap)
+func NewExchange(request, response, status string) *Exchange {
+	e := new(Exchange)
 	e.m = make(map[string]string)
 	if request != "" {
 		e.m[requestKey] = request
@@ -29,15 +29,15 @@ func NewExchangeMap(request, response, status string) *ExchangeMap {
 	return e
 }
 
-func (e *ExchangeMap) Request() string {
+func (e *Exchange) Request() string {
 	return e.m[requestKey]
 }
 
-func (e *ExchangeMap) Response() string {
+func (e *Exchange) Response() string {
 	return e.m[responseKey]
 }
 
-func (e *ExchangeMap) Status() string {
+func (e *Exchange) Status() string {
 	return e.m[statusKey]
 }
 
@@ -76,8 +76,8 @@ func UrlFromContext(ctx context.Context) string {
 	return ""
 }
 
-// NewExchangeMapContext - creates a new Context with an exchange map
-func NewExchangeMapContext(ctx context.Context, ex *ExchangeMap) context.Context {
+// NewExchangeContext - creates a new Context with an exchange
+func NewExchangeContext(ctx context.Context, ex *Exchange) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
@@ -89,14 +89,14 @@ func NewExchangeMapContext(ctx context.Context, ex *ExchangeMap) context.Context
 	return context.WithValue(ctx, urlExchangeKey, ex)
 }
 
-// ExchangeMapFromContext - return a url map from a context
-func ExchangeMapFromContext(ctx context.Context) *ExchangeMap {
+// ExchangeFromContext - return an exchange
+func ExchangeFromContext(ctx context.Context) *Exchange {
 	if ctx == nil {
 		return nil
 	}
 	v := ctx.Value(urlExchangeKey)
 	if v != nil {
-		if url, ok := v.(*ExchangeMap); ok {
+		if url, ok := v.(*Exchange); ok {
 			return url
 		}
 	}
