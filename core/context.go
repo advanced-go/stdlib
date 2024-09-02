@@ -10,12 +10,12 @@ const (
 	statusKey   = "status"
 )
 
-type Exchange struct {
+type ExchangeOverride struct {
 	m map[string]string
 }
 
-func NewExchange(request, response, status string) *Exchange {
-	e := new(Exchange)
+func NewExchangeOverride(request, response, status string) *ExchangeOverride {
+	e := new(ExchangeOverride)
 	e.m = make(map[string]string)
 	if request != "" {
 		e.m[requestKey] = request
@@ -29,27 +29,28 @@ func NewExchange(request, response, status string) *Exchange {
 	return e
 }
 
-func (e *Exchange) Request() string {
+func (e *ExchangeOverride) Request() string {
 	return e.m[requestKey]
 }
 
-func (e *Exchange) Response() string {
+func (e *ExchangeOverride) Response() string {
 	return e.m[responseKey]
 }
 
-func (e *Exchange) Status() string {
+func (e *ExchangeOverride) Status() string {
 	return e.m[statusKey]
 }
 
-type urlContextKey struct{}
-type urlExchangeContextKey struct{}
+// type urlContextKey struct{}
+type urlExchangeOverrideContextKey struct{}
 
 var (
-	urlKey         = urlContextKey{}
-	urlExchangeKey = urlExchangeContextKey{}
+	//	urlKey         = urlContextKey{}
+	urlExchangeOverrideKey = urlExchangeOverrideContextKey{}
 )
 
 // NewUrlContext - creates a new Context with an url
+/*
 func NewUrlContext(ctx context.Context, url string) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
@@ -76,27 +77,30 @@ func UrlFromContext(ctx context.Context) string {
 	return ""
 }
 
-// NewExchangeContext - creates a new Context with an exchange
-func NewExchangeContext(ctx context.Context, ex *Exchange) context.Context {
+
+*/
+
+// NewExchangeOverrideContext - creates a new Context with an exchange override
+func NewExchangeOverrideContext(ctx context.Context, ex *ExchangeOverride) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	} else {
-		i := ctx.Value(urlExchangeKey)
+		i := ctx.Value(urlExchangeOverrideKey)
 		if i != nil {
 			return ctx
 		}
 	}
-	return context.WithValue(ctx, urlExchangeKey, ex)
+	return context.WithValue(ctx, urlExchangeOverrideKey, ex)
 }
 
-// ExchangeFromContext - return an exchange
-func ExchangeFromContext(ctx context.Context) *Exchange {
+// ExchangeOverrideFromContext - return an exchange override
+func ExchangeOverrideFromContext(ctx context.Context) *ExchangeOverride {
 	if ctx == nil {
 		return nil
 	}
-	v := ctx.Value(urlExchangeKey)
+	v := ctx.Value(urlExchangeOverrideKey)
 	if v != nil {
-		if url, ok := v.(*Exchange); ok {
+		if url, ok := v.(*ExchangeOverride); ok {
 			return url
 		}
 	}

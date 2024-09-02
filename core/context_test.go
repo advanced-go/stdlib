@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+/*
 func ExampleUrlContext() {
 	url := "https://google.com/search?q=test"
 	ctx := NewUrlContext(context.Background(), url)
@@ -15,11 +16,14 @@ func ExampleUrlContext() {
 
 }
 
+
+*/
+
 func ExampleExchangeContext() {
 	url := "https://google.com/search?q=test"
-	urls := NewExchange(url, "response-url", "status-url")
-	ctx := NewExchangeContext(context.Background(), urls)
-	fmt.Printf("test: NewExchangeContext(%v) -> %v\n", urls, ExchangeFromContext(ctx))
+	urls := NewExchangeOverride(url, "response-url", "status-url")
+	ctx := NewExchangeOverrideContext(context.Background(), urls)
+	fmt.Printf("test: NewExchangeContext(%v) -> %v\n", urls, ExchangeOverrideFromContext(ctx))
 
 	//Output:
 	//test: NewExchangeContext(&{map[request:https://google.com/search?q=test response:response-url status:status-url]}) -> &{map[request:https://google.com/search?q=test response:response-url status:status-url]}
