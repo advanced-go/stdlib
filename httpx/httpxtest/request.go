@@ -37,7 +37,7 @@ func ReadRequest(uri any) (*http.Request, *core.Status) {
 	}
 	location := req.Header.Get(httpx.ContentLocation)
 	if location != "" {
-		ctx := core.NewUrlContext(nil, location)
+		ctx := core.NewExchangeOverrideContext(nil, core.NewExchangeOverride("", location, ""))
 		req2, err3 := http.NewRequestWithContext(ctx, req.Method, req.URL.String(), req.Body)
 		if err3 != nil {
 			return nil, core.NewStatusError(core.StatusInvalidArgument, err3)
