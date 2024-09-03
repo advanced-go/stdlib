@@ -37,7 +37,7 @@ func BuildRsc(version, resource string) string {
 	return formatVersion(version) + resource
 }
 
-func BuildHostWithScheme(host string) string {
+func UNUSED_BuildHostWithScheme(host string) string {
 	if host == "" {
 		return ""
 	}

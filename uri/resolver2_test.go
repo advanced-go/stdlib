@@ -27,6 +27,7 @@ func ExampleBuildRsc() {
 
 }
 
+/*
 func ExampleBuildHostWithScheme() {
 	host := ""
 	o := BuildHostWithScheme(host)
@@ -52,6 +53,9 @@ func ExampleBuildHostWithScheme() {
 
 }
 
+
+*/
+
 func ExampleBuildPath2() {
 	auth := "github/advanced-go/timeseries"
 	vers := "v2"
@@ -71,7 +75,7 @@ func ExampleBuildPath2() {
 
 }
 
-func ExampleResolve() {
+func ExampleResolve2() {
 	host := ""
 	auth := "github/advanced-go/timeseries"
 	vers := "v2"

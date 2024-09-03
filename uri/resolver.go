@@ -80,8 +80,8 @@ func (r *Resolver) Host(host string) string {
 	return host
 }
 
-func (r *Resolver) Url(host string, authority, resourcePath string, values url.Values, h http.Header) string {
-	path := BuildPath(authority, resourcePath, values)
+func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, values url.Values, h http.Header) string {
+	path := BuildPath(authority, version, resource, values)
 	if h != nil {
 		p2 := h.Get(path)
 		if p2 != "" {
@@ -99,25 +99,26 @@ func (r *Resolver) Url(host string, authority, resourcePath string, values url.V
 }
 
 func Cat(host, path string) string {
-	origin := BuildOrigin(host)
+	origin := BuildHostWithScheme(host)
 	if path[0] == '/' {
 		return origin + path
 	}
 	return origin + "/" + path
 }
 
-func BuildPath(authority, resourcePath string, values url.Values) string {
+func BuildPath(authority, version, resource string, values url.Values) string {
 	path := strings.Builder{}
 	if authority != "" {
 		path.WriteString(authority)
 		path.WriteString(":")
+		path.WriteString(formatVersion(version))
 	}
-	path.WriteString(resourcePath)
+	path.WriteString(resource)
 	path.WriteString(formatValues(values))
 	return path.String()
 }
 
-func BuildOrigin(host string) string {
+func BuildHostWithScheme(host string) string {
 	if host == "" {
 		return ""
 	}

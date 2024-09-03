@@ -14,97 +14,100 @@ const (
 	bingKey      = "bing"
 )
 
-func ExampleBuildOrigin() {
+func ExampleBuildHostWithScheme() {
 	host := ""
-	o := BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o := BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "www.google.com"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "localhost:8080"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "internalhost"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	//Output:
-	//test: BuildOrigin("") -> [origin:]
-	//test: BuildOrigin("www.google.com") -> [origin:https://www.google.com]
-	//test: BuildOrigin("localhost:8080") -> [origin:http://localhost:8080]
-	//test: BuildOrigin("internalhost") -> [origin:http://internalhost]
+	//test: BuildHostWithScheme("") -> [origin:]
+	//test: BuildHostWithScheme("www.google.com") -> [origin:https://www.google.com]
+	//test: BuildHostWithScheme("localhost:8080") -> [origin:http://localhost:8080]
+	//test: BuildHostWithScheme("internalhost") -> [origin:http://internalhost]
 
 }
 
 func ExampleBuildPath() {
 	auth := "github/advanced-go/timeseries"
 	rsc := "access"
+	ver := "v2"
 	values := make(url.Values)
-	p := BuildPath(auth, rsc, values)
+	p := BuildPath(auth, "", rsc, values)
 
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
 
 	values.Add("region", "*")
-	rsc = "v2/access"
-	p = BuildPath(auth, rsc, values)
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\") -> [%v]\n", auth, rsc, p)
+	//rsc = "access"
+	p = BuildPath(auth, ver, rsc, values)
+	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
 
 	//Output:
-	//test: BuildPath("github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
-	//test: BuildPath("github/advanced-go/timeseries","v2/access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:access]
+	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=*]
 
 }
 
-func _ExampleResolve() {
+func ExampleResolve() {
 	host := ""
 	auth := "github/advanced-go/timeseries"
 	rsc := "access"
+	ver := ""
 	values := make(url.Values)
 	r := NewResolver(nil)
 
-	url := r.Url(host, auth, rsc, values, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url := r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	values.Add("region", "*")
-	url = r.Url(host, auth, rsc, values, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	host = "www.google.com"
-	url = r.Url(host, auth, rsc, values, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	host = "localhost:8080"
-	rsc = "v2/" + rsc
-	url = r.Url(host, auth, rsc, values, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	ver = "v2"
+	//rsc = "v2/" + rsc
+	url = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	h := make(http.Header)
-	url = r.Url(host, auth, rsc, values, h)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
-	h.Add(BuildPath(auth, rsc, values), testRespName)
-	url = r.Url(host, auth, rsc, values, h)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	h.Add(BuildPath(auth, ver, rsc, values), testRespName)
+	url = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	host = "www.google.com"
 	rsc = "search"
 	values.Del("region")
 	values.Add("q", "golang")
 	auth = ""
-	url = r.Url(host, auth, rsc, values, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url)
+	url = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
 
 	//Output:
-	//test: Url("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access]
-	//test: Url("","github/advanced-go/timeseries","access") -> [github/advanced-go/timeseries:access?region=%2A]
-	//test: Url("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=%2A]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
-	//test: Url("www.google.com","","search") -> [https://www.google.com/search?q=golang]
+	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access]
+	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access?region=*]
+	//test: UrlWithAuthority("www.google.com","github/advanced-go/timeseries","","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=*]
+	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
+	//test: UrlWithAuthority("www.google.com","","v2","search") -> [https://www.google.com/search?q=golang]
 
 }
 
@@ -130,108 +133,112 @@ func resolverWithoutProxy() *Resolver {
 func ExampleResolver() {
 	host := ""
 	auth := "github/advanced-go/search"
+	ver := ""
 	rsc := "access"
 	r := resolverWithProxy()
 
-	url1 := r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = "duckduckgo.com"
-	url1 = r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = defaultKey
-	url1 = r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Url("","github/advanced-go/search","access") -> [github/advanced-go/search:access]
-	//test: Url("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
-	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Url("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
-	//test: Url("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority("","github/advanced-go/search","access") -> [github/advanced-go/search:access]
+	//test: UrlWithAuthority("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: UrlWithAuthority("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
 
 }
 
 func ExampleResolver_Overrides_Empty() {
 	host := ""
 	auth := "github/advanced-go/search"
+	ver := ""
 	rsc := "access"
 	r := resolverWithProxy()
 
 	host = "duckduckgo.com"
-	url1 := r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override(nil)
 	host = defaultKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Url("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
-	//test: Url2("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Url2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
-	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: UrlWithAuthority("duckduckgo.com","github/advanced-go/search","access") -> [https://duckduckgo.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
 func ExampleResolver_Overrides_No_Proxy() {
 	host := ""
 	auth := "github/advanced-go/search"
+	ver := ""
 	rsc := "access"
 	r := resolverWithProxy()
 
 	host = defaultKey
-	url1 := r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override([]HostEntry{{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false}})
 	host = defaultKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Url2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
-	//test: Url2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
-	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: UrlWithAuthority("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("bing","github/advanced-go/search","access") -> [https://www.bing.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
 func ExampleResolver_Overrides_Proxy() {
 	host := ""
 	auth := "github/advanced-go/search"
+	ver := ""
 	rsc := "access"
 	r := resolverWithProxy()
 
 	host = defaultKey
-	url1 := r.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 := r.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	r2 := r.Override([]HostEntry{
 		{Key: defaultKey, Host: "www.duckduckgo.com", Proxy: false},
@@ -239,22 +246,22 @@ func ExampleResolver_Overrides_Proxy() {
 		{Key: bingKey, Host: "www.bing.com", Proxy: true},
 	})
 	host = defaultKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = bingKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	host = yahooKey
-	url1 = r2.Url(host, auth, rsc, nil, nil)
-	fmt.Printf("test: Url2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
+	url1 = r2.UrlWithAuthority(host, auth, ver, rsc, nil, nil)
+	fmt.Printf("test: UrlWithAuthority2(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, rsc, url1)
 
 	//Output:
-	//test: Url("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
-	//test: Url2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
-	//test: Url2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
-	//test: Url2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
+	//test: UrlWithAuthority("default","github/advanced-go/search","access") -> [https://www.google.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("default","github/advanced-go/search","access") -> [https://www.duckduckgo.com/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("bing","github/advanced-go/search","access") -> [http://localhost:8888/github/advanced-go/search:access]
+	//test: UrlWithAuthority2("yahoo","github/advanced-go/search","access") -> [http://localhost:8081/github/advanced-go/search:access]
 
 }
 
