@@ -6,26 +6,36 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
-	"sync"
 )
 
 const (
 	proxyKey = "proxy-key"
 )
 
+/*
 type HostEntry struct {
 	Key   string `json:"key"`
 	Host  string `json:"host"`
 	Proxy bool   `json:"proxy"`
 }
 
+*/
+
 type Resolver struct {
-	m       *sync.Map
-	proxy   HostEntry
-	entryFn func(host string, m *sync.Map) (HostEntry, bool)
+	defaultHost string
+	//m           *sync.Map
+	//proxy       HostEntry
+	//entryFn     func(host string, m *sync.Map) (HostEntry, bool)
 }
 
-func NewResolver(entries []HostEntry) *Resolver {
+func NewResolver(defaultHost string) *Resolver {
+	r := new(Resolver)
+	r.defaultHost = defaultHost
+	return r
+}
+
+/*
+func NewResolver3(entries []HostEntry) *Resolver {
 	r := new(Resolver)
 	r.m = new(sync.Map)
 	for _, e := range entries {
@@ -50,7 +60,9 @@ func NewResolver(entries []HostEntry) *Resolver {
 	}
 	return r
 }
+*/
 
+/*
 func (r *Resolver) Override(entries []HostEntry) *Resolver {
 	r2 := NewResolver(entries)
 	r2.entryFn = func(host string, m *sync.Map) (HostEntry, bool) {
@@ -82,6 +94,8 @@ func (r *Resolver) Host(host string) string {
 	return host
 }
 
+*/
+
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	path1 := BuildPath(path, query)
 	if h != nil {
@@ -90,14 +104,10 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 			return p2
 		}
 	}
-	if host == "" {
-		return path1
+	if host != "" {
+		return Cat(host, path1)
 	}
-	e, ok := r.entryFn(host, r.m)
-	if ok {
-		return Cat(e.Host, path1)
-	}
-	return Cat(host, path1)
+	return Cat(r.defaultHost, path1)
 }
 
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
@@ -108,14 +118,10 @@ func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, q
 			return p2
 		}
 	}
-	if host == "" {
-		return path
+	if host != "" {
+		return Cat(host, path)
 	}
-	e, ok := r.entryFn(host, r.m)
-	if ok {
-		return Cat(e.Host, path)
-	}
-	return Cat(host, path)
+	return Cat(r.defaultHost, path)
 }
 
 func Cat(host, path string) string {
@@ -194,6 +200,7 @@ func entry(host string, m *sync.Map) (HostEntry, bool) {
 
 */
 
+/*
 func load(host string, m *sync.Map) (HostEntry, bool) {
 	if m == nil {
 		return HostEntry{}, false
@@ -208,6 +215,8 @@ func load(host string, m *sync.Map) (HostEntry, bool) {
 	return HostEntry{}, false
 }
 
+
+*/
 /*
 newUrl := strings.Builder{}
 if host != "" {

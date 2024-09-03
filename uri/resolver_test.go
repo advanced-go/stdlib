@@ -71,7 +71,7 @@ func ExampleResolve_Url() {
 	host := ""
 	path := "/search"
 	values := make(url.Values)
-	r := NewResolver(nil)
+	r := NewResolver("localhost:8081")
 
 	url1 := r.Url(host, path, errType, nil)
 	fmt.Printf("test: Url(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
@@ -97,10 +97,10 @@ func ExampleResolve_Url() {
 	fmt.Printf("test: Url_Override(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
 
 	//Output:
-	//test: Url("","/search") -> [/searcherror: query type is invalid int]
-	//test: Url("","/search") -> [/search]
-	//test: Url("","/search") -> [/search?q=golang]
-	//test: Url_String("","/search") -> [/search?q=golang]
+	//test: Url("","/search") -> [http://localhost:8081/searcherror: query type is invalid int]
+	//test: Url("","/search") -> [http://localhost:8081/search]
+	//test: Url("","/search") -> [http://localhost:8081/search?q=golang]
+	//test: Url_String("","/search") -> [http://localhost:8081/search?q=golang]
 	//test: Url_String("www.google.com","/search") -> [https://www.google.com/search?q=golang]
 	//test: Url_Override("www.google.com","/search") -> [https://www.search.yahoo.com?q=golang]
 
@@ -112,7 +112,7 @@ func ExampleResolve_UrlWithAuthority() {
 	rsc := "access"
 	ver := ""
 	values := make(url.Values)
-	r := NewResolver(nil)
+	r := NewResolver("")
 
 	url1 := r.UrlWithAuthority(host, auth, "", rsc, values, nil)
 	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
@@ -151,9 +151,9 @@ func ExampleResolve_UrlWithAuthority() {
 	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	//Output:
-	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access]
-	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access?region=*]
-	//test: UrlWithAuthority_String("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access?region=*]
+	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access]
+	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access?region=*]
+	//test: UrlWithAuthority_String("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access?region=*]
 	//test: UrlWithAuthority("www.google.com","github/advanced-go/timeseries","","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=*]
 	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
 	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
@@ -162,6 +162,7 @@ func ExampleResolve_UrlWithAuthority() {
 
 }
 
+/*
 func resolverWithProxy() *Resolver {
 	return NewResolver([]HostEntry{
 		{Key: proxyKey, Host: "localhost:8081", Proxy: false},
@@ -181,6 +182,10 @@ func resolverWithoutProxy() *Resolver {
 	)
 }
 
+
+*/
+
+/*
 func ExampleResolver_UrlWithAuthority() {
 	host := ""
 	auth := "github/advanced-go/search"
@@ -358,3 +363,6 @@ func ExampleResolver_Host() {
 	//test: Host2("yahoo") -> [localhost:8081]
 
 }
+
+
+*/
