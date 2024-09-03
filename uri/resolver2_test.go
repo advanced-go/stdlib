@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	testRespName = "file://[cwd]/timeseries1test/get-all-resp-v1.txt"
+	testRespName2 = "file://[cwd]/uritest/get-all-resp-v1.txt"
 )
 
 func ExampleBuildRsc() {
@@ -27,47 +27,47 @@ func ExampleBuildRsc() {
 
 }
 
-func ExampleBuildOrigin() {
+func ExampleBuildHostWithScheme() {
 	host := ""
-	o := BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o := BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "www.google.com"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "localhost:8080"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	host = "internalhost"
-	o = BuildOrigin(host)
-	fmt.Printf("test: BuildOrigin(\"%v\") -> [origin:%v]\n", host, o)
+	o = BuildHostWithScheme(host)
+	fmt.Printf("test: BuildHostWithScheme(\"%v\") -> [origin:%v]\n", host, o)
 
 	//Output:
-	//test: BuildOrigin("") -> [origin:]
-	//test: BuildOrigin("www.google.com") -> [origin:https://www.google.com]
-	//test: BuildOrigin("localhost:8080") -> [origin:http://localhost:8080]
-	//test: BuildOrigin("internalhost") -> [origin:http://internalhost]
+	//test: BuildHostWithScheme("") -> [origin:]
+	//test: BuildHostWithScheme("www.google.com") -> [origin:https://www.google.com]
+	//test: BuildHostWithScheme("localhost:8080") -> [origin:http://localhost:8080]
+	//test: BuildHostWithScheme("internalhost") -> [origin:http://internalhost]
 
 }
 
-func ExampleBuildPath() {
+func ExampleBuildPath2() {
 	auth := "github/advanced-go/timeseries"
 	vers := "v2"
 	rsc := "access"
 	values := make(url.Values)
-	p := BuildPath(auth, vers, rsc, values)
+	p := BuildPath2(auth, vers, rsc, values)
 
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
+	fmt.Printf("test: BuildPath2(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
 
 	values.Add("region", "*")
-	p = BuildPath(auth, vers, rsc, values)
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
+	p = BuildPath2(auth, vers, rsc, values)
+	fmt.Printf("test: BuildPath2(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, vers, rsc, p)
 
 	//Output:
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access]
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
+	//test: BuildPath2("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access]
+	//test: BuildPath2("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=*]
 
 }
 
@@ -97,16 +97,16 @@ func ExampleResolve() {
 	url = Resolve(host, auth, vers, rsc, values, h)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
 
-	h.Add(BuildPath(auth, vers, rsc, values), testRespName)
+	h.Add(BuildPath2(auth, vers, rsc, values), testRespName2)
 	url = Resolve(host, auth, vers, rsc, values, h)
 	fmt.Printf("test: Resolve(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, vers, rsc, url)
 
 	//Output:
 	//test: Resolve("","github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access]
-	//test: Resolve("","github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("www.google.com","github/advanced-go/timeseries","v2","access") -> [https://www.google.com/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=%2A]
-	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
+	//test: Resolve("","github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=*]
+	//test: Resolve("www.google.com","github/advanced-go/timeseries","v2","access") -> [https://www.google.com/github/advanced-go/timeseries:v2/access?region=*]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: Resolve("localhost:8080","github/advanced-go/timeseries","v2","access") -> [file://[cwd]/uritest/get-all-resp-v1.txt]
 
 }

@@ -1,0 +1,45 @@
+HTTP/1.1 200 OK
+Date: Mon, 27 Jul 2009 12:28:53 GMT
+Server: Apache/2.2.14 (Win32)
+Content-Type: application/json
+Connection: Closed
+
+[
+  {
+    "region":"region1",
+    "zone":"Zone1",
+    "sub-zone":"",
+    "host":"www.host1.com",
+    "status":"active",
+    "created-ts":"",
+    "updated-ts":"",
+    "timeout":100,
+    "rate-limit":125,
+    "rate-burst":25
+  },
+  {
+    "region":"region1",
+    "zone":"Zone2",
+    "sub-zone":"",
+    "host":"www.host2.com",
+    "status":"inactive",
+    "created-ts":"",
+    "updated-ts":"",
+    "timeout":250,
+    "rate-limit":100,
+    "rate-burst":10
+  },
+  {
+    "region":"region2",
+    "zone":"Zone1",
+    "sub-zone":"",
+    "host":"www.google.com",
+    "instance-id":"",
+    "status":"removed",
+    "created-ts":"",
+    "updated-ts":"",
+    "timeout":3000,
+    "rate-limit":50,
+    "rate-burst":5
+  }
+]

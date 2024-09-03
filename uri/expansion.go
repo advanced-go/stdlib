@@ -34,6 +34,7 @@ func formatValues(values url.Values) string {
 	}
 	encoded := values.Encode()
 	if encoded != "" {
+		encoded, _ = url.QueryUnescape(encoded)
 		return "?" + encoded
 	}
 	return ""

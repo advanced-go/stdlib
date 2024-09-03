@@ -18,9 +18,9 @@ func Resolve(host, authority, version, resource string, values url.Values, h htt
 		return path
 	}
 	if path[0] == '/' {
-		return BuildOrigin2(host) + path
+		return BuildHostWithScheme(host) + path
 	}
-	return BuildOrigin2(host) + "/" + path
+	return BuildHostWithScheme(host) + "/" + path
 }
 
 func BuildPath2(authority, version, resource string, values url.Values) string {
@@ -37,7 +37,7 @@ func BuildRsc(version, resource string) string {
 	return formatVersion(version) + resource
 }
 
-func BuildOrigin2(host string) string {
+func BuildHostWithScheme(host string) string {
 	if host == "" {
 		return ""
 	}

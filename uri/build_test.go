@@ -2,7 +2,7 @@ package uri
 
 import (
 	"fmt"
-	"github.com/advanced-go/stdlib/core"
+	//"github.com/advanced-go/stdlib/core"
 	"net/http"
 	url2 "net/url"
 )
@@ -19,8 +19,8 @@ func ExampleBuildQuery() {
 	fmt.Printf("test: BuildQuery(\"%v\") -> [query:%v] [unesc:%v]\n", s, q, u)
 
 	v := make(url2.Values)
-	v.Add(core.RegionKey, "*")
-	v.Add(core.ZoneKey, "texas")
+	v.Add("region", "*")
+	v.Add("zone", "texas")
 	q = BuildQuery(v)
 	u, _ = url2.QueryUnescape(q)
 	fmt.Printf("test: BuildQuery(\"%v\") -> [query:%v] [unesc:%v]\n", s, q, u)
