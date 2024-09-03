@@ -1,4 +1,4 @@
-package httpx
+package http2
 
 import (
 	"fmt"
@@ -58,7 +58,7 @@ func ExampleResource_Get() {
 
 	//Output:
 	//test: Get() -> [status:OK] [status-code:200] [header:map[Content-Type:[application/json] X-Authority:[github/advanced-go/stdlib] X-Method:[GET]]] [[{region1 Zone1  www.host1.com } {region2 Zone1  www.google.com }]]
-	
+
 }
 
 func ExampleResource_Delete() {

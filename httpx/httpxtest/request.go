@@ -9,9 +9,10 @@ import (
 	io2 "github.com/advanced-go/stdlib/io"
 	"io"
 	"net/http"
+	"testing"
 )
 
-func ReadRequest(uri any) (*http.Request, *core.Status) {
+func NewRequest(uri any) (*http.Request, *core.Status) {
 	if uri == nil {
 		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
 	}
@@ -46,4 +47,14 @@ func ReadRequest(uri any) (*http.Request, *core.Status) {
 		return req2, core.StatusOK()
 	}
 	return req, core.StatusOK()
+}
+
+func NewRequestTest(uri any, t *testing.T) *http.Request {
+	req, status := NewRequest(uri)
+	if status.OK() {
+		return req
+	}
+	t.Errorf("ReadRequest() err = %v", status.Err.Error())
+	req2, _ := http.NewRequest("", "http://somedomain.com/invalid-uri", nil)
+	return req2
 }

@@ -1,8 +1,9 @@
-package httpx
+package http2
 
 import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"net/http"
 )
 
@@ -15,14 +16,14 @@ const (
 
 func rsc1(r *http.Request) (*http.Response, *core.Status) {
 	if r.Method == http.MethodGet && r.URL.Path == core.AuthorityRootPath {
-		return NewAuthorityResponse(rsc1Name), core.StatusOK()
+		return httpx.NewAuthorityResponse(rsc1Name), core.StatusOK()
 	}
 	return &http.Response{StatusCode: http.StatusBadRequest}, core.StatusOK()
 }
 
 func rsc2(r *http.Request) (*http.Response, *core.Status) {
 	if r.Method == http.MethodGet && r.URL.Path == core.AuthorityRootPath {
-		return NewAuthorityResponse(rsc2Name), core.StatusOK()
+		return httpx.NewAuthorityResponse(rsc2Name), core.StatusOK()
 	}
 	return &http.Response{StatusCode: http.StatusGatewayTimeout}, core.StatusOK()
 }

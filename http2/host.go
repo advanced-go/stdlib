@@ -1,9 +1,10 @@
-package httpx
+package http2
 
 import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"net/http"
 )
 
@@ -23,7 +24,7 @@ func NewHost(authority string, mapFn ResourceMapFunc, exchanges ...core.HttpExch
 		return nil, errors.New("resource map function is nil")
 	}
 	a := new(Host)
-	a.Identity = NewAuthorityResponse(authority)
+	a.Identity = httpx.NewAuthorityResponse(authority)
 	a.Exchanges = make(map[string]core.HttpExchange)
 	a.ResourceMap = mapFn
 	for _, ex := range exchanges {
@@ -60,8 +61,8 @@ func (a *Host) Exchange(name string) (core.HttpExchange, error) {
 func (a *Host) Do(req *http.Request) (*http.Response, *core.Status) {
 	if req == nil {
 		h2 := make(http.Header)
-		h2.Add(ContentType, ContentTypeText)
-		resp, status := NewResponse[core.Log](http.StatusBadRequest, h2, errors.New("bad request: http.Request is nil"))
+		h2.Add(httpx.ContentType, httpx.ContentTypeText)
+		resp, status := httpx.NewResponse[core.Log](http.StatusBadRequest, h2, errors.New("bad request: http.Request is nil"))
 		return resp, status //core.StatusBadRequest()
 	}
 	if req.Method == http.MethodGet && req.URL.Path == core.AuthorityRootPath {
@@ -70,8 +71,8 @@ func (a *Host) Do(req *http.Request) (*http.Response, *core.Status) {
 	ex, err := a.Exchange(a.ResourceMap(req))
 	if ex == nil {
 		h2 := make(http.Header)
-		h2.Add(ContentType, ContentTypeText)
-		resp, status := NewResponse[core.Log](http.StatusBadRequest, h2, errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
+		h2.Add(httpx.ContentType, httpx.ContentTypeText)
+		resp, status := httpx.NewResponse[core.Log](http.StatusBadRequest, h2, errors.New(fmt.Sprintf("invalid resource map: %v, HttpExchange not found for: [%v]", err, req.URL)))
 		return resp, status //core.StatusBadRequest()
 	}
 	return ex(req)

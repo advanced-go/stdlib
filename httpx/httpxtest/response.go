@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"errors"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
 	"strings"
+	"testing"
 )
 
 const (
@@ -15,8 +17,8 @@ const (
 	fileScheme      = "file"
 )
 
-// ReadResponse - read a Http response given a URL
-func ReadResponse(uri any) (*http.Response, *core.Status) {
+// NewResponse - read an HTTP response given a URL
+func NewResponse(uri any) (*http.Response, *core.Status) {
 	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: "Internal Error"}
 
 	if uri == nil {
@@ -37,4 +39,13 @@ func ReadResponse(uri any) (*http.Response, *core.Status) {
 		return serverErr, core.NewStatusError(core.StatusIOError, err2)
 	}
 	return resp1, core.StatusOK()
+}
+
+func NewResponseTest(uri any, t *testing.T) *http.Response {
+	resp, status := httpx.ReadResponse(uri)
+	if status.OK() {
+		return resp
+	}
+	t.Errorf("ReadResponse() err = %v", status.Err.Error())
+	return &http.Response{StatusCode: http.StatusTeapot}
 }

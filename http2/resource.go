@@ -1,9 +1,10 @@
-package httpx
+package http2
 
 import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"github.com/advanced-go/stdlib/json"
 	"net/http"
 )
@@ -20,10 +21,10 @@ type Resource[T any, U any, V any] struct {
 
 func NewResource[T any, U any, V any](name string, content Content2[T, U, V], finalize FinalizeFunc) *Resource[T, U, V] {
 	r := new(Resource[T, U, V])
-	r.Identity = NewAuthorityResponse(name)
+	r.Identity = httpx.NewAuthorityResponse(name)
 	h2 := make(http.Header)
-	h2.Add(ContentType, ContentTypeText)
-	r.MethodNotAllowed, _ = NewResponse[core.Log](core.NewStatus(http.StatusMethodNotAllowed).HttpCode(), h2, nil)
+	h2.Add(httpx.ContentType, httpx.ContentTypeText)
+	r.MethodNotAllowed, _ = httpx.NewResponse[core.Log](core.NewStatus(http.StatusMethodNotAllowed).HttpCode(), h2, nil)
 	r.Finalize = finalize
 	if r.Finalize == nil {
 		r.Finalize = defaultFinalize()
@@ -43,9 +44,9 @@ func (r *Resource[T, U, V]) Empty() {
 func (r *Resource[T, U, V]) finalize(req *http.Request, status *core.Status) (*http.Response, *core.Status) {
 	h2 := make(http.Header)
 	if !status.OK() && status.Err != nil {
-		h2.Add(ContentType, ContentTypeText)
+		h2.Add(httpx.ContentType, httpx.ContentTypeText)
 	}
-	resp, status1 := NewResponse[core.Log](status.HttpCode(), h2, status.Err)
+	resp, status1 := httpx.NewResponse[core.Log](status.HttpCode(), h2, status.Err)
 	resp.Request = req
 	r.Finalize(resp)
 	return resp, status1
@@ -66,7 +67,7 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 			return r.finalize(req, status)
 		}
 		h2 := make(http.Header)
-		h2.Add(ContentType, ContentTypeJson)
+		h2.Add(httpx.ContentType, httpx.ContentTypeJson)
 		resp := &http.Response{StatusCode: status1.HttpCode(), Status: status1.String(), Header: h2, ContentLength: bytes, Body: reader}
 		resp.Request = req
 		r.Finalize(resp)
@@ -94,8 +95,8 @@ func (r *Resource[T, U, V]) Do(req *http.Request) (*http.Response, *core.Status)
 	default:
 		status := core.NewStatusError(http.StatusMethodNotAllowed, errors.New(fmt.Sprintf("unsupported method: %v", req.Method)))
 		h2 := make(http.Header)
-		h2.Add(ContentType, ContentTypeText)
-		resp, status1 := NewResponse[core.Log](status.HttpCode(), h2, status.Err)
+		h2.Add(httpx.ContentType, httpx.ContentTypeText)
+		resp, status1 := httpx.NewResponse[core.Log](status.HttpCode(), h2, status.Err)
 		return resp, status1
 	}
 }

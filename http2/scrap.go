@@ -1,4 +1,4 @@
-package httpx
+package http2
 
 /*
 type FinalizeFunc func(*http.Response)

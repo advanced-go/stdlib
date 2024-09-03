@@ -24,49 +24,49 @@ type entryTest struct {
 
 func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
-	req, err := ReadRequest(ParseRaw(s))
-	fmt.Printf("test: ReadRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
+	req, err := NewRequest(ParseRaw(s))
+	fmt.Printf("test: NewRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
-	req, err = ReadRequest(s)
-	fmt.Printf("test: ReadRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
+	req, err = NewRequest(s)
+	fmt.Printf("test: NewRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlContextKey, val github/advanced-go/example-domain/activity/EntryV1)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
-	//test: ReadRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlContextKey, val github/advanced-go/example-domain/activity/EntryV1)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlExchangeOverrideContextKey, val <not Stringer>)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlExchangeOverrideContextKey, val <not Stringer>)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
 
 }
 
 func Example_ReadRequest_Baseline() {
 	s := "file://[cwd]/resource/baseline-request.txt"
-	req, err := ReadRequest(ParseRaw(s))
+	req, err := NewRequest(ParseRaw(s))
 
 	if req != nil {
 	}
 	// print content
 	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
-	fmt.Printf("test: ReadRequest(%v) -> [status:%v]\n", s, err)
+	fmt.Printf("test: NewRequest(%v) -> [status:%v]\n", s, err)
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
+	//test: NewRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
 
 }
 
 func Example_ReadRequest_PUT() {
 	s := "file://[cwd]/resource/put-req.txt"
-	req, status := ReadRequest(ParseRaw(s))
+	req, status := NewRequest(ParseRaw(s))
 
 	if !status.OK() {
-		fmt.Printf("test: ReadRequest(%v) -> [status:%v]\n", s, status)
+		fmt.Printf("test: NewRequest(%v) -> [status:%v]\n", s, status)
 	} else {
 		buf, err1 := io.ReadAll(req.Body, nil)
 		if err1 != nil {
 		}
 		var entry []entryTest
 		json.Unmarshal(buf, &entry)
-		fmt.Printf("test: ReadRequest(%v) -> [cnt:%v] [fields:%v]\n", s, len(entry), entry)
+		fmt.Printf("test: NewRequest(%v) -> [cnt:%v] [fields:%v]\n", s, len(entry), entry)
 	}
 
 	//Output:
-	//test: ReadRequest(file://[cwd]/resource/put-req.txt) -> [cnt:2] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200} {egress 100µs usa east  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry PUT 202}]]
+	//test: NewRequest(file://[cwd]/resource/put-req.txt) -> [cnt:2] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200} {egress 100µs usa east  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry PUT 202}]]
 
 }
