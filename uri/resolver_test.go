@@ -59,7 +59,47 @@ func ExampleBuildPath() {
 
 }
 
-func ExampleResolve() {
+func ExampleResolve_Url() {
+	errType := 123
+	host := ""
+	path := "/search"
+	values := make(url.Values)
+	r := NewResolver(nil)
+
+	url1 := r.Url(host, path, errType, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	url1 = r.Url(host, path, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	values.Add("q", "golang")
+	url1 = r.Url(host, path, values, nil)
+	fmt.Printf("test: Url(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	url1 = r.Url(host, path, "q=golang", nil)
+	fmt.Printf("test: Url_String(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	host = "www.google.com"
+	url1 = r.Url(host, path, values, nil)
+	fmt.Printf("test: Url_String(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	h := make(http.Header)
+	h.Add(BuildPath("", "", path, values), "https://www.search.yahoo.com?q=golang")
+	host = "www.google.com"
+	url1 = r.Url(host, path, values, h)
+	fmt.Printf("test: Url_Override(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
+
+	//Output:
+	//test: Url("","/search") -> [/searcherror: query type is invalid int]
+	//test: Url("","/search") -> [/search]
+	//test: Url("","/search") -> [/search?q=golang]
+	//test: Url_String("","/search") -> [/search?q=golang]
+	//test: Url_String("www.google.com","/search") -> [https://www.google.com/search?q=golang]
+	//test: Url_Override("www.google.com","/search") -> [https://www.search.yahoo.com?q=golang]
+
+}
+
+func ExampleResolve_UrlWithAuthority() {
 	host := ""
 	auth := "github/advanced-go/timeseries"
 	rsc := "access"
@@ -134,7 +174,7 @@ func resolverWithoutProxy() *Resolver {
 	)
 }
 
-func ExampleResolver() {
+func ExampleResolver_UrlWithAuthority() {
 	host := ""
 	auth := "github/advanced-go/search"
 	ver := ""

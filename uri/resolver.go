@@ -82,6 +82,24 @@ func (r *Resolver) Host(host string) string {
 	return host
 }
 
+func (r *Resolver) Url(host, path string, query any, h http.Header) string {
+	path1 := BuildPath("", "", path, query)
+	if h != nil {
+		p2 := h.Get(path1)
+		if p2 != "" {
+			return p2
+		}
+	}
+	if host == "" {
+		return path1
+	}
+	e, ok := r.entryFn(host, r.m)
+	if ok {
+		return Cat(e.Host, path1)
+	}
+	return Cat(host, path1)
+}
+
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
 	path := BuildPath(authority, version, resource, query)
 	if h != nil {
