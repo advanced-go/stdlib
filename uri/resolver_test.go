@@ -67,42 +67,46 @@ func ExampleResolve() {
 	values := make(url.Values)
 	r := NewResolver(nil)
 
-	url := r.UrlWithAuthority(host, auth, "", rsc, values, nil)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 := r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	values.Add("region", "*")
-	url = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
+
+	url1 = r.UrlWithAuthority(host, auth, "", rsc, "region=*", nil)
+	fmt.Printf("test: UrlWithAuthority_String(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	host = "www.google.com"
-	url = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, "", rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	host = "localhost:8080"
 	ver = "v2"
 	//rsc = "v2/" + rsc
-	url = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	h := make(http.Header)
-	url = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	h.Add(BuildPath(auth, ver, rsc, values), testRespName)
-	url = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	host = "www.google.com"
 	rsc = "search"
 	values.Del("region")
 	values.Add("q", "golang")
 	auth = ""
-	url = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
-	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url)
+	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, nil)
+	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
 	//Output:
 	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access]
 	//test: UrlWithAuthority("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access?region=*]
+	//test: UrlWithAuthority_String("","github/advanced-go/timeseries","","access") -> [github/advanced-go/timeseries:access?region=*]
 	//test: UrlWithAuthority("www.google.com","github/advanced-go/timeseries","","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=*]
 	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
 	//test: UrlWithAuthority("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]

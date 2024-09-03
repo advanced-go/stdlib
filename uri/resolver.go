@@ -1,8 +1,10 @@
 package uri
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -80,8 +82,8 @@ func (r *Resolver) Host(host string) string {
 	return host
 }
 
-func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, values url.Values, h http.Header) string {
-	path := BuildPath(authority, version, resource, values)
+func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
+	path := BuildPath(authority, version, resource, query)
 	if h != nil {
 		p2 := h.Get(path)
 		if p2 != "" {
@@ -106,15 +108,15 @@ func Cat(host, path string) string {
 	return origin + "/" + path
 }
 
-func BuildPath(authority, version, resource string, values url.Values) string {
+func BuildPath(authority, version, resource string, query any) string {
 	path := strings.Builder{}
 	if authority != "" {
 		path.WriteString(authority)
 		path.WriteString(":")
-		path.WriteString(formatVersion(version))
+		path.WriteString(formatVersion2(version))
 	}
 	path.WriteString(resource)
-	path.WriteString(formatValues(values))
+	path.WriteString(formatQuery(query))
 	return path.String()
 }
 
@@ -131,6 +133,31 @@ func BuildHostWithScheme(host string) string {
 	origin.WriteString("://")
 	origin.WriteString(host)
 	return origin.String()
+}
+
+func formatQuery(query any) string {
+	if query == nil {
+		return ""
+	}
+	if v, ok := query.(url.Values); ok {
+		encoded := v.Encode()
+		if encoded != "" {
+			encoded, _ = url.QueryUnescape(encoded)
+			return "?" + encoded
+		}
+		return ""
+	}
+	if s, ok := query.(string); ok {
+		return "?" + s
+	}
+	return fmt.Sprintf("error: query type is invalid %v", reflect.TypeOf(query))
+}
+
+func formatVersion2(version string) string {
+	if version == "" {
+		return ""
+	}
+	return version + "/"
 }
 
 /*
