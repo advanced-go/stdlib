@@ -10,6 +10,10 @@ import (
 	"net/url"
 )
 
+const (
+	testResonse = "file://[cwd]/httpxtest/resource/test-response.txt"
+)
+
 /*
 func _ExampleInfoFmt() {
 	info := core.ModuleInfo{
@@ -24,8 +28,6 @@ func _ExampleInfoFmt() {
 	//fail
 
 }
-
-
 */
 
 var testCore = []core.Origin{
@@ -159,7 +161,7 @@ func readAll(body io.ReadCloser) ([]byte, *core.Status) {
 }
 
 func Example_ReadResponse() {
-	s := "file://[cwd]/httpxtest/resource/test-response.txt"
+	s := testResonse
 	u, _ := url.Parse(s)
 
 	resp, status0 := ReadResponse(u)

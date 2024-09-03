@@ -1,10 +1,11 @@
-package httpxtest
+package http2
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx/httpxtest"
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
 	"testing"
@@ -24,12 +25,12 @@ type Args struct {
 
 func ReadHttp(basePath, reqName, respName string) ([]Args, *http.Request, *http.Response) {
 	path := basePath + reqName
-	req, status := NewRequest(ParseRaw(path))
+	req, status := httpxtest.NewRequest(httpxtest.ParseRaw(path))
 	if !status.OK() {
 		return []Args{{Item: fmt.Sprintf("ReadRequest(%v)", path), Got: "", Want: "", Err: status}}, nil, nil
 	}
 	path = basePath + respName
-	resp, status1 := NewResponse(ParseRaw(path))
+	resp, status1 := httpxtest.NewResponse(httpxtest.ParseRaw(path))
 	if !status1.OK() {
 		return []Args{{Item: fmt.Sprintf("ReadResponse(%v)", path), Got: "", Want: "", Err: status1}}, nil, nil
 	}
