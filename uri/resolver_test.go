@@ -44,18 +44,25 @@ func ExampleBuildPath() {
 	rsc := "access"
 	ver := "v2"
 	values := make(url.Values)
-	p := BuildPath(auth, "", rsc, values)
 
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
+	p := BuildPath(rsc, values)
+	fmt.Printf("test: BuildPath(\"%v\") -> [%v]\n", rsc, p)
+
+	p = BuildPathWithAuthority(auth, "", rsc, values)
+	fmt.Printf("test: BuildPathWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
 
 	values.Add("region", "*")
-	//rsc = "access"
-	p = BuildPath(auth, ver, rsc, values)
-	fmt.Printf("test: BuildPath(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
+	p = BuildPath(rsc, values)
+	fmt.Printf("test: BuildPath(\"%v\") -> [%v]\n", rsc, p)
+
+	p = BuildPathWithAuthority(auth, ver, rsc, values)
+	fmt.Printf("test: BuildPathWithAuthority(\"%v\",\"%v\",\"%v\") -> [%v]\n", auth, ver, rsc, p)
 
 	//Output:
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:access]
-	//test: BuildPath("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=*]
+	//test: BuildPath("access") -> [access]
+	//test: BuildPathWithAuthority("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:access]
+	//test: BuildPath("access") -> [access?region=*]
+	//test: BuildPathWithAuthority("github/advanced-go/timeseries","v2","access") -> [github/advanced-go/timeseries:v2/access?region=*]
 
 }
 
@@ -84,7 +91,7 @@ func ExampleResolve_Url() {
 	fmt.Printf("test: Url_String(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
 
 	h := make(http.Header)
-	h.Add(BuildPath("", "", path, values), "https://www.search.yahoo.com?q=golang")
+	h.Add(BuildPath(path, values), "https://www.search.yahoo.com?q=golang")
 	host = "www.google.com"
 	url1 = r.Url(host, path, values, h)
 	fmt.Printf("test: Url_Override(\"%v\",\"%v\") -> [%v]\n", host, path, url1)
@@ -131,7 +138,7 @@ func ExampleResolve_UrlWithAuthority() {
 	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
 	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 
-	h.Add(BuildPath(auth, ver, rsc, values), testRespName)
+	h.Add(BuildPathWithAuthority(auth, ver, rsc, values), testRespName)
 	url1 = r.UrlWithAuthority(host, auth, ver, rsc, values, h)
 	fmt.Printf("test: UrlWithAuthority(\"%v\",\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, ver, rsc, url1)
 

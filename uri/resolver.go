@@ -83,7 +83,7 @@ func (r *Resolver) Host(host string) string {
 }
 
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
-	path1 := BuildPath("", "", path, query)
+	path1 := BuildPath(path, query)
 	if h != nil {
 		p2 := h.Get(path1)
 		if p2 != "" {
@@ -101,7 +101,7 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 }
 
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
-	path := BuildPath(authority, version, resource, query)
+	path := BuildPathWithAuthority(authority, version, resource, query)
 	if h != nil {
 		p2 := h.Get(path)
 		if p2 != "" {
@@ -126,7 +126,11 @@ func Cat(host, path string) string {
 	return origin + "/" + path
 }
 
-func BuildPath(authority, version, resource string, query any) string {
+func BuildPath(path string, query any) string {
+	return BuildPathWithAuthority("", "", path, query)
+}
+
+func BuildPathWithAuthority(authority, version, resource string, query any) string {
 	path := strings.Builder{}
 	if authority != "" {
 		path.WriteString(authority)
