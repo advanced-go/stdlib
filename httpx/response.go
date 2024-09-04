@@ -122,8 +122,8 @@ func NewNotFoundResponse() *http.Response {
 	return resp
 }
 
-// ReadResponse - read a Http response given a URL
-func ReadResponse(uri any) (*http.Response, *core.Status) {
+// NewResponseFromUri - read a Http response given a URL
+func NewResponseFromUri(uri any) (*http.Response, *core.Status) {
 	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: internalError}
 	if uri == nil {
 		return serverErr, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
