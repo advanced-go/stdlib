@@ -42,7 +42,7 @@ func NewResponse(uri any) (*http.Response, *core.Status) {
 }
 
 func NewResponseTest(uri any, t *testing.T) *http.Response {
-	resp, status := httpx.ReadResponse(uri)
+	resp, status := httpx.NewResponseFromUri(uri)
 	if status.OK() {
 		return resp
 	}
