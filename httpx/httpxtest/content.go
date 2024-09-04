@@ -3,19 +3,8 @@ package httpxtest
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
-	"errors"
-	"github.com/advanced-go/stdlib/core"
-	io2 "github.com/advanced-go/stdlib/io"
 	"io"
-	"net/url"
 )
-
-// ParseRaw - parse a raw Uri without error
-func ParseRaw(rawUri string) *url.URL {
-	u, _ := url.Parse(rawUri)
-	return u
-}
 
 func ReadContent(rawHttp []byte) (*bytes.Buffer, error) {
 	var content = new(bytes.Buffer)
@@ -43,6 +32,7 @@ func ReadContent(rawHttp []byte) (*bytes.Buffer, error) {
 	return content, nil
 }
 
+/*
 func Content[T any](body io.Reader) (t T, status *core.Status) {
 	if body == nil {
 		return t, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: body is nil"))
@@ -65,3 +55,6 @@ func Content[T any](body io.Reader) (t T, status *core.Status) {
 	}
 	return
 }
+
+
+*/

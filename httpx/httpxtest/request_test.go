@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/advanced-go/stdlib/io"
+	"net/url"
 	"time"
 )
 
@@ -22,9 +23,15 @@ type entryTest struct {
 	StatusCode int32
 }
 
+// parseRaw - parse a raw Uri without error
+func parseRaw(rawUri string) *url.URL {
+	u, _ := url.Parse(rawUri)
+	return u
+}
+
 func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
-	req, err := NewRequest(ParseRaw(s))
+	req, err := NewRequest(parseRaw(s))
 	fmt.Printf("test: NewRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
 	req, err = NewRequest(s)
@@ -38,7 +45,7 @@ func Example_ReadRequest_GET() {
 
 func Example_ReadRequest_Baseline() {
 	s := "file://[cwd]/resource/baseline-request.txt"
-	req, err := NewRequest(ParseRaw(s))
+	req, err := NewRequest(parseRaw(s))
 
 	if req != nil {
 	}
@@ -53,7 +60,7 @@ func Example_ReadRequest_Baseline() {
 
 func Example_ReadRequest_PUT() {
 	s := "file://[cwd]/resource/put-req.txt"
-	req, status := NewRequest(ParseRaw(s))
+	req, status := NewRequest(parseRaw(s))
 
 	if !status.OK() {
 		fmt.Printf("test: NewRequest(%v) -> [status:%v]\n", s, status)
