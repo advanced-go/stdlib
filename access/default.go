@@ -22,6 +22,12 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 	newResp := BuildResponse(resp)
 	url, parsed := uri.ParseURL(newReq.Host, newReq.URL)
 	o.Host = Conditional(o.Host, parsed.Host)
+	if controller.RateLimit == 0 {
+		controller.RateLimit = -1
+	}
+	if controller.RateBurst == 0 {
+		controller.RateBurst = -1
+	}
 	s := fmt.Sprintf("{"+
 		"\"region\":%v, "+
 		"\"zone\":%v, "+
