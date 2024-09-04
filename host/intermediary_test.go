@@ -65,7 +65,7 @@ func ExampleConditionalIntermediary_AuthExchange() {
 }
 
 func ExampleAccessLogIntermediary() {
-	ic := NewAccessLogIntermediary("test-route", testDo)
+	ic := NewAccessLogIntermediary(testDo)
 
 	r, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q-golang", nil)
 	resp, status := ic(r)

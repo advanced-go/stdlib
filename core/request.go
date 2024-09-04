@@ -14,6 +14,7 @@ const (
 	XTest      = "x-test"
 	XFrom      = "x-from"
 	XTo        = "x-to"
+	XRoute     = "x-route"
 )
 
 // AddRequestId - add a request to an http.Request or an http.Header

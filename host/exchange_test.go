@@ -182,7 +182,7 @@ func ExampleHttpHandler_AccessLog_Service_OK() {
 
 	SetAuthExchange(testAuthExchangeOK, nil)
 	SetHostTimeout(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-ok", testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)
@@ -200,7 +200,7 @@ func ExampleHttpHandler_AccessLog_Service_Timeout() {
 
 	SetAuthExchange(testAuthExchangeOK, nil)
 	SetHostTimeout(time.Millisecond * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-timeout", testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)
@@ -218,7 +218,7 @@ func ExampleHttpHandler_AccessLog_Service_Unauthorized() {
 
 	SetAuthExchange(testAuthExchangeFail, nil)
 	SetHostTimeout(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary("log-route-unauthorized", testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)

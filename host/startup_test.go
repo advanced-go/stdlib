@@ -12,7 +12,7 @@ import (
 func emptyRun(uri string, ctrl, data <-chan *messaging.Message, state any) {
 }
 func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.Message) error {
-	a, _ := messaging.NewAgentWithChannels(uri, cmd, data, nil, emptyRun, nil)
+	a, _ := messaging.NewAgentWithChannels(uri, cmd, data, emptyRun, nil)
 	ex.Register(a) //.NewMailboxWithCtrl(uri, false, cmd, data))
 	return nil
 }

@@ -35,7 +35,7 @@ func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok f
 	}
 }
 
-func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpExchange {
+func NewAccessLogIntermediary(c2 core.HttpExchange) core.HttpExchange {
 	return func(r *http.Request) (resp *http.Response, status *core.Status) {
 		if c2 == nil {
 			return badRequest("error: AccessLog Intermediary HttpExchange is nil")
@@ -52,7 +52,7 @@ func NewAccessLogIntermediary(routeName string, c2 core.HttpExchange) core.HttpE
 		if status.Code == http.StatusGatewayTimeout {
 			reasonCode = access.ControllerTimeout
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: routeName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: resp.Header.Get(core.XRoute), To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
 		return
 	}
 }
