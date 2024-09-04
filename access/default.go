@@ -12,10 +12,8 @@ import (
 	"time"
 )
 
-const ()
-
 var defaultLog = func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
-	s := formatter(o, traffic, start, duration, req, resp, routing, controller)
+	s := DefaultFormat(o, traffic, start, duration, req, resp, routing, controller)
 	log.Default().Printf("%v\n", s)
 }
 

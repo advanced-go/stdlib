@@ -24,19 +24,14 @@ const (
 	RoutingRedirect     = "RD" // Routing struct code
 )
 
+var (
+	origin = core.Origin{}
+	logger = defaultLog
+)
+
 // SetOrigin - initialize the origin
 func SetOrigin(o core.Origin) {
 	origin = o
-}
-
-// FormatFunc - formatting
-type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) string
-
-// SetFormatFunc - override formatting
-func SetFormatFunc(fn FormatFunc) {
-	if fn != nil {
-		formatter = fn
-	}
 }
 
 // LogFn - log function
@@ -48,17 +43,6 @@ func SetLogFn(fn LogFn) {
 		logger = fn
 	}
 }
-
-func DisableLogging(v bool) {
-	disabled = v
-}
-
-var (
-	origin    = core.Origin{}
-	formatter = DefaultFormat
-	logger    = defaultLog
-	disabled  = false
-)
 
 // RequestConstraints - Request constraints
 //type RequestConstraints interface {
@@ -75,8 +59,27 @@ var (
 // Header.Get(XRelatesTo)),
 // Header.Get(LocationHeader)
 func Log(traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) {
-	if logger == nil || disabled {
+	if logger == nil {
 		return
 	}
 	logger(origin, traffic, start, duration, req, resp, routing, controller)
 }
+
+/*
+// FormatFunc - formatting
+type FormatFunc func(o core.Origin, traffic string, start time.Time, duration time.Duration, req any, resp any, routing Routing, controller Controller) string
+
+// SetFormatFunc - override formatting
+func SetFormatFunc(fn FormatFunc) {
+	if fn != nil {
+		formatter = fn
+	}
+}
+func DisableLogging(v bool) {
+	disabled = v
+}
+origin    = core.Origin{}
+	//formatter = DefaultFormat
+	logger    = defaultLog
+	disabled  = false
+*/
