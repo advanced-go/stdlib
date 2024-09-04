@@ -39,8 +39,8 @@ const (
 	ContentTypeConfig = "application/config"
 	ChannelData       = "DATA"
 	ChannelControl    = "CTRL"
-	ChannelStatus     = "STATUS"
-	ChannelNone       = "NONE"
+	//ChannelStatus     = "STATUS"
+	ChannelNone = "NONE"
 )
 
 // SendFunc - uniform interface for messaging
@@ -80,12 +80,16 @@ func NewDataMessage(to, from, event string) *Message {
 	return NewMessage(ChannelData, to, from, event)
 }
 
+/*
 func NewStatusMessage(to, from string, status *core.Status) *Message {
 	m := NewMessage(ChannelStatus, to, from, StatusEvent)
 	m.SetContent(ContentTypeStatus, status)
 	m.Body = status
 	return m
 }
+
+
+*/
 
 func NewMessageWithReply(channel, to, from, event string, replyTo Handler) *Message {
 	m := NewMessage(channel, to, from, event)

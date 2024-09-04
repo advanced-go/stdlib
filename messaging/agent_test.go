@@ -34,10 +34,10 @@ func testAgentRun(uri string, ctrl, data <-chan *Message, _ any) {
 }
 
 func ExampleNewAgent_Error() {
-	a, err := newAgent("", nil, nil, nil, nil, nil)
+	a, err := newAgent("", nil, nil, nil, nil)
 	fmt.Printf("test: newAgent() -> [agent:%v] [%v]\n", a, err)
 
-	a, err = newAgent("urn:agent7", nil, nil, nil, nil, nil)
+	a, err = newAgent("urn:agent7", nil, nil, nil, nil)
 	fmt.Printf("test: newAgent() -> [agent:%v] [%v]\n", a, err)
 
 	//Output:
@@ -54,7 +54,7 @@ func ExampleNewAgent() {
 	a.Run()
 	time.Sleep(time.Second)
 
-	a, _ = NewAgentWithChannels(uri1, nil, nil, nil, printAgentRun, "data")
+	a, _ = NewAgentWithChannels(uri1, nil, nil, printAgentRun, "data")
 	a.Run()
 	time.Sleep(time.Second)
 

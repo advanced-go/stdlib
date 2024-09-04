@@ -42,20 +42,19 @@ type agent struct {
 	state    any
 	ctrl     chan *Message
 	data     chan *Message
-	status   chan *Message
 	run      AgentFunc
 	shutdown func()
 }
 
 func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
-	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
+	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
 }
 
-func NewAgentWithChannels(uri string, ctrl, data, status chan *Message, run AgentFunc, state any) (Agent, error) {
-	return newAgent(uri, ctrl, data, status, run, state)
+func NewAgentWithChannels(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
+	return newAgent(uri, ctrl, data, run, state)
 }
 
-func newAgent(uri string, ctrl, data, status chan *Message, run AgentFunc, state any) (Agent, error) {
+func newAgent(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
 	if len(uri) == 0 {
 		return nil, errors.New("error: agent URI is empty")
 	}
@@ -70,7 +69,6 @@ func newAgent(uri string, ctrl, data, status chan *Message, run AgentFunc, state
 	a.state = state
 	a.ctrl = ctrl
 	a.data = data
-	a.status = status
 	a.run = run
 	return a, nil
 }
@@ -87,7 +85,7 @@ func (a *agent) String() string {
 
 // Message - message an agent
 func (a *agent) Message(msg *Message) {
-	Mux(msg, a.ctrl, a.data, a.status)
+	Mux(msg, a.ctrl, a.data)
 }
 
 // Run - run the agent
@@ -117,7 +115,7 @@ func (a *agent) Add(f func()) {
 }
 
 // Mux - multiplex a message over channels
-func Mux(msg *Message, ctrl, data, status chan *Message) {
+func Mux(msg *Message, ctrl, data chan *Message) {
 	if msg == nil {
 		return
 	}
@@ -129,10 +127,6 @@ func Mux(msg *Message, ctrl, data, status chan *Message) {
 	case ChannelData:
 		if data != nil {
 			data <- msg
-		}
-	case ChannelStatus:
-		if status != nil {
-			status <- msg
 		}
 	default:
 	}

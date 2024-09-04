@@ -87,11 +87,11 @@ func ExampleSend() {
 	c := make(chan *Message, 16)
 	ex := NewExchange()
 
-	a1, _ := NewAgentWithChannels(uri1, c, nil, nil, testAgentRun, nil)
+	a1, _ := NewAgentWithChannels(uri1, c, nil, testAgentRun, nil)
 	ex.Register(a1)
-	a2, _ := NewAgentWithChannels(uri2, c, nil, nil, testAgentRun, nil)
+	a2, _ := NewAgentWithChannels(uri2, c, nil, testAgentRun, nil)
 	ex.Register(a2)
-	a3, _ := NewAgentWithChannels(uri3, c, nil, nil, testAgentRun, nil)
+	a3, _ := NewAgentWithChannels(uri3, c, nil, testAgentRun, nil)
 	ex.Register(a3)
 
 	ex.Send(NewControlMessage(uri1, PkgPath, StartupEvent))
