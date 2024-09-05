@@ -5,40 +5,57 @@ import (
 )
 
 const (
-	requestKey  = "request"
-	responseKey = "response"
-	statusKey   = "status"
+	ExchangeRequestKey  = "request"
+	ExchangeResponseKey = "response"
+	ExchangeStatusKey   = "status"
 )
 
 type ExchangeOverride struct {
 	m map[string]string
 }
 
-func NewExchangeOverride(request, response, status string) *ExchangeOverride {
+func NewExchangeOverrideEmpty() *ExchangeOverride {
 	e := new(ExchangeOverride)
 	e.m = make(map[string]string)
+	return e
+}
+
+func NewExchangeOverride(request, response, status string) *ExchangeOverride {
+	e := NewExchangeOverrideEmpty()
 	if request != "" {
-		e.m[requestKey] = request
+		e.m[ExchangeRequestKey] = request
 	}
 	if response != "" {
-		e.m[responseKey] = response
+		e.m[ExchangeResponseKey] = response
 	}
 	if status != "" {
-		e.m[statusKey] = status
+		e.m[ExchangeStatusKey] = status
 	}
 	return e
 }
 
 func (e *ExchangeOverride) Request() string {
-	return e.m[requestKey]
+	return e.m[ExchangeRequestKey]
+}
+
+func (e *ExchangeOverride) SetRequest(s string) {
+	e.m[ExchangeRequestKey] = s
 }
 
 func (e *ExchangeOverride) Response() string {
-	return e.m[responseKey]
+	return e.m[ExchangeResponseKey]
+}
+
+func (e *ExchangeOverride) SetResponse(s string) {
+	e.m[ExchangeResponseKey] = s
 }
 
 func (e *ExchangeOverride) Status() string {
-	return e.m[statusKey]
+	return e.m[ExchangeStatusKey]
+}
+
+func (e *ExchangeOverride) SetStatus(s string) {
+	e.m[ExchangeStatusKey] = s
 }
 
 // type urlContextKey struct{}

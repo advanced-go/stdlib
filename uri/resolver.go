@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+const (
+	ContentLocationResolver  = "Content-Location-Resolver"
+	ContentLocationSeparator = "->"
+)
+
 type Resolver struct {
 	defaultHost string
 }
@@ -21,7 +26,7 @@ func NewResolver(defaultHost string) *Resolver {
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	path1 := BuildPath(path, query)
 	if h != nil {
-		p2 := h.Get(path1)
+		p2 := createUrl(h, path1) //h.Get(path1)
 		if p2 != "" {
 			return p2
 		}
@@ -108,4 +113,22 @@ func formatVersion2(version string) string {
 		return ""
 	}
 	return version + "/"
+}
+
+func createUrl(h http.Header, path string) string {
+	if h == nil || path == "" {
+		return ""
+	}
+	prefix := path + ContentLocationSeparator
+	if str, ok := h[ContentLocationResolver]; ok && str[0] != "" {
+		for _, s := range str {
+			if s == "" {
+				continue
+			}
+			if strings.HasPrefix(s, prefix) {
+				return s[len(prefix):]
+			}
+		}
+	}
+	return ""
 }

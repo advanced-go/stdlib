@@ -9,6 +9,7 @@ import (
 	io2 "github.com/advanced-go/stdlib/io"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -36,9 +37,9 @@ func NewRequest(uri any) (*http.Request, *core.Status) {
 	if bytes1 != nil {
 		req.Body = io.NopCloser(bytes1)
 	}
-	location := req.Header.Get(httpx.ContentLocation)
-	if location != "" {
-		ctx := core.NewExchangeOverrideContext(nil, core.NewExchangeOverride("", location, ""))
+	ex := createExchange(req.Header)
+	if ex != nil {
+		ctx := core.NewExchangeOverrideContext(nil, ex)
 		req2, err3 := http.NewRequestWithContext(ctx, req.Method, req.URL.String(), req.Body)
 		if err3 != nil {
 			return nil, core.NewStatusError(core.StatusInvalidArgument, err3)
@@ -57,4 +58,37 @@ func NewRequestTest(uri any, t *testing.T) *http.Request {
 	t.Errorf("ReadRequest() err = %v", status.Err.Error())
 	req2, _ := http.NewRequest("", "http://somedomain.com/invalid-uri", nil)
 	return req2
+}
+
+func createExchange(h http.Header) *core.ExchangeOverride {
+	if h == nil {
+		return nil
+	}
+	var ex *core.ExchangeOverride
+
+	if str, ok := h[httpx.ContentLocationExchange]; ok && str[0] != "" {
+		for _, s := range str {
+			if s == "" {
+				continue
+			}
+			if ex == nil {
+				ex = core.NewExchangeOverrideEmpty()
+			}
+			prefix := core.ExchangeRequestKey + httpx.ContentLocationSeparator
+			if strings.HasPrefix(s, prefix) {
+				ex.SetRequest(s[len(prefix):])
+				continue
+			}
+			prefix = core.ExchangeResponseKey + httpx.ContentLocationSeparator
+			if strings.HasPrefix(s, prefix) {
+				ex.SetResponse(s[len(prefix):])
+				continue
+			}
+			prefix = core.ExchangeStatusKey + httpx.ContentLocationSeparator
+			if strings.HasPrefix(s, prefix) {
+				ex.SetStatus(s[len(prefix):])
+			}
+		}
+	}
+	return ex
 }

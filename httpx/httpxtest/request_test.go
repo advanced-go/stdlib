@@ -3,8 +3,11 @@ package httpxtest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/advanced-go/stdlib/httpx"
 	"github.com/advanced-go/stdlib/io"
+	"net/http"
 	"net/url"
+	"reflect"
 	"time"
 )
 
@@ -38,8 +41,8 @@ func Example_ReadRequest_GET() {
 	fmt.Printf("test: NewRequest(%v) -> [status:%v] [ctx:%v] [content-location:%v]\n", s, err, req.Context(), req.Header.Get("Content-Location"))
 
 	//Output:
-	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlExchangeOverrideContextKey, val <not Stringer>)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
-	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background.WithValue(type core.urlExchangeOverrideContextKey, val <not Stringer>)] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background] [content-location:github/advanced-go/example-domain/activity/EntryV1]
+	//test: NewRequest(file://[cwd]/resource/get-request.txt) -> [status:OK] [ctx:context.Background] [content-location:github/advanced-go/example-domain/activity/EntryV1]
 
 }
 
@@ -75,5 +78,60 @@ func Example_ReadRequest_PUT() {
 
 	//Output:
 	//test: NewRequest(file://[cwd]/resource/put-req.txt) -> [cnt:2] [fields:[{ingress 800µs usa west  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry GET 200} {egress 100µs usa east  access-log https://access-log.com/example-domain/timeseries/entry http access-log.com /example-domain/timeseries/entry PUT 202}]]
+
+}
+
+func _ExampleNewRequest_Overrides() {
+	s := "file://[cwd]/resource/get-request-overrides.txt"
+	req, err := NewRequest(parseRaw(s))
+
+	if req != nil {
+	}
+	// print content
+	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
+	fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v][type:%v]\n", s, err, req.Header[httpx.ContentLocationResolver], reflect.TypeOf(any(req.Header[httpx.ContentLocationResolver])))
+
+	//Output:
+	//test: NewRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
+
+}
+
+func _ExampleNewRequest_Overrides_Empty() {
+	s := "file://[cwd]/resource/get-request-overrides.txt"
+	req, err := NewRequest(parseRaw(s))
+
+	if req != nil {
+	}
+	str, ok := req.Header["Content-Location-Empty"]
+	fmt.Printf("test: NewRequest(%v) -> [err:%v] [ok:%v] [str:%v]\n", s, err, ok, len(str))
+
+	// print content
+	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
+	//fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v][type:%v]\n", s, err, req.Header["Content-Location-Empty"], reflect.TypeOf(any(req.Header["Content-Location-Test"])))
+
+	//Output:
+	//test: NewRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
+
+}
+
+func ExampleCreateExchange() {
+	h := make(http.Header)
+
+	h.Add(httpx.ContentLocationExchange, "")
+
+	ex := createExchange(h)
+	fmt.Printf("test: createExchange() -> [ex:%v]\n", ex)
+
+	h = make(http.Header)
+	h.Add(httpx.ContentLocationExchange, "request->file:///f:/resource/request.json")
+	h.Add(httpx.ContentLocationExchange, "response->file:///f:/resource/response.json")
+	h.Add(httpx.ContentLocationExchange, "status->file:///f:/resource/status.json")
+
+	ex = createExchange(h)
+	fmt.Printf("test: createExchange() -> [ex:%v]\n", ex)
+
+	//Output:
+	//test: createExchange() -> [ex:<nil>]
+	//test: createExchange() -> [ex:&{map[request:file:///f:/resource/request.json response:file:///f:/resource/response.json status:file:///f:/resource/status.json]}]
 
 }

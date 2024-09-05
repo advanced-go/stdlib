@@ -7,16 +7,19 @@ import (
 )
 
 const (
-	ContentTypeJson     = "application/json"
-	ContentType         = "Content-Type"
-	ContentEncoding     = "Content-Encoding"
-	AcceptEncoding      = "Accept-Encoding"
-	AcceptEncodingValue = "gzip, deflate, br"
-	ContentLength       = "Content-Length"
-	ContentEncodingGzip = "gzip"
-	ContentTypeTextHtml = "text/html"
-	ContentTypeText     = "text/plain charset=utf-8"
-	ContentLocation     = "Content-Location"
+	ContentTypeJson          = "application/json"
+	ContentType              = "Content-Type"
+	ContentEncoding          = "Content-Encoding"
+	AcceptEncoding           = "Accept-Encoding"
+	AcceptEncodingValue      = "gzip, deflate, br"
+	ContentLength            = "Content-Length"
+	ContentEncodingGzip      = "gzip"
+	ContentTypeTextHtml      = "text/html"
+	ContentTypeText          = "text/plain charset=utf-8"
+	ContentLocation          = "Content-Location"
+	ContentLocationExchange  = "Content-Location-Exchange"
+	ContentLocationResolver  = "Content-Location-Resolver"
+	ContentLocationSeparator = "->"
 )
 
 func forwardDefaults(dest http.Header, src http.Header) http.Header {

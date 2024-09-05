@@ -161,3 +161,31 @@ func ExampleResolve_UrlWithAuthority() {
 	//test: UrlWithAuthority("www.google.com","","v2","search") -> [https://www.google.com/search?q=golang]
 
 }
+
+func ExampleCreateUrl() {
+	path1 := "advanced-go/observation:v1/timeseries/egress/entry?region=*"
+	path2 := "advanced-go/observation:v1/timeseries/egress/entry?region=**"
+	s1 := path1 + "->file:///f:/resource/info.json"
+	s2 := path2 + "->file:///f:/resource/test.json"
+
+	path := ""
+	h := make(http.Header)
+	h.Add(ContentLocationResolver, path)
+	uri := createUrl(h, "")
+	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path, uri)
+
+	h = make(http.Header)
+	h.Add(ContentLocationResolver, s1)
+	h.Add(ContentLocationResolver, s2)
+	uri = createUrl(h, path1)
+	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path1, uri)
+
+	uri = createUrl(h, path2)
+	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path2, uri)
+
+	//Output:
+	//test: createUrl("") ->
+	//test: createUrl("advanced-go/observation:v1/timeseries/egress/entry?region=*") -> file:///f:/resource/info.json
+	//test: createUrl("advanced-go/observation:v1/timeseries/egress/entry?region=**") -> file:///f:/resource/test.json
+
+}
