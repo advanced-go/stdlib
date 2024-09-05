@@ -9,7 +9,7 @@ import (
 func ExampleNewRequest() {
 	h := make(http.Header)
 	h.Add(core.XAuthority, "github/advanced-go/search")
-	req := Request{Method: http.MethodPatch, Url: "https://www.google.com/search?q=golang", Header: h}
+	req := RequestImpl{Method: http.MethodPatch, Url: "https://www.google.com/search?q=golang", Header: h}
 
 	fmt.Printf("test: NewRequest() -> [method:%v] [url:%v] [h:%v]\n", req.Method, req.Url, req.Header)
 

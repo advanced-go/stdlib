@@ -32,8 +32,15 @@ func NilController() Controller {
 	return Controller{RateLimit: -1, RateBurst: -1}
 }
 
-// Request - non HTTP request attributes
-type Request struct {
+// Request - request attributes interface for non HTTP traffic
+type Request interface {
+	Url() string
+	Header() http.Header
+	Method() string
+}
+
+// RequestImpl - non HTTP request attributes
+type RequestImpl struct {
 	Url    string
 	Header http.Header
 	Method string
