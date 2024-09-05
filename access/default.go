@@ -122,6 +122,7 @@ func BuildRequest(r any) *http.Request {
 	if req, ok := r.(Request); ok {
 		newReq, _ := http.NewRequest(req.Method(), req.Url(), nil)
 		newReq.Header = req.Header()
+		newReq.Proto = req.Protocol()
 		return newReq
 	}
 	newReq, _ := http.NewRequest("", "https://somehost.com/search?q=test", nil)
