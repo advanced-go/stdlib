@@ -105,6 +105,9 @@ func DefaultFormat(o core.Origin, traffic string, start time.Time, duration time
 
 // Milliseconds - convert time.Duration to milliseconds
 func Milliseconds(duration time.Duration) int {
+	if duration <= 0 {
+		return -1
+	}
 	return int(duration / time.Duration(1e6))
 }
 

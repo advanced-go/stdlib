@@ -6,15 +6,15 @@ import (
 )
 
 const (
-	XRequestId = "x-request-id"
-	XRelatesTo = "x-relates-to"
-	XAuthority = "x-authority"
-	XVersion   = "x-version"
+	XRequestId = "X-Request-Id"
+	XRelatesTo = "X-Relates-To"
+	XAuthority = "X-Authority"
+	XVersion   = "X-Version"
 	XURLPath   = "x-url-path"
-	XTest      = "x-test"
-	XFrom      = "x-from"
-	XTo        = "x-to"
-	XRoute     = "x-route"
+	XTest      = "X-Test"
+	XFrom      = "X-From"
+	XTo        = "X-To"
+	XRoute     = "X-Route"
 )
 
 // AddRequestId - add a request to an http.Request or an http.Header
