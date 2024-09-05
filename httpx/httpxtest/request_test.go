@@ -7,7 +7,6 @@ import (
 	"github.com/advanced-go/stdlib/io"
 	"net/http"
 	"net/url"
-	"reflect"
 	"time"
 )
 
@@ -81,36 +80,26 @@ func Example_ReadRequest_PUT() {
 
 }
 
-func _ExampleNewRequest_Overrides() {
+func ExampleNewRequest_Overrides() {
 	s := "file://[cwd]/resource/get-request-overrides.txt"
 	req, err := NewRequest(parseRaw(s))
 
-	if req != nil {
-	}
-	// print content
-	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
-	fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v][type:%v]\n", s, err, req.Header[httpx.ContentLocationResolver], reflect.TypeOf(any(req.Header[httpx.ContentLocationResolver])))
+	fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v]\n", s, err, req.Header[httpx.ContentLocationResolver])
 
 	//Output:
-	//test: NewRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
+	//test: NewRequest(file://[cwd]/resource/get-request-overrides.txt) -> [status:OK] [header:[github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/info.json github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/test.json]]
 
 }
 
-func _ExampleNewRequest_Overrides_Empty() {
+func ExampleNewRequest_Overrides_Empty() {
 	s := "file://[cwd]/resource/get-request-overrides.txt"
 	req, err := NewRequest(parseRaw(s))
 
-	if req != nil {
-	}
-	str, ok := req.Header["Content-Location-Empty"]
+	str, ok := req.Header["X-Content-Location-Empty"]
 	fmt.Printf("test: NewRequest(%v) -> [err:%v] [ok:%v] [str:%v]\n", s, err, ok, len(str))
 
-	// print content
-	//fmt.Printf("test: ReadRequest(%v) -> [err:%v] [%v]\n", s, err, req)
-	//fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v][type:%v]\n", s, err, req.Header["Content-Location-Empty"], reflect.TypeOf(any(req.Header["Content-Location-Test"])))
-
 	//Output:
-	//test: NewRequest(file://[cwd]/resource/baseline-request.txt) -> [status:OK]
+	//test: NewRequest(file://[cwd]/resource/get-request-overrides.txt) -> [err:OK] [ok:true] [str:1]
 
 }
 

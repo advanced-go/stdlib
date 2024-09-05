@@ -17,8 +17,8 @@ const (
 	ContentTypeTextHtml      = "text/html"
 	ContentTypeText          = "text/plain charset=utf-8"
 	ContentLocation          = "Content-Location"
-	ContentLocationExchange  = "Content-Location-Exchange"
-	ContentLocationResolver  = "Content-Location-Resolver"
+	ContentLocationExchange  = "X-Content-Location-Exchange"
+	ContentLocationResolver  = "X-Content-Location-Resolver"
 	ContentLocationSeparator = "->"
 )
 

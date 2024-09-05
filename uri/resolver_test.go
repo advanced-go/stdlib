@@ -102,7 +102,7 @@ func ExampleResolve_Url() {
 	//test: Url("","/search") -> [http://localhost:8081/search?q=golang]
 	//test: Url_String("","/search") -> [http://localhost:8081/search?q=golang]
 	//test: Url_String("www.google.com","/search") -> [https://www.google.com/search?q=golang]
-	//test: Url_Override("www.google.com","/search") -> [https://www.search.yahoo.com?q=golang]
+	//test: Url_Override("www.google.com","/search") -> [https://www.google.com/search?q=golang]
 
 }
 

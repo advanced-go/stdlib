@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ContentLocationResolver  = "Content-Location-Resolver"
+	ContentLocationResolver  = "X-Content-Location-Resolver"
 	ContentLocationSeparator = "->"
 )
 
@@ -25,7 +25,7 @@ func NewResolver(defaultHost string) *Resolver {
 
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	path1 := BuildPath(path, query)
-	if h != nil {
+	if h != nil && h.Get(ContentLocationResolver) != "" {
 		p2 := createUrl(h, path1) //h.Get(path1)
 		if p2 != "" {
 			return p2
@@ -39,8 +39,8 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
 	path := BuildPathWithAuthority(authority, version, resource, query)
-	if h != nil {
-		p2 := h.Get(path)
+	if h != nil && h.Get(ContentLocationResolver) != "" {
+		p2 := createUrl(h, path) //h.Get(path)
 		if p2 != "" {
 			return p2
 		}
