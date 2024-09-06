@@ -27,37 +27,29 @@ const (
 	urnSeparator   = ":"
 )
 
-// Formatter - output formatting type
-type Formatter func(ts time.Time, code int, status, requestId string, errs []error, trace []string) string
-
-// SetFormatter - optional override of error formatting
-func SetFormatter(fn Formatter) {
-	if fn != nil {
-		formatter = fn
-	}
+// ErrorHandler - error handler interface
+type ErrorHandler interface {
+	Handle(s *Status) *Status
 }
 
-// Logger - log function
-type Logger func(code int, status, requestId string, errs []error, trace []string)
+// LogFunc - log function
+type LogFunc func(code int, status, requestId string, errs []error, trace []string)
 
-// SetLogger - optional override of logging
-func SetLogger(fn Logger) {
-	if fn != nil {
-		logger = fn
-	}
-}
+//type Formatter func(ts time.Time, code int, status, requestId string, errs []error, trace []string) string
 
 var (
-	formatter            = defaultFormatter
-	logger               = defaultLogger
-	defaultLogger Logger = func(code int, status, requestId string, errs []error, trace []string) {
+	formatter             = defaultFormatter
+	logger                = defaultLogger
+	defaultLogger LogFunc = func(code int, status, requestId string, errs []error, trace []string) {
 		log.Default().Println(formatter(time.Now().UTC(), code, status, requestId, errs, trace))
 	}
 )
 
-// ErrorHandler - error handler interface
-type ErrorHandler interface {
-	Handle(s *Status) *Status
+// SetLogFunc - optional override of logging
+func SetLogFunc(fn LogFunc) {
+	if fn != nil {
+		logger = fn
+	}
 }
 
 // Bypass - bypass error handler
@@ -105,25 +97,6 @@ func (h Log) Handle(s *Status) *Status {
 	}
 	return s
 }
-
-/*
-func handle(s *Status, requestId string, output func()) *Status {
-	if s == nil {
-		return StatusOK()
-	}
-	if s.OK() {
-		return s
-	}
-	if s.Err != nil && !s.Handled {
-		s.addParentLocation()
-		output
-		//go logger(s.Code, HttpStatus(s.Code), requestId, []error{s.Err}, s.Trace())
-		s.Handled = true
-	}
-	return s
-}
-
-*/
 
 func defaultFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
