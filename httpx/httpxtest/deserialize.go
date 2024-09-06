@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Deserialize[T any, E core.ErrorHandler](gotBody, wantBody io.Reader, t *testing.T) (gotT, wantT T, success bool) {
+func Deserialize[E core.ErrorHandler, T any](gotBody, wantBody io.Reader, t *testing.T) (gotT, wantT T, success bool) {
 	var e E
 
 	gotStatus := core.StatusOK()
