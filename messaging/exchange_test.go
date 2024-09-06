@@ -8,6 +8,8 @@ import (
 func emptyRun(uri string, ctrl, data <-chan *Message, state any) {
 }
 
+func emptyHandler(_ *Message) {}
+
 func ExampleRegister() {
 	testDir := NewExchange()
 
@@ -17,7 +19,7 @@ func ExampleRegister() {
 	a := testDir.Get(uri1)
 	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, a)
 
-	a1, _ := NewAgent(uri1, emptyRun, nil)
+	a1, _ := NewControlAgent(uri1, emptyHandler)
 	err := testDir.Register(a1)
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri1, err)
 
@@ -26,7 +28,7 @@ func ExampleRegister() {
 	fmt.Printf("test: Get(%v) -> : [agent:%v]\n", uri1, m1.Uri())
 
 	uri2 := "urn:test:two"
-	a2, _ := NewAgent(uri2, emptyRun, nil)
+	a2, _ := NewControlAgent(uri2, emptyHandler)
 	err = testDir.Register(a2)
 	fmt.Printf("test: Register(%v) -> : [err:%v]\n", uri2, err)
 	fmt.Printf("test: Count() -> : %v\n", testDir.Count())
@@ -52,7 +54,7 @@ func ExampleRegisterError() {
 	uri := "urn:agent007"
 	ex := NewExchange()
 
-	a, _ := NewAgent(uri, emptyRun, nil)
+	a, _ := NewControlAgent(uri, emptyHandler)
 	err := ex.Register(a)
 	fmt.Printf("test: Register(%v) -> [%v]\n", uri, err)
 

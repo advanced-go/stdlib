@@ -18,14 +18,14 @@ func NewControlAgent(uri string, handler Handler) (Agent, error) {
 	if handler == nil {
 		return nil, errors.New("error: control agent message handler is nil")
 	}
-	return newControlAgent(uri, handler), nil
+	return newControlAgent(uri, make(chan *Message, ChannelSize), handler), nil
 	//return NewAgentWithChannels(uri, nil, nil, controlAgentRun, ctrlHandler)
 }
 
-func newControlAgent(uri string, handler Handler) *controlAgent {
+func newControlAgent(uri string, ch chan *Message, handler Handler) *controlAgent {
 	c := new(controlAgent)
 	c.agentId = uri
-	c.ch = make(chan *Message, ChannelSize)
+	c.ch = ch
 	c.handler = handler
 	return c
 }
