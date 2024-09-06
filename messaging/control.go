@@ -24,59 +24,60 @@ func NewControlAgent(uri string, handler Handler) (Agent, error) {
 
 func newControlAgent(uri string, handler Handler) *controlAgent {
 	c := new(controlAgent)
+	c.agentId = uri
 	c.ch = make(chan *Message, ChannelSize)
 	c.handler = handler
 	return c
 }
 
 // Uri - identity
-func (a *controlAgent) Uri() string { return a.agentId }
+func (c *controlAgent) Uri() string { return c.agentId }
 
 // String - identity
-func (a *controlAgent) String() string { return a.Uri() }
+func (c *controlAgent) String() string { return c.Uri() }
 
 // Message - message an agent
-func (a *controlAgent) Message(msg *Message) {
+func (c *controlAgent) Message(msg *Message) {
 	if msg == nil {
 		return
 	}
 	switch msg.Channel() {
 	case ChannelControl:
-		if a.ch != nil {
-			a.ch <- msg
+		if c.ch != nil {
+			c.ch <- msg
 		}
 	default:
 	}
 }
 
 // Run - run the agent
-func (a *controlAgent) Run() {
-	if a.running {
+func (c *controlAgent) Run() {
+	if c.running {
 		return
 	}
-	a.running = true
-	go controlAgentRun(a)
+	c.running = true
+	go controlAgentRun(c)
 }
 
 // Shutdown - shutdown the agent
-func (a *controlAgent) Shutdown() {
-	if !a.running {
+func (c *controlAgent) Shutdown() {
+	if !c.running {
 		return
 	}
-	a.running = false
-	if a.shutdownFn != nil {
-		a.shutdownFn()
+	c.running = false
+	if c.shutdownFn != nil {
+		c.shutdownFn()
 	}
-	a.Message(NewControlMessage(a.agentId, a.agentId, ShutdownEvent))
+	c.Message(NewControlMessage(c.agentId, c.agentId, ShutdownEvent))
 }
 
 // Add - add a shutdown function
-func (a *controlAgent) Add(f func()) {
-	a.shutdownFn = AddShutdown(a.shutdownFn, f)
+func (c *controlAgent) Add(f func()) {
+	c.shutdownFn = AddShutdown(c.shutdownFn, f)
 }
 
-func (a *controlAgent) shutdown() {
-	close(a.ch)
+func (c *controlAgent) shutdown() {
+	close(c.ch)
 }
 
 // controlAgentRun - a simple run function that only handles control messages, and dispatches via a message handler

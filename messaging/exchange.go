@@ -125,6 +125,9 @@ func (d *Exchange) Register(agent Agent) error {
 	if agent == nil {
 		return errors.New("error: exchange.Register() agent is nil")
 	}
+	if agent.Uri() == "" {
+		return errors.New("error: exchange.Register() agent Uri is nil")
+	}
 	_, ok := d.m.Load(agent.Uri())
 	if ok {
 		return errors.New(fmt.Sprintf("error: exchange.Register() agent already exists: [%v]", agent.Uri()))
