@@ -1,0 +1,36 @@
+GET /advanced-go/example-domain/activity/entry?v=v2 HTTP/1.1
+Host: localhost:8080
+Content-Location: github/advanced-go/example-domain/activity/EntryV1
+Connection: close
+User-Agent: Fake
+invalid header this is a test
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Content-Length: 7
+Proxy-Connection: keep-alive
+
+[
+  {
+    "ActivityID": "123456",
+    "ActivityType": "action",
+    "Agent": "Controller",
+    "AgentUri": "https://somehost.com/id",
+    "Assignment": "case#",
+    "Controller": "egress",
+    "Behavior": "timeout",
+    "Description": "decreased timeout"
+  },
+  {
+    "ActivityID": "101010",
+    "ActivityType": "trace",
+    "Agent": "Controller2",
+    "AgentUri": "https://somehost.com/id2",
+    "Assignment": "case#5",
+    "Controller": "",
+    "Behavior": "",
+    "Description": "created action"
+  }
+]

@@ -31,6 +31,26 @@ func parseRaw(rawUri string) *url.URL {
 	return u
 }
 
+func ExampleNewRequest_Error() {
+	s := "file://[cwd]/resource/get-request123.txt"
+	req, status := NewRequest(parseRaw(s))
+	fmt.Printf("test: NewRequest(%v) -> [status:%v][req:%v]\n", s, status, req != nil)
+
+	s = "file://[cwd]/resource/get-request-error-header.txt"
+	req, status = NewRequest(parseRaw(s))
+	fmt.Printf("test: NewRequest(%v) -> [status:%v][req:%v]\n", s, status, req != nil)
+
+	s = "file://[cwd]/resource/get-request-error-format.txt"
+	req, status = NewRequest(parseRaw(s))
+	fmt.Printf("test: NewRequest(%v) -> [status:%v][req:%v]\n", s, status, req != nil)
+
+	//Output:
+	//test: NewRequest(file://[cwd]/resource/get-request123.txt) -> [status:I/O Failure [open C:\Users\markb\GitHub\stdlib\httpx\httpxtest\resource\get-request123.txt: The system cannot find the file specified.]][req:false]
+	//test: NewRequest(file://[cwd]/resource/get-request-error-header.txt) -> [status:Invalid Argument [malformed MIME header: missing colon: "invalid header this is a test"]][req:false]
+	//test: NewRequest(file://[cwd]/resource/get-request-error-format.txt) -> [status:Invalid Argument [unexpected EOF]][req:false]
+
+}
+
 func Example_ReadRequest_GET() {
 	s := "file://[cwd]/resource/get-request.txt"
 	req, err := NewRequest(parseRaw(s))
