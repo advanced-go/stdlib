@@ -21,6 +21,9 @@ import (
 func New[T any](v any, h http.Header) (t T, status *core.Status) {
 	var buf []byte
 
+	if v == nil {
+		return t, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: value parameter is nil"))
+	}
 	switch ptr := v.(type) {
 	case string:
 		if isStatusURL(ptr) {
@@ -82,6 +85,8 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		}
 		return t, core.StatusOK()
 	case *http.Request:
+		return New[T](ptr.Body, h)
+	case *http.Response:
 		return New[T](ptr.Body, h)
 	default:
 		return t, core.NewStatusError(core.StatusInvalidArgument, errors.New(fmt.Sprintf("error: invalid type [%v]", reflect.TypeOf(v))))

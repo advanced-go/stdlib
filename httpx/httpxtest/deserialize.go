@@ -7,11 +7,14 @@ import (
 	"testing"
 )
 
-func Deserialize[T any](gotBody, wantBody io.Reader, t *testing.T) (gotT, wantT T, success bool) {
+func Deserialize[T any, E core.ErrorHandler](gotBody, wantBody io.Reader, t *testing.T) (gotT, wantT T, success bool) {
+	var e E
+
 	gotStatus := core.StatusOK()
 	gotT, gotStatus = httpx.Content[T](gotBody)
 	if !gotStatus.OK() && !gotStatus.NotFound() {
 		t.Errorf("Deserialize() %v err = %v", "got", gotStatus.Err)
+		e.Handle(gotStatus)
 		return
 	}
 
@@ -19,6 +22,7 @@ func Deserialize[T any](gotBody, wantBody io.Reader, t *testing.T) (gotT, wantT 
 	wantT, wantStatus = httpx.Content[T](wantBody)
 	if !wantStatus.OK() && !wantStatus.NotFound() {
 		t.Errorf("Deserialize() %v err = %v", "want", wantStatus.Err)
+		e.Handle(wantStatus)
 		return
 	}
 

@@ -42,8 +42,8 @@ func ExampleNew_String_Error() {
 	fmt.Printf("test: New(%v) -> [status:%v]\n", s, status)
 
 	//Output:
-	//test: New("") -> [status:Invalid Argument [error: URI is empty]]
-	//test: New(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
+	//test: New("") -> [status:I/O Failure [open error: URL is empty: The system cannot find the file specified.]]
+	//test: New(https://www.google.com/search) -> [status:I/O Failure [open error: scheme is invalid [https]: The system cannot find the file specified.]]
 	//test: New(file://[cwd]/jsontest/address.txt) -> [status:I/O Failure [open C:\Users\markb\GitHub\stdlib\json\jsontest\address.txt: The system cannot find the file specified.]]
 
 }
@@ -107,8 +107,8 @@ func ExampleNew_URL_Error() {
 	fmt.Printf("test: New(%v) -> [status:%v]\n", s, status)
 
 	//Output:
-	//test: New("") -> [status:Invalid Argument [error: invalid type [<nil>]]]
-	//test: New(https://www.google.com/search) -> [status:Invalid Argument [error: URI is not of scheme file: https://www.google.com/search]]
+	//test: New("") -> [status:Invalid Argument [error: value parameter is nil]]
+	//test: New(https://www.google.com/search) -> [status:I/O Failure [open error: scheme is invalid [https]: The system cannot find the file specified.]]
 	//test: New(file://[cwd]/jsontest/address.txt) -> [status:I/O Failure [open C:\Users\markb\GitHub\stdlib\json\jsontest\address.txt: The system cannot find the file specified.]]
 
 }

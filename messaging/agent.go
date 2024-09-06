@@ -149,8 +149,6 @@ func AddShutdown(curr, next func()) func() {
 	return curr
 }
 
-//	return
-//}
 /*
 	if msg1, ok := t.(*core.Status); ok {
 		if status != nil {
