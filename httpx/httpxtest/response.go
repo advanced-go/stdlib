@@ -1,17 +1,12 @@
 package httpxtest
 
 import (
-	"bufio"
-	"bytes"
-	"errors"
-	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/httpx"
-	"github.com/advanced-go/stdlib/io"
 	"net/http"
-	"strings"
 	"testing"
 )
 
+/*
 const (
 	fileExistsError = "The system cannot find the file specified"
 	fileScheme      = "file"
@@ -40,6 +35,8 @@ func NewResponse(uri any) (*http.Response, *core.Status) {
 	}
 	return resp1, core.StatusOK()
 }
+
+*/
 
 func NewResponseTest(uri any, t *testing.T) *http.Response {
 	resp, status := httpx.NewResponseFromUri(uri)
