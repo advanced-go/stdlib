@@ -73,6 +73,21 @@ func genericErrorFunc[E ErrorHandler]() *Status {
 	return s
 }
 
+func ExampleStatus_WithRequestId() {
+	h := make(http.Header)
+	h.Add(XRequestId, "123456789")
+
+	status := StatusNotFound()
+	fmt.Printf("test: Status_WithRequestId() -> [request-id:%v]\n", status.WithRequestId(h).RequestId)
+
+	fmt.Printf("test: Status_WithRequestId() -> [request-id:%v]\n", status.WithRequestId("333-444-555").RequestId)
+
+	//Output:
+	//test: Status_WithRequestId() -> [request-id:123456789]
+	//test: Status_WithRequestId() -> [request-id:333-444-555]
+
+}
+
 /*
 func ExampleNewStatus_TeapotHandled() {
 	var e Output

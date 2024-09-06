@@ -71,12 +71,13 @@ var notFoundStatus = func() *Status {
 }()
 
 type Status struct {
-	Code     int   `json:"code"`
-	Err      error `json:"err"`
-	Handled  bool  `json:"handled"`
-	Duration time.Duration
-	Content  any
-	trace    []string `json:"location"`
+	Code      int    `json:"code"`
+	Err       error  `json:"err"`
+	RequestId string `json:"request-id"`
+	Handled   bool   `json:"handled"`
+	Duration  time.Duration
+	Content   any
+	trace     []string
 }
 
 func StatusOK() *Status {
@@ -140,6 +141,11 @@ func (s *Status) AddLocation() *Status {
 		return s
 	}
 	s.addTrace(getLocation(2))
+	return s
+}
+
+func (s *Status) WithRequestId(t any) *Status {
+	s.RequestId = RequestId(t)
 	return s
 }
 

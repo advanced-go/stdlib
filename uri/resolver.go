@@ -9,12 +9,16 @@ import (
 )
 
 const (
-	ContentLocationResolver  = "X-Content-Location-Resolver"
+	XContentLocationResolver = "X-Content-Location-Resolver"
 	ContentLocationSeparator = "->"
 )
 
-func NewHeaderValue(path, url string) string {
-	return path + ContentLocationSeparator + url
+func AddContentLocation(h http.Header, path, url string) http.Header {
+	if h == nil {
+		h = make(http.Header)
+	}
+	h.Add(XContentLocationResolver, path+ContentLocationSeparator+url)
+	return h
 }
 
 type Resolver struct {
@@ -29,7 +33,7 @@ func NewResolver(defaultHost string) *Resolver {
 
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	path1 := BuildPath(path, query)
-	if h != nil && h.Get(ContentLocationResolver) != "" {
+	if h != nil && h.Get(XContentLocationResolver) != "" {
 		p2 := createUrl(h, path1) //h.Get(path1)
 		if p2 != "" {
 			return p2
@@ -43,7 +47,7 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
 	path := BuildPathWithAuthority(authority, version, resource, query)
-	if h != nil && h.Get(ContentLocationResolver) != "" {
+	if h != nil && h.Get(XContentLocationResolver) != "" {
 		p2 := createUrl(h, path) //h.Get(path)
 		if p2 != "" {
 			return p2
@@ -124,7 +128,7 @@ func createUrl(h http.Header, path string) string {
 		return ""
 	}
 	prefix := path + ContentLocationSeparator
-	if str, ok := h[ContentLocationResolver]; ok && str[0] != "" {
+	if str, ok := h[XContentLocationResolver]; ok && str[0] != "" {
 		for _, s := range str {
 			if s == "" {
 				continue
