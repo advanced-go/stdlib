@@ -25,7 +25,7 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, stat
 	}
 	writer, status0 := io.NewEncodingWriter(w, reqHeader)
 	if !status0.OK() {
-		e.Handle(status0, core.RequestId(w.Header()))
+		e.Handle(status0.WithRequestId(w.Header()))
 		w.WriteHeader(status0.HttpCode())
 		return 0
 	}
@@ -36,7 +36,7 @@ func WriteResponse[E core.ErrorHandler](w http.ResponseWriter, headers any, stat
 	contentLength, status0 = writeContent(writer, content, w.Header().Get(ContentType))
 	_ = writer.Close()
 	if !status0.OK() {
-		e.Handle(status0, core.RequestId(w.Header()))
+		e.Handle(status0.WithRequestId(w.Header()))
 	}
 	return contentLength
 }
@@ -46,55 +46,3 @@ func CreateAcceptEncodingHeader() http.Header {
 	out.Add(AcceptEncoding, AcceptEncodingValue)
 	return out
 }
-
-/*
-	ct := GetContentType(headers)
-	buf, status0 := core.Bytes(content, ct)
-	if !status0.OK() {
-		e.Handle(status0, status.RequestId(), writeLoc)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	SetHeaders(w, headers)
-	if len(ct) == 0 {
-		w.Header().Set(ContentType, http.DetectContentType(buf))
-	}
-	w.WriteHeader(status.Http())
-
-*/
-/*
-	bytes, err := w.Write(buf)
-	if err != nil {
-		e.Handle(core.NewStatusError(http.StatusInternalServerError, writeLoc, err), status.RequestId(), "")
-	}
-	if bytes != len(buf) {
-		e.Handle(core.NewStatusError(http.StatusInternalServerError, writeLoc, errors.New(fmt.Sprintf("error on ResponseWriter().Write() -> [got:%v] [want:%v]\n", bytes, len(buf)))), status.RequestId(), "")
-	}
-
-*/
-
-/*
-func writeStatusContent[E core.ErrorHandler](w http.ResponseWriter, status core.Status, location string) {
-	var e E
-
-	if status.Content() == nil {
-		return
-	}
-	ct := status.ContentHeader().Get(ContentType)
-	buf, status1 := core.Bytes(status.Content(), ct)
-	if !status1.OK() {
-		e.Handle(status, status.RequestId(), location+writeStatusContentLoc)
-		return
-	}
-	if len(ct) == 0 {
-		ct = http.DetectContentType(buf)
-	}
-	w.Header().Set(ContentType, ct)
-	_, err := w.Write(buf)
-	if err != nil {
-		e.Handle(core.NewStatusError(http.StatusInternalServerError, location+writeStatusContentLoc, err), "", "")
-	}
-}
-
-
-*/

@@ -72,7 +72,7 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 		if h != nil && h.Get(ContentType) == ContentTypeJson {
 			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
 			if !status.OK() {
-				e.Handle(status, "")
+				e.Handle(status)
 				h = make(http.Header)
 				h.Add(ContentType, ContentTypeText)
 				if status.Err != nil {

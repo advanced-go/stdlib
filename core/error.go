@@ -57,14 +57,14 @@ var (
 
 // ErrorHandler - error handler interface
 type ErrorHandler interface {
-	Handle(s *Status, requestId string) *Status
+	Handle(s *Status) *Status
 }
 
 // Bypass - bypass error handler
 type Bypass struct{}
 
 // Handle - bypass error handler
-func (h Bypass) Handle(s *Status, _ string) *Status {
+func (h Bypass) Handle(s *Status) *Status {
 	return s
 }
 
@@ -72,7 +72,7 @@ func (h Bypass) Handle(s *Status, _ string) *Status {
 type Output struct{}
 
 // Handle - output error handler
-func (h Output) Handle(s *Status, requestId string) *Status {
+func (h Output) Handle(s *Status) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -81,7 +81,7 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Err != nil && !s.Handled {
 		s.addParentLocation()
-		fmt.Printf("%v", formatter(time.Now().UTC(), s.Code, HttpStatus(s.Code), requestId, []error{s.Err}, s.Trace()))
+		fmt.Printf("%v", formatter(time.Now().UTC(), s.Code, HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace()))
 		s.Handled = true
 	}
 	return s
@@ -91,7 +91,7 @@ func (h Output) Handle(s *Status, requestId string) *Status {
 type Log struct{}
 
 // Handle - log error handler
-func (h Log) Handle(s *Status, requestId string) *Status {
+func (h Log) Handle(s *Status) *Status {
 	if s == nil {
 		return StatusOK()
 	}
@@ -100,7 +100,7 @@ func (h Log) Handle(s *Status, requestId string) *Status {
 	}
 	if s.Err != nil && !s.Handled {
 		s.addParentLocation()
-		go logger(s.Code, HttpStatus(s.Code), requestId, []error{s.Err}, s.Trace())
+		go logger(s.Code, HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace())
 		s.Handled = true
 	}
 	return s
