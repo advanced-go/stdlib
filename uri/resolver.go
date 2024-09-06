@@ -13,6 +13,10 @@ const (
 	ContentLocationSeparator = "->"
 )
 
+func NewHeaderValue(path, url string) string {
+	return path + ContentLocationSeparator + url
+}
+
 type Resolver struct {
 	defaultHost string
 }
