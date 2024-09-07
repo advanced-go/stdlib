@@ -24,6 +24,20 @@ var (
 	healthLength = int64(len(healthOK))
 )
 
+func NewError(status *core.Status, resp *http.Response) string {
+	if status != nil && status.Err != nil {
+		return status.Err.Error()
+	}
+	if resp != nil && resp.Body != nil {
+		s, status1 := Content[string](resp.Body)
+		if status1.OK() {
+			return s
+		}
+		return status1.String()
+	}
+	return ""
+}
+
 /*
 func NewResponse2(status *core.Status, content any) *http.Response {
 	if status == nil {

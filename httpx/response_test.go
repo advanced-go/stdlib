@@ -232,3 +232,34 @@ func Example_NewResponseFromUri_EOF_Error() {
 	//test: NewResponseFromUri(file://[cwd]/httpxtest/resource/http-503-error.txt) -> [error:[unexpected EOF]] [statusCode:500]
 
 }
+
+func ExampleNewError() {
+	status := core.StatusOK()
+	//var resp *http.Response
+
+	err := NewError(nil, nil)
+	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [err:%v]\n", nil, nil, err)
+
+	err = NewError(status, nil)
+	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [err:%v]\n", core.StatusOK(), nil, err)
+
+	status = core.NewStatusError(core.StatusInvalidContent, errors.New("error: invalid content"))
+	err = NewError(status, nil)
+	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", status, nil, err)
+
+	resp, _ := NewResponse[core.Output](http.StatusTeapot, nil, nil)
+	err = NewError(nil, resp)
+	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [err:%v]\n", nil, resp != nil, err)
+
+	resp, _ = NewResponse[core.Output](http.StatusTeapot, nil, "error: response content")
+	err = NewError(nil, resp)
+	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", nil, resp != nil, err)
+
+	//Output:
+	//test: NewError() -> [status:<nil>] [resp:<nil>] [err:]
+	//test: NewError() -> [status:OK] [resp:<nil>] [err:]
+	//test: NewError() -> [status:Invalid Content [error: invalid content]] [resp:<nil>] [error: invalid content]
+	//test: NewError() -> [status:<nil>] [resp:true] [err:]
+	//test: NewError() -> [status:<nil>] [resp:true] [error: response content]
+
+}
