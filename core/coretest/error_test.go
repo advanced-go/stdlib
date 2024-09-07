@@ -40,7 +40,7 @@ func Example_DefaultFormatterTest() {
 	trace := []string{"https://github.com/advanced-go/customer/tree/main/address1#get[...]",
 		"https://github.com/advanced-go/stdlib/tree/main/httpx#Do",
 	}
-	s := defaultFormatter(time.Now().UTC(), http.StatusTeapot, "I'm a teapot", "1234-5678", errs, trace)
+	s := defaultFormatter(time.Now().UTC(), "got", http.StatusTeapot, "I'm a teapot", "1234-5678", errs, trace)
 	fmt.Printf("test: defaultFormatterTest() -> \n%v\n", s)
 
 	//Output:

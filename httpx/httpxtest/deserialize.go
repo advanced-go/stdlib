@@ -14,16 +14,16 @@ func Deserialize[E coretest.ErrorHandler, T any](gotBody, wantBody io.Reader, t 
 	gotStatus := core.StatusOK()
 	gotT, gotStatus = httpx.Content[T](gotBody)
 	if !gotStatus.OK() && !gotStatus.NotFound() {
-		t.Errorf("Deserialize() %v err = %v", "got", gotStatus.Err)
-		e.Handle(gotStatus, t)
+		//t.Errorf("Deserialize() %v err = %v", "got", gotStatus.Err)
+		e.Handle(gotStatus, t, "got")
 		return
 	}
 
 	wantStatus := core.StatusOK()
 	wantT, wantStatus = httpx.Content[T](wantBody)
 	if !wantStatus.OK() && !wantStatus.NotFound() {
-		t.Errorf("Deserialize() %v err = %v", "want", wantStatus.Err)
-		e.Handle(wantStatus, t)
+		//t.Errorf("Deserialize() %v err = %v", "want", wantStatus.Err)
+		e.Handle(wantStatus, t, "want")
 		return
 	}
 

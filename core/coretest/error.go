@@ -16,18 +16,19 @@ const (
 	githubTemplate = "https://%v/tree/main%v"
 	fragmentId     = "#"
 	urnSeparator   = ":"
+	targetName     = "target"
 )
 
 // ErrorHandler - error handler interface
 type ErrorHandler interface {
-	Handle(s *core.Status, t *testing.T) *core.Status
+	Handle(s *core.Status, t *testing.T, target string) *core.Status
 }
 
 // Output - standard output error handler
 type Output struct{}
 
 // Handle - output error handler
-func (h Output) Handle(s *core.Status, t *testing.T) *core.Status {
+func (h Output) Handle(s *core.Status, t *testing.T, target string) *core.Status {
 	if s == nil {
 		return core.StatusOK()
 	}
@@ -37,16 +38,17 @@ func (h Output) Handle(s *core.Status, t *testing.T) *core.Status {
 	if s.Err != nil && !s.Handled {
 		s.AddParentLocation()
 		//fmt.Printf("%v", defaultFormatter(time.Now().UTC(), s.Code, core.HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace()))
-		t.Errorf("%v", defaultFormatter(time.Now().UTC(), s.Code, core.HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace()))
+		t.Errorf("%v", defaultFormatter(time.Now().UTC(), target, s.Code, core.HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace()))
 		s.Handled = true
 	}
 	return s
 }
 
-func defaultFormatter(ts time.Time, code int, status, requestId string, errs []error, trace []string) string {
+func defaultFormatter(ts time.Time, target string, code int, status, requestId string, errs []error, trace []string) string {
 	str := strconv.Itoa(code)
-	return fmt.Sprintf("{ %v, %v, %v, %v, \n%v, \n%v }\n",
+	return fmt.Sprintf("{ %v, %v %v, %v, %v, \n%v, \n%v }\n",
 		fmt2.JsonMarkup(core.TimestampName, fmt2.FmtRFC3339Millis(ts), true),
+		fmt2.JsonMarkup(targetName, target, true),
 		fmt2.JsonMarkup(core.CodeName, str, false),
 		fmt2.JsonMarkup(core.StatusName, status, true),
 		fmt2.JsonMarkup(core.RequestIdName, requestId, true),
