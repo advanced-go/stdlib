@@ -1,0 +1,8 @@
+{ "timestamp":"2024-09-07T15:49:59.713Z", "code":418, "status":"I'm a teapot", "request-id":"1234-5678",
+  "errors" : [
+    "Get http://localhost:8082/storage/address: dial tcp [::1]:8082: connectex: No connection could be made because the target machine actively refused it."
+  ],
+  "trace" : [
+    "https://https://github.com.com/advanced-go/stdlib/tree/main/tree/main/httpx#Do",
+    "https://https://github.com.com/advanced-go/customer/tree/main/tree/main/address1#get[...]"
+  ] }

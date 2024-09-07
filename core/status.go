@@ -149,7 +149,7 @@ func (s *Status) WithRequestId(t any) *Status {
 	return s
 }
 
-func (s *Status) addParentLocation() *Status {
+func (s *Status) AddParentLocation() *Status {
 	if s.OK() {
 		return s
 	}

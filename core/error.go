@@ -72,7 +72,7 @@ func (h Output) Handle(s *Status) *Status {
 		return s
 	}
 	if s.Err != nil && !s.Handled {
-		s.addParentLocation()
+		s.AddParentLocation()
 		fmt.Printf("%v", formatter(time.Now().UTC(), s.Code, HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace()))
 		s.Handled = true
 	}
@@ -91,7 +91,7 @@ func (h Log) Handle(s *Status) *Status {
 		return s
 	}
 	if s.Err != nil && !s.Handled {
-		s.addParentLocation()
+		s.AddParentLocation()
 		go logger(s.Code, HttpStatus(s.Code), s.RequestId, []error{s.Err}, s.Trace())
 		s.Handled = true
 	}
@@ -109,20 +109,6 @@ func defaultFormatter(ts time.Time, code int, status, requestId string, errs []e
 		formatTrace(TraceName, trace))
 }
 
-func formatTrace(name string, trace []string) string {
-	if len(trace) == 0 {
-		return fmt.Sprintf("\"%v\" : null", name)
-	}
-	result := fmt.Sprintf("\"%v\" : [ ", name)
-	for i := len(trace) - 1; i >= 0; i-- {
-		if i < len(trace)-1 {
-			result += ","
-		}
-		result += fmt.Sprintf("\"%v\"", formatUri(trace[i]))
-	}
-	return result + " ]"
-}
-
 func formatErrors(name string, errs []error) string {
 	if len(errs) == 0 || errs[0] == nil {
 		return fmt.Sprintf("\"%v\" : null", name)
@@ -133,6 +119,20 @@ func formatErrors(name string, errs []error) string {
 			result += ","
 		}
 		result += fmt.Sprintf("\"%v\"", e.Error())
+	}
+	return result + " ]"
+}
+
+func formatTrace(name string, trace []string) string {
+	if len(trace) == 0 {
+		return fmt.Sprintf("\"%v\" : null", name)
+	}
+	result := fmt.Sprintf("\"%v\" : [ ", name)
+	for i := len(trace) - 1; i >= 0; i-- {
+		if i < len(trace)-1 {
+			result += ","
+		}
+		result += fmt.Sprintf("\"%v\"", formatUri(trace[i]))
 	}
 	return result + " ]"
 }
