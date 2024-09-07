@@ -1,7 +1,6 @@
 package messaging
 
 import (
-	"errors"
 	"github.com/advanced-go/stdlib/core"
 )
 
@@ -33,6 +32,7 @@ type OpsAgent interface {
 	AddActivity(agentId string, content any)
 }
 
+/*
 // AgentFunc - agent function
 type AgentFunc func(uri string, ctrl, data <-chan *Message, state any)
 
@@ -46,11 +46,11 @@ type agent struct {
 	shutdown func()
 }
 
-func NewAgent(uri string, run AgentFunc, state any) (Agent, error) {
+func NewAgent2(uri string, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, make(chan *Message, ChannelSize), make(chan *Message, ChannelSize), run, state)
 }
 
-func NewAgentWithChannels(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
+func NewAgentWithChannels2(uri string, ctrl, data chan *Message, run AgentFunc, state any) (Agent, error) {
 	return newAgent(uri, ctrl, data, run, state)
 }
 
@@ -131,6 +131,9 @@ func Mux(msg *Message, ctrl, data chan *Message) {
 	default:
 	}
 }
+
+
+*/
 
 func AddShutdown(curr, next func()) func() {
 	if next == nil {

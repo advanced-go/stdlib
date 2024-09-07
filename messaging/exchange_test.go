@@ -89,11 +89,11 @@ func ExampleSend() {
 	c := make(chan *Message, 16)
 	ex := NewExchange()
 
-	a1, _ := NewAgentWithChannels(uri1, c, nil, testAgentRun, nil)
+	a1 := newTestAgent(uri1, c, nil)
 	ex.Register(a1)
-	a2, _ := NewAgentWithChannels(uri2, c, nil, testAgentRun, nil)
+	a2 := newTestAgent(uri2, c, nil)
 	ex.Register(a2)
-	a3, _ := NewAgentWithChannels(uri3, c, nil, testAgentRun, nil)
+	a3 := newTestAgent(uri3, c, nil)
 	ex.Register(a3)
 
 	ex.Send(NewControlMessage(uri1, PkgPath, StartupEvent))
@@ -117,9 +117,9 @@ func ExampleListCount() {
 	uri2 := "urn:agent-2"
 	ex := NewExchange()
 
-	a1, _ := NewAgent(uri1, testAgentRun, nil)
+	a1 := newTestAgent(uri1, nil, nil)
 	ex.Register(a1)
-	a2, _ := NewAgent(uri2, testAgentRun, nil)
+	a2 := newTestAgent(uri2, nil, nil)
 	ex.Register(a2)
 
 	fmt.Printf("test: Count() -> : %v\n", ex.Count())
@@ -136,21 +136,18 @@ func ExampleExchangeOnShutdown() {
 	uri2 := "urn:agent-2"
 	ex := NewExchange()
 
-	a1, _ := NewAgent(uri1, testAgentRun, nil)
+	a1 := newTestAgent(uri1, nil, nil)
 	ex.Register(a1)
-	a2, _ := NewAgent(uri2, testAgentRun, nil)
+	a2 := newTestAgent(uri2, nil, nil)
 	ex.Register(a2)
 
 	fmt.Printf("test: Get(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get(%v) -> : %v\n", uri2, ex.Get(uri2))
 
-	if t, ok := any(a1).(*agent); ok {
-		t.running = true
-	}
+	a1.running = true
 	a1.Shutdown()
-	if t, ok := any(a2).(*agent); ok {
-		t.running = true
-	}
+
+	a2.running = true
 	a2.Shutdown()
 
 	fmt.Printf("test: Get-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
@@ -163,9 +160,7 @@ func ExampleExchangeOnShutdown() {
 	fmt.Printf("test: Get-Ex1(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get-Ex2(%v) -> : %v\n", uri1, ex.Get(uri1))
 
-	if t, ok := any(a1).(*agent); ok {
-		t.running = true
-	}
+	a1.running = true
 	a1.Shutdown()
 	fmt.Printf("test: Get-Ex1-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
 	fmt.Printf("test: Get-Ex2-Shutdown(%v) -> : %v\n", uri1, ex.Get(uri1))
