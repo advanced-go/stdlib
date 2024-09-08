@@ -44,3 +44,17 @@ func Example_SetHeaders() {
 	//test: SetHeaders() [cnt:2]
 
 }
+
+func ExampleAddHeader() {
+	h := AddHeader(nil, ContentLocation, "https://www.google.com/search")
+
+	fmt.Printf("test: AddHeader() -> [h:%v]\n", h)
+
+	h = AddHeader(h, ContentLocation, "https://www.google.com/search")
+	fmt.Printf("test: AddHeader() -> [h:%v]\n", h)
+
+	//Output:
+	//test: AddHeader() -> [h:map[Content-Location:[https://www.google.com/search]]]
+	//test: AddHeader() -> [h:map[Content-Location:[https://www.google.com/search https://www.google.com/search]]]
+
+}

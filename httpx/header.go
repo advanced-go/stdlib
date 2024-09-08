@@ -84,3 +84,11 @@ func SetHeaders(w http.ResponseWriter, headers any) {
 		}
 	}
 }
+
+func AddHeader(h http.Header, name, value string) http.Header {
+	if h == nil {
+		h = make(http.Header)
+	}
+	h.Add(name, value)
+	return h
+}
