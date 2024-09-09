@@ -31,13 +31,13 @@ func ExampleURLParse_Raw() {
 }
 
 func ExampleParsed() {
-	uri := "http://localhost:8081/github/advanced-go/guidance:v1/resiliency?" + BuildQuery("region=region1")
+	uri := "http://localhost:8081/github/advanced-go/guidance:v1/resiliency/entry?" + BuildQuery("region=region1")
 	p := Uproot(uri)
 
 	fmt.Printf("test: Uproot() -> [auth:%v] [vers:%v] [rsc:%v] [path:%v] [query:%v]\n", p.Authority, p.Version, p.Resource, p.Path, p.Query)
 
 	//Output:
-	//test: Uproot() -> [auth:github/advanced-go/guidance] [vers:v1] [rsc:resiliency] [path:resiliency] [query:region=region1]
+	//test: Uproot() -> [auth:github/advanced-go/guidance] [vers:v1] [rsc:resiliency] [path:resiliency/entry] [query:region=region1]
 
 }
 
