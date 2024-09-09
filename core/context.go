@@ -10,6 +10,13 @@ const (
 	ExchangeStatusKey   = "status"
 )
 
+func NewContext(ctx context.Context) context.Context {
+	if ctx != nil {
+		return ctx
+	}
+	return context.Background()
+}
+
 type ExchangeOverride struct {
 	m map[string]string
 }
