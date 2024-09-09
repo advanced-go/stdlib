@@ -52,7 +52,11 @@ func NewAccessLogIntermediary(c2 core.HttpExchange) core.HttpExchange {
 		if status.Code == http.StatusGatewayTimeout {
 			reasonCode = access.ControllerTimeout
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: resp.Header.Get(core.XRoute), To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
+		route := resp.Header.Get(core.XRoute)
+		if route == "" {
+			route = EtcRoute
+		}
+		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: route, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
 		return
 	}
 }

@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	RouteName = "host"
+	HostRoute = "host"
+	EtcRoute  = "etc"
 )
 
 func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, dur time.Duration, handler core.HttpExchange) {
@@ -22,7 +23,7 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	core.AddRequestId(r)
 	from := r.Header.Get(core.XFrom)
 	if from == "" {
-		r.Header.Set(core.XFrom, RouteName)
+		r.Header.Set(core.XFrom, HostRoute)
 	}
 	if dur > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), dur)
@@ -38,6 +39,6 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		controllerCode = access.ControllerTimeout
 	}
 	resp.ContentLength = httpx.WriteResponse[E](w, resp.Header, resp.StatusCode, resp.Body, r.Header)
-	r.Header.Set(core.XTo, RouteName)
-	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: RouteName, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: controllerCode})
+	r.Header.Set(core.XTo, HostRoute)
+	access.Log(access.IngressTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: HostRoute, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: controllerCode})
 }

@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
+	"github.com/advanced-go/stdlib/messaging/messagingtest"
 	"net/http"
 	"time"
 )
 
 func emptyRun(uri string, ctrl, data <-chan *messaging.Message, state any) {
 }
-func testRegister(ex *messaging.Exchange, uri string, cmd, data chan *messaging.Message) error {
-	a, _ := messaging.NewAgentWithChannels(uri, cmd, data, emptyRun, nil)
+func testRegister(ex *messaging.Exchange, uri string, cmd chan *messaging.Message) error {
+	a := messagingtest.NewAgent(uri, cmd)
 	ex.Register(a) //.NewMailboxWithCtrl(uri, false, cmd, data))
 	return nil
 }
@@ -24,13 +25,13 @@ func ExampleCreateToSend() {
 	uriOne := "startup/one"
 	ex := messaging.NewExchange()
 
-	a, _ := messaging.NewAgent(uriNone, emptyRun, nil)
+	a := messagingtest.NewAgent(uriNone, nil)
 	err := ex.Register(a)
 	if err != nil {
 		fmt.Printf("test: NewAgent(%v) -> [err:%v]\n", uriNone, err)
 	}
 
-	a, _ = messaging.NewAgent(uriOne, emptyRun, nil)
+	a = messagingtest.NewAgent(uriOne, nil)
 	err = ex.Register(a)
 	if err != nil {
 		fmt.Printf("test: NewAgent(%v) -> [err:%v]\n", uriOne, err)
@@ -53,15 +54,15 @@ func ExampleStartup_Success() {
 	start = time.Now()
 
 	c := make(chan *messaging.Message, 16)
-	testRegister(ex, uri1, c, nil)
+	testRegister(ex, uri1, c)
 	go startupGood(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(ex, uri2, c, nil)
+	testRegister(ex, uri2, c)
 	go startupBad(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(ex, uri3, c, nil)
+	testRegister(ex, uri3, c)
 	go startupDepends(c, nil)
 
 	status := startup(ex, time.Second*2, nil)
@@ -85,15 +86,15 @@ func ExampleStartup_Failure() {
 	start = time.Now()
 
 	c := make(chan *messaging.Message, 16)
-	testRegister(ex, uri1, c, nil)
+	testRegister(ex, uri1, c)
 	go startupGood(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(ex, uri2, c, nil)
+	testRegister(ex, uri2, c)
 	go startupBad(c)
 
 	c = make(chan *messaging.Message, 16)
-	testRegister(ex, uri3, c, nil)
+	testRegister(ex, uri3, c)
 	go startupDepends(c, errors.New("startup failure error message"))
 
 	status := startup(ex, time.Second*2, nil)
