@@ -174,8 +174,8 @@ func ExampleCreateUrl() {
 	uri := createUrl(h, "")
 	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path, uri)
 
-	h = AddContentLocation(nil, path1, url1)
-	AddContentLocation(h, path2, url2)
+	h = AddContentLocationResolver(nil, path1, url1)
+	AddContentLocationResolver(h, path2, url2)
 	uri = createUrl(h, path1)
 	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path1, uri)
 
