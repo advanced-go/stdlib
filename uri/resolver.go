@@ -13,7 +13,7 @@ const (
 	ContentLocationSeparator = "->"
 )
 
-func AddContentLocationResolver(h http.Header, path, url string) http.Header {
+func AddResolverContentLocation(h http.Header, path, url string) http.Header {
 	if h == nil {
 		h = make(http.Header)
 	}
