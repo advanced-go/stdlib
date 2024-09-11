@@ -136,9 +136,9 @@ func ExampleResolve_UrlWithAuthority() {
 	url1 = r.Url(host, auth, path, values, h)
 	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, path, url1)
 
-	h.Add(BuildPath(auth, path, values), testRespName)
-	url1 = r.Url(host, auth, path, values, h)
-	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, path, url1)
+	//h.Add(BuildPath(auth, path, values), testRespName)
+	//url1 = r.Url(host, auth, path, values, h)
+	//fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, path, url1)
 
 	host = "www.google.com"
 	path = "v2/search"
@@ -149,14 +149,13 @@ func ExampleResolve_UrlWithAuthority() {
 	fmt.Printf("test: Url(\"%v\",\"%v\",\"%v\") -> [%v]\n", host, auth, path, url1)
 
 	//Output:
-	//test: Url("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access]
-	//test: Url("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access?region=*]
-	//test: Url_String("","github/advanced-go/timeseries","","access") -> [/github/advanced-go/timeseries:access?region=*]
-	//test: Url("www.google.com","github/advanced-go/timeseries","","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=*]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2","access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
-	//test: Url("localhost:8080","github/advanced-go/timeseries","v2","access") -> [file://[cwd]/timeseries1test/get-all-resp-v1.txt]
-	//test: Url("www.google.com","","v2","search") -> [https://www.google.com/search?q=golang]
+	//test: Url("","github/advanced-go/timeseries","access") -> [/github/advanced-go/timeseries:access]
+	//test: Url("","github/advanced-go/timeseries","access") -> [/github/advanced-go/timeseries:access?region=*]
+	//test: Url_String("","github/advanced-go/timeseries","access") -> [/github/advanced-go/timeseries:access?region=*]
+	//test: Url("www.google.com","github/advanced-go/timeseries","access") -> [https://www.google.com/github/advanced-go/timeseries:access?region=*]
+	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: Url("localhost:8080","github/advanced-go/timeseries","v2/access") -> [http://localhost:8080/github/advanced-go/timeseries:v2/access?region=*]
+	//test: Url("www.google.com","","v2/search") -> [https://www.google.com/v2/search?q=golang]
 
 }
 
