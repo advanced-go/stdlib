@@ -169,7 +169,7 @@ func ExampleCreateUrl() {
 	h := make(http.Header)
 	h.Add(XContentLocationResolver, path)
 	uri := createUrl(h, "")
-	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path, uri)
+	fmt.Printf("test: createUrl(empty) -> [%v]\n", uri)
 
 	h = AddResolverContentLocation(nil, path1, url1)
 	AddResolverContentLocation(h, path2, url2)
@@ -180,7 +180,7 @@ func ExampleCreateUrl() {
 	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path2, uri)
 
 	//Output:
-	//test: createUrl("") ->
+	//test: createUrl(empty) -> []
 	//test: createUrl("advanced-go/observation:v1/timeseries/egress/entry?region=*") -> file:///f:/resource/info.json
 	//test: createUrl("advanced-go/observation:v1/timeseries/egress/entry?region=**") -> file:///f:/resource/test.json
 

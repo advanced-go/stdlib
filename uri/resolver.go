@@ -31,24 +31,10 @@ func NewResolver(defaultHost string) *Resolver {
 	return r
 }
 
-func (r *Resolver) Url2(host, path string, query any, h http.Header) string {
-	path1 := BuildPath("", path, query)
-	if h != nil && h.Get(XContentLocationResolver) != "" {
-		p2 := createUrl(h, path1) //h.Get(path1)
-		if p2 != "" {
-			return p2
-		}
-	}
-	if host != "" {
-		return Cat(host, path1)
-	}
-	return Cat(r.defaultHost, path1)
-}
-
 func (r *Resolver) Url(host, authority, path string, query any, h http.Header) string {
 	path1 := BuildPath(authority, path, query)
 	if h != nil && h.Get(XContentLocationResolver) != "" {
-		p2 := createUrl(h, path1) //h.Get(path)
+		p2 := createUrl(h, path1)
 		if p2 != "" {
 			return p2
 		}
@@ -65,10 +51,6 @@ func Cat(host, path string) string {
 		return origin + path
 	}
 	return origin + "/" + path
-}
-
-func BuildPath1(path string, query any) string {
-	return BuildPath("", path, query)
 }
 
 func BuildPath(authority, path string, query any) string {

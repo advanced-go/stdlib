@@ -3,6 +3,7 @@ package host
 import (
 	"bytes"
 	"fmt"
+	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"io"
 	"net/http"
@@ -182,7 +183,7 @@ func ExampleHttpHandler_AccessLog_Service_OK() {
 
 	SetAuthExchange(testAuthExchangeOK, nil)
 	SetHostTimeout(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(access.InternalTraffic, testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)
@@ -200,7 +201,7 @@ func ExampleHttpHandler_AccessLog_Service_Timeout() {
 
 	SetAuthExchange(testAuthExchangeOK, nil)
 	SetHostTimeout(time.Millisecond * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(access.InternalTraffic, testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)
@@ -218,7 +219,7 @@ func ExampleHttpHandler_AccessLog_Service_Unauthorized() {
 
 	SetAuthExchange(testAuthExchangeFail, nil)
 	SetHostTimeout(time.Second * 4)
-	RegisterExchange(pattern, NewAccessLogIntermediary(testDo))
+	RegisterExchange(pattern, NewAccessLogIntermediary(access.InternalTraffic, testDo))
 
 	rec := httptest.NewRecorder()
 	HttpHandler(rec, r)

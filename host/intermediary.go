@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	"net/http"
 	"time"
 )
@@ -35,7 +36,7 @@ func NewConditionalIntermediary(c1 core.HttpExchange, c2 core.HttpExchange, ok f
 	}
 }
 
-func NewAccessLogIntermediary(c2 core.HttpExchange) core.HttpExchange {
+func NewAccessLogIntermediary(traffic string, c2 core.HttpExchange) core.HttpExchange {
 	return func(r *http.Request) (resp *http.Response, status *core.Status) {
 		if c2 == nil {
 			return badRequest("error: AccessLog Intermediary HttpExchange is nil")
@@ -56,7 +57,24 @@ func NewAccessLogIntermediary(c2 core.HttpExchange) core.HttpExchange {
 		if route == "" {
 			route = EtcRoute
 		}
-		access.Log(access.InternalTraffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: route, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
+		access.Log(traffic, start, time.Since(start), r, resp, access.Routing{From: from, Route: route, To: "", Percent: -1}, access.Controller{Timeout: dur, RateLimit: 0, RateBurst: 0, Code: reasonCode})
 		return
+	}
+}
+
+func NewProxyIntermediary(host string, c2 core.HttpExchange) core.HttpExchange {
+	return func(r *http.Request) (resp *http.Response, status *core.Status) {
+		if c2 == nil {
+			return badRequest("error: Proxy Intermediary HttpExchange is nil")
+		}
+		u := r.URL.Scheme + "://" + host + r.URL.Path
+		if r.URL.RawQuery != "" {
+			u += "?" + r.URL.RawQuery
+		}
+		r2, err := http.NewRequestWithContext(r.Context(), r.Method, u, r.Body)
+		if err != nil {
+			return httpx.NewResponse[core.Log](http.StatusBadRequest, r.Header, err)
+		}
+		return c2(r2)
 	}
 }
