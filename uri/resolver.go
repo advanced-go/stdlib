@@ -31,8 +31,8 @@ func NewResolver(defaultHost string) *Resolver {
 	return r
 }
 
-func (r *Resolver) Url(host, path string, query any, h http.Header) string {
-	path1 := BuildPath(path, query)
+func (r *Resolver) Url2(host, path string, query any, h http.Header) string {
+	path1 := BuildPath("", path, query)
 	if h != nil && h.Get(XContentLocationResolver) != "" {
 		p2 := createUrl(h, path1) //h.Get(path1)
 		if p2 != "" {
@@ -45,18 +45,18 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	return Cat(r.defaultHost, path1)
 }
 
-func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
-	path := BuildPathWithAuthority(authority, version, resource, query)
+func (r *Resolver) Url(host, authority, path string, query any, h http.Header) string {
+	path1 := BuildPath(authority, path, query)
 	if h != nil && h.Get(XContentLocationResolver) != "" {
-		p2 := createUrl(h, path) //h.Get(path)
+		p2 := createUrl(h, path1) //h.Get(path)
 		if p2 != "" {
 			return p2
 		}
 	}
 	if host != "" {
-		return Cat(host, path)
+		return Cat(host, path1)
 	}
-	return Cat(r.defaultHost, path)
+	return Cat(r.defaultHost, path1)
 }
 
 func Cat(host, path string) string {
@@ -67,21 +67,37 @@ func Cat(host, path string) string {
 	return origin + "/" + path
 }
 
-func BuildPath(path string, query any) string {
-	return BuildPathWithAuthority("", "", path, query)
+func BuildPath1(path string, query any) string {
+	return BuildPath("", path, query)
 }
 
-func BuildPathWithAuthority(authority, version, resource string, query any) string {
-	path := strings.Builder{}
+func BuildPath(authority, path string, query any) string {
+	path1 := strings.Builder{}
 	if authority != "" {
-		path.WriteString(authority)
-		path.WriteString(":")
-		path.WriteString(formatVersion2(version))
+		path1.WriteString(authority)
+		path1.WriteString(":")
+		//path1.WriteString(formatVersion2(version))
 	}
-	path.WriteString(resource)
-	path.WriteString(formatQuery(query))
-	return path.String()
+	path1.WriteString(path)
+	path1.WriteString(formatQuery(query))
+	return path1.String()
 }
+
+/*
+func BuildPath(authority, path string, query any) string {
+	path1 := strings.Builder{}
+	if authority != "" {
+		path1.WriteString(authority)
+		path1.WriteString(":")
+		path1.WriteString(formatVersion2(version))
+	}
+	path1.WriteString(resource)
+	path1.WriteString(formatQuery(query))
+	return path1.String()
+}
+
+
+*/
 
 func BuildHostWithScheme(host string) string {
 	if host == "" {
@@ -140,3 +156,36 @@ func createUrl(h http.Header, path string) string {
 	}
 	return ""
 }
+
+/*
+
+func (r *Resolver) Url(host, path string, query any, h http.Header) string {
+	path1 := BuildPath("",path, query)
+	if h != nil && h.Get(XContentLocationResolver) != "" {
+		p2 := createUrl(h, path1) //h.Get(path1)
+		if p2 != "" {
+			return p2
+		}
+	}
+	if host != "" {
+		return Cat(host, path1)
+	}
+	return Cat(r.defaultHost, path1)
+}
+
+func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
+	path := BuildPath(authority, version, resource, query)
+	if h != nil && h.Get(XContentLocationResolver) != "" {
+		p2 := createUrl(h, path) //h.Get(path)
+		if p2 != "" {
+			return p2
+		}
+	}
+	if host != "" {
+		return Cat(host, path)
+	}
+	return Cat(r.defaultHost, path)
+}
+
+
+*/
