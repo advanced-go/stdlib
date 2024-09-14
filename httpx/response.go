@@ -63,6 +63,9 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 	var e E
 
 	resp = &http.Response{StatusCode: statusCode, Header: h}
+	if h == nil {
+		resp.Header = make(http.Header)
+	}
 	if content == nil {
 		return resp, core.NewStatus(statusCode)
 	}
@@ -87,8 +90,7 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 			resp.Body, resp.ContentLength, status = json2.NewReadCloser(content)
 			if !status.OK() {
 				e.Handle(status)
-				h = make(http.Header)
-				h.Add(ContentType, ContentTypeText)
+				h = SetHeader(nil, ContentType, ContentTypeText)
 				if status.Err != nil {
 					return &http.Response{StatusCode: http.StatusInternalServerError, Header: h, ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}, status
 				} else {
@@ -97,48 +99,36 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 			}
 		} else {
 			status = core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
-			h = make(http.Header)
-			h.Add(ContentType, ContentTypeText)
-			return &http.Response{StatusCode: http.StatusInternalServerError, Header: h, ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}, status
+			return &http.Response{StatusCode: http.StatusInternalServerError, Header: SetHeader(nil, ContentType, ContentTypeText), ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}, status
 		}
 	}
 	return resp, core.NewStatus(statusCode)
 }
 
 func NewVersionResponse(version string) *http.Response {
-	h2 := make(http.Header)
-	h2.Add(ContentType, ContentTypeJson)
 	content := fmt.Sprintf(versionFmt, version)
-	resp, _ := NewResponse[core.Log](http.StatusOK, h2, content)
+	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), content)
 	return resp
 }
 
 func NewAuthorityResponse(authority string) *http.Response {
-	h2 := make(http.Header)
-	h2.Add(core.XAuthority, authority)
-	//h.Add(ContentType, ContentTypeJson)
-	resp, _ := NewResponse[core.Log](http.StatusOK, h2, nil)
+	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), nil)
 	return resp
 }
 
 func NewHealthResponseOK() *http.Response {
-	h2 := make(http.Header)
-	h2.Add(ContentType, ContentTypeText)
-	resp, _ := NewResponse[core.Log](http.StatusOK, h2, healthOK)
+	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), healthOK)
 	return resp
-	///&http.Response{StatusCode: http.StatusOK, Header: h2, ContentLength: healthLength, Body: io.NopCloser(bytes.NewReader(healthOK))}
 }
 
 func NewNotFoundResponse() *http.Response {
-	h2 := make(http.Header)
-	h2.Add(ContentType, ContentTypeText)
-	resp, _ := NewResponse[core.Log](http.StatusNotFound, h2, core.StatusNotFound().String())
+	resp, _ := NewResponse[core.Log](http.StatusNotFound, SetHeader(nil, ContentType, ContentTypeText), core.StatusNotFound().String())
 	return resp
 }
 
 // NewResponseFromUri - read a Http response given a URL
 func NewResponseFromUri(uri any) (*http.Response, *core.Status) {
-	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: internalError}
+	serverErr := &http.Response{StatusCode: http.StatusInternalServerError, Status: internalError, Header: make(http.Header)}
 	if uri == nil {
 		return serverErr, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: URL is nil"))
 	}
@@ -148,7 +138,7 @@ func NewResponseFromUri(uri any) (*http.Response, *core.Status) {
 	buf, status := io2.ReadFile(uri)
 	if !status.OK() {
 		if strings.Contains(status.Err.Error(), fileExistsError) {
-			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found"}, core.NewStatusError(core.StatusInvalidArgument, status.Err)
+			return &http.Response{StatusCode: http.StatusNotFound, Status: "Not Found", Header: make(http.Header)}, core.NewStatusError(core.StatusInvalidArgument, status.Err)
 		}
 		return serverErr, core.NewStatusError(core.StatusIOError, status.Err)
 	}

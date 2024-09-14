@@ -135,3 +135,21 @@ func ExampleUprootAuthority() {
 	//test: UprootAuthority("github/advanced-go/searchyahoo?q=golang") -> [auth:]
 
 }
+
+func _ExampleUrl() {
+	uri := "https://user:pswd@www.google.com/search?q=golang"
+	u, err := url2.Parse(uri)
+	info := u.User
+
+	fmt.Printf("test: Url(\"%v\") -> [%v] [err:%v] [%v]\n", uri, u, err, info)
+
+	uri = "https://www.google.com/search?q=golang"
+	u, err = url2.Parse(uri)
+	info = u.User
+
+	fmt.Printf("test: Url(\"%v\") -> [%v] [err:%v] [%v]\n", uri, u, err, info)
+
+	//Output:
+	//fail
+
+}
