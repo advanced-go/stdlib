@@ -144,7 +144,7 @@ func ExampleNewResponseWithBody() {
 	fmt.Printf("test: ResponseBody() -> [status-code:%v] [header:%v] [content-length:%v]\n", resp.StatusCode, resp.Header, resp.ContentLength)
 
 	//Output:
-	//test: ResponseBody() -> [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:272]
+	//test: ResponseBody() -> [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:305]
 
 }
 

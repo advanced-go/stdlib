@@ -112,7 +112,7 @@ func NewVersionResponse(version string) *http.Response {
 }
 
 func NewAuthorityResponse(authority string) *http.Response {
-	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), nil)
+	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, core.XAuthority, authority), nil)
 	return resp
 }
 
