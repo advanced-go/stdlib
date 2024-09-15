@@ -1,19 +1,25 @@
 package httpx
 
 import (
+	"errors"
+	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"sync"
 )
 
-type OnResponse func(resp *http.Response, status *core.Status)
+type OnResponse func(resp *http.Response, status *core.Status) (failure bool)
 
-func MultiExchange(reqs []*http.Request, ex core.HttpExchange, handler OnResponse) []core.ExchangeResult {
+func MultiExchange(reqs []*http.Request, ex core.HttpExchange, handler OnResponse) ([]core.ExchangeResult, *core.Status) {
 	cnt := len(reqs)
-	if cnt == 0 || ex == nil {
-		return nil
+	if cnt == 0 {
+		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: no requests were found to process"))
+	}
+	if ex == nil {
+		ex = Exchange
 	}
 	var wg sync.WaitGroup
+	failures := 0
 
 	results := make([]core.ExchangeResult, cnt)
 	for i := 0; i < cnt; i++ {
@@ -25,10 +31,15 @@ func MultiExchange(reqs []*http.Request, ex core.HttpExchange, handler OnRespons
 			defer wg.Done()
 			res.Resp, res.Status = ex(req)
 			if handler != nil {
-				handler(res.Resp, res.Status)
+				if handler(res.Resp, res.Status) {
+					failures++
+				}
 			}
 		}(reqs[i], &results[i])
 	}
 	wg.Wait()
-	return results
+	if failures > 0 {
+		return results, core.NewStatusError(core.StatusExecError, errors.New(fmt.Sprintf("error: %v requests failed", failures)))
+	}
+	return results, core.StatusOK()
 }

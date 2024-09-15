@@ -252,6 +252,8 @@ func HttpStatus(code int) string {
 		return "Invalid Argument"
 	case StatusHaveContent:
 		return "Content Available"
+	case StatusExecError:
+		return "Execution Error"
 
 		//case StatusUnavailable:
 		//	return "Invalid Argument"

@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-func onResponse(resp *http.Response, status *core.Status) {
+func onResponse(resp *http.Response, status *core.Status) (failure bool) {
 	//fmt.Printf("[req:%v]\n [resp:%v]\n [status:%v]\n", resp.Request, resp, status)
 	fmt.Printf("[status:%v]\n", status)
-
+	return !status.OK()
 }
 
 func ExampleMultiExchange() {
@@ -26,14 +26,14 @@ func ExampleMultiExchange() {
 	r, _ = http.NewRequest("", "https://www.duckduckgo.com/search?q=golang", nil)
 	reqs = append(reqs, r)
 
-	results := MultiExchange(reqs, Do, onResponse)
-	fmt.Printf("test: ExampleMultiExchange() -> [count:%v]\n", len(results))
+	results, status := MultiExchange(reqs, Do, onResponse)
+	fmt.Printf("test: ExampleMultiExchange() -> [count:%v] [%v]\n", len(results), status)
 
 	//Output:
 	//[status:OK]
 	//[status:OK]
-	//[status:Accepted]
 	//[status:OK]
-	//test: ExampleMultiExchange() -> [count:4]
+	//[status:OK]
+	//test: ExampleMultiExchange() -> [count:4] [status:OK]
 
 }
