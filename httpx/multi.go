@@ -37,7 +37,7 @@ func MultiExchange(reqs []*http.Request, handler OnResponse) ([]core.ExchangeRes
 	}
 	wg.Wait()
 	if failure.Load() {
-		return results, core.NewStatusError(core.StatusExecError, errors.New("error: %v requests failuer"))
+		return results, core.NewStatusError(core.StatusExecError, errors.New("error: request failures"))
 	}
 	return results, core.StatusOK()
 }
