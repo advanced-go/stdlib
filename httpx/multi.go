@@ -8,23 +8,7 @@ import (
 
 type OnResponse func(resp *http.Response, status *core.Status)
 
-func DoN(reqs []*http.Request) []core.ExchangeResult {
-	return ExchangeMulti(nil, Do, reqs)
-}
-
-func DoNWithHandler(handler OnResponse, reqs []*http.Request) []core.ExchangeResult {
-	return ExchangeMulti(handler, Do, reqs)
-}
-
-func ExchangeN(reqs []*http.Request) []core.ExchangeResult {
-	return ExchangeMulti(nil, Exchange, reqs)
-}
-
-func ExchangeNWithHandler(handler OnResponse, reqs []*http.Request) []core.ExchangeResult {
-	return ExchangeMulti(handler, Exchange, reqs)
-}
-
-func ExchangeMulti(handler OnResponse, ex core.HttpExchange, reqs []*http.Request) []core.ExchangeResult {
+func MultiExchange(handler OnResponse, ex core.HttpExchange, reqs []*http.Request) []core.ExchangeResult {
 	cnt := len(reqs)
 	if cnt == 0 || ex == nil {
 		return nil

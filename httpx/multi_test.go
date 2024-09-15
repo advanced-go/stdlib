@@ -12,7 +12,7 @@ func onResponse(resp *http.Response, status *core.Status) {
 
 }
 
-func _ExampleExchangeMulti() {
+func ExampleMultiExchange() {
 	var reqs []*http.Request
 	r, _ := http.NewRequest("", "https://www.google.com/search?q=golang", nil)
 	reqs = append(reqs, r)
@@ -26,14 +26,14 @@ func _ExampleExchangeMulti() {
 	r, _ = http.NewRequest("", "https://www.duckduckgo.com/search?q=golang", nil)
 	reqs = append(reqs, r)
 
-	results := ExchangeMulti(onResponse, Do, reqs)
-	fmt.Printf("test: ExampleExchangeMulti() -> [count:%v]\n", len(results))
+	results := MultiExchange(onResponse, Do, reqs)
+	fmt.Printf("test: ExampleMultiExchange() -> [count:%v]\n", len(results))
 
 	//Output:
 	//[status:OK]
 	//[status:OK]
+	//[status:Accepted]
 	//[status:OK]
-	//[status:OK]
-	//test: ExampleExchangeMulti() -> [count:4]
+	//test: ExampleMultiExchange() -> [count:4]
 
 }
