@@ -8,7 +8,7 @@ import (
 
 type OnResponse func(resp *http.Response, status *core.Status)
 
-func MultiExchange(handler OnResponse, ex core.HttpExchange, reqs []*http.Request) []core.ExchangeResult {
+func MultiExchange(reqs []*http.Request, ex core.HttpExchange, handler OnResponse) []core.ExchangeResult {
 	cnt := len(reqs)
 	if cnt == 0 || ex == nil {
 		return nil

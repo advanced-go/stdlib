@@ -26,7 +26,7 @@ func ExampleMultiExchange() {
 	r, _ = http.NewRequest("", "https://www.duckduckgo.com/search?q=golang", nil)
 	reqs = append(reqs, r)
 
-	results := MultiExchange(onResponse, Do, reqs)
+	results := MultiExchange(reqs, Do, onResponse)
 	fmt.Printf("test: ExampleMultiExchange() -> [count:%v]\n", len(results))
 
 	//Output:
