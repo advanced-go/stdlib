@@ -22,6 +22,7 @@ const (
 	DataEvent              = "event:data"
 	StatusEvent            = "event:status"
 	DataChangeEvent        = "event:data-change"
+	ObservationEvent       = "event:observation"
 
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
