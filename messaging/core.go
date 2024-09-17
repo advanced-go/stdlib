@@ -27,22 +27,22 @@ const (
 	PauseEvent  = "event:pause"  // disable data channel receive
 	ResumeEvent = "event:resume" // enable data channel receive
 
-	ContentType            = "Content-Type"
-	XRelatesTo             = "x-relates-to"
-	XMessageId             = "x-message-id"
-	XTo                    = "x-to"
-	XFrom                  = "x-from"
-	XEvent                 = "x-event"
-	XChannel               = "x-channel"
-	XAgentId               = "x-agent-id"
-	XForwardTo             = "x-forward-to"
-	ContentTypeStatus      = "application/status"
-	ContentTypeConfig      = "application/config"
-	ChannelData            = "DATA"
-	ChannelControl         = "CTRL"
-	ChannelRightHemisphere = "RIGHT"
-	ChannelLeftHemisphere  = "LEFT"
-	ChannelNone            = "NONE"
+	ContentType       = "Content-Type"
+	XRelatesTo        = "x-relates-to"
+	XMessageId        = "x-message-id"
+	XTo               = "x-to"
+	XFrom             = "x-from"
+	XEvent            = "x-event"
+	XChannel          = "x-channel"
+	XAgentId          = "x-agent-id"
+	XForwardTo        = "x-forward-to"
+	ContentTypeStatus = "application/status"
+	ContentTypeConfig = "application/config"
+	ChannelData       = "DATA"
+	ChannelControl    = "CTRL"
+	ChannelRight      = "RIGHT"
+	ChannelLeft       = "LEFT"
+	ChannelNone       = "NONE"
 )
 
 // SendFunc - uniform interface for messaging
@@ -82,12 +82,16 @@ func NewDataMessage(to, from, event string) *Message {
 	return NewMessage(ChannelData, to, from, event)
 }
 
-func NewRightHemisphereMessage(to, from, event string) *Message {
-	return NewMessage(ChannelRightHemisphere, to, from, event)
+func NewRightChannelMessage(to, from, event string, body any) *Message {
+	m := NewMessage(ChannelRight, to, from, event)
+	m.Body = body
+	return m
 }
 
-func NewLeftHemisphereMessage(to, from, event string) *Message {
-	return NewMessage(ChannelLeftHemisphere, to, from, event)
+func NewLeftChannelMessage(to, from, event string, body any) *Message {
+	m := NewMessage(ChannelLeft, to, from, event)
+	m.Body = body
+	return m
 }
 
 /*
