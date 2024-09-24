@@ -23,8 +23,8 @@ type Origin struct {
 	Zone       string `json:"zone"`
 	SubZone    string `json:"sub-zone"`
 	Host       string `json:"host"`
-	InstanceId string `json:"instance-id"`
 	Route      string `json:"route"`
+	InstanceId string `json:"instance-id"`
 }
 
 func (o Origin) Tag() string {
