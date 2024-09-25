@@ -209,15 +209,18 @@ func Example_NewResponseFromUri_HTTP_Error() {
 
 }
 
-func Example_NewResponseFromUri_NotFound() {
-	s := "file://[cwd]/httpxtest/resource/not-found.txt"
+func Example_NewResponseFromUri_504() {
+	s := "file://[cwd]/httpxtest/resource/http-504.txt"
 	u, _ := url.Parse(s)
 
 	resp, status0 := NewResponseFromUri(u)
 	fmt.Printf("test: NewResponseFromUri(%v) -> [error:[%v]] [statusCode:%v]\n", s, status0.Err, resp.StatusCode)
 
+	buf, status := readAll(resp.Body)
+	fmt.Printf("test: readAll() -> [status:%v] [content-length:%v]\n", status, len(buf)) //string(buf))
+
 	//Output:
-	//test: NewResponseFromUri(file://[cwd]/httpxtest/resource/not-found.txt) -> [error:[open C:\Users\markb\GitHub\stdlib\httpx\httpxtest\resource\not-found.txt: The system cannot find the file specified.]] [statusCode:404]
+	//test: NewResponseFromUri(file://[cwd]/httpxtest/resource/http-504.txt) -> [error:[<nil>]] [statusCode:504]
 
 }
 
