@@ -22,6 +22,7 @@ const (
 var (
 	healthOK     = []byte("{\n \"status\": \"up\"\n}")
 	healthLength = int64(len(healthOK))
+	emptyReader  = io.NopCloser(bytes.NewReader([]byte{}))
 )
 
 func NewError(status *core.Status, resp *http.Response) string {
@@ -62,7 +63,7 @@ func NewResponse2(status *core.Status, content any) *http.Response {
 func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	var e E
 
-	resp = &http.Response{StatusCode: statusCode, Header: h}
+	resp = &http.Response{StatusCode: statusCode, Header: h, Body: io.NopCloser(bytes.NewReader([]byte{}))}
 	if h == nil {
 		resp.Header = make(http.Header)
 	}
