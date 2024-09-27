@@ -73,7 +73,7 @@ func NewProxyIntermediary(host string, c2 core.HttpExchange) core.HttpExchange {
 		}
 		r2, err := http.NewRequestWithContext(r.Context(), r.Method, u, r.Body)
 		if err != nil {
-			return httpx.NewResponse[core.Log](http.StatusBadRequest, r.Header, err)
+			return httpx.NewResponse(http.StatusBadRequest, r.Header, err)
 		}
 		return c2(r2)
 	}
