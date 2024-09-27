@@ -16,13 +16,13 @@ import (
 
 const (
 	versionFmt      = "{\n \"version\": \"%v\"\n}"
+	authorityFmt    = "{\n \"authority\": \"%v\"\n}"
 	fileExistsError = "The system cannot find the file specified"
 )
 
 var (
 	healthOK     = []byte("{\n \"status\": \"up\"\n}")
 	healthLength = int64(len(healthOK))
-	emptyReader  = io.NopCloser(bytes.NewReader([]byte{}))
 )
 
 func NewError(status *core.Status, resp *http.Response) string {
@@ -60,7 +60,38 @@ func NewResponse2(status *core.Status, content any) *http.Response {
 
 */
 
-func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
+func NewResponse(statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
+	resp = &http.Response{StatusCode: statusCode, ContentLength: -1, Header: h, Body: io.NopCloser(bytes.NewReader([]byte{}))}
+	if h == nil {
+		resp.Header = make(http.Header)
+	}
+	if content == nil {
+		return resp, core.NewStatus(statusCode)
+	}
+	switch ptr := (content).(type) {
+	case []byte:
+		if len(ptr) > 0 {
+			resp.ContentLength = int64(len(ptr))
+			resp.Body = io.NopCloser(bytes.NewReader(ptr))
+		}
+	case string:
+		if ptr != "" {
+			resp.ContentLength = int64(len(ptr))
+			resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr)))
+		}
+	case error:
+		if ptr.Error() != "" {
+			resp.ContentLength = int64(len(ptr.Error()))
+			resp.Body = io.NopCloser(bytes.NewReader([]byte(ptr.Error())))
+		}
+	default:
+		status = core.NewStatusError(core.StatusInvalidContent, errors.New(fmt.Sprintf("error: content type is invalid: %v", reflect.TypeOf(ptr))))
+		return &http.Response{StatusCode: http.StatusInternalServerError, Header: SetHeader(nil, ContentType, ContentTypeText), ContentLength: int64(len(status.Err.Error())), Body: io.NopCloser(bytes.NewReader([]byte(status.Err.Error())))}, status
+	}
+	return resp, core.NewStatus(statusCode)
+}
+
+func NewResponse1[E core.ErrorHandler](statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	var e E
 
 	resp = &http.Response{StatusCode: statusCode, Header: h, Body: io.NopCloser(bytes.NewReader([]byte{}))}
@@ -108,22 +139,22 @@ func NewResponse[E core.ErrorHandler](statusCode int, h http.Header, content any
 
 func NewVersionResponse(version string) *http.Response {
 	content := fmt.Sprintf(versionFmt, version)
-	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), content)
+	resp, _ := NewResponse(http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), content)
 	return resp
 }
 
 func NewAuthorityResponse(authority string) *http.Response {
-	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, core.XAuthority, authority), nil)
+	resp, _ := NewResponse(http.StatusOK, SetHeader(nil, core.XAuthority, authority), nil)
 	return resp
 }
 
 func NewHealthResponseOK() *http.Response {
-	resp, _ := NewResponse[core.Log](http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), healthOK)
+	resp, _ := NewResponse(http.StatusOK, SetHeader(nil, ContentType, ContentTypeText), healthOK)
 	return resp
 }
 
 func NewNotFoundResponse() *http.Response {
-	resp, _ := NewResponse[core.Log](http.StatusNotFound, SetHeader(nil, ContentType, ContentTypeText), core.StatusNotFound().String())
+	resp, _ := NewResponse(http.StatusNotFound, SetHeader(nil, ContentType, ContentTypeText), core.StatusNotFound().String())
 	return resp
 }
 

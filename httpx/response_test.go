@@ -38,12 +38,12 @@ var testCore = []core.Origin{
 
 func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
-	resp, _ := NewResponse[core.Log](status.HttpCode(), nil, status.Err)
+	resp, _ := NewResponse1[core.Log](status.HttpCode(), nil, status.Err)
 	buf, _ := io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	status = core.NewStatusError(http.StatusGatewayTimeout, errors.New("Deadline Exceeded"))
-	resp, _ = NewResponse[core.Log](status.HttpCode(), nil, status.Err)
+	resp, _ = NewResponse1[core.Log](status.HttpCode(), nil, status.Err)
 	buf, _ = io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -54,10 +54,10 @@ func ExampleNewResponse_Error() {
 }
 
 func ExampleNewResponse() {
-	resp, _ := NewResponse[core.Log](http.StatusOK, nil, nil)
+	resp, _ := NewResponse1[core.Log](http.StatusOK, nil, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v]\n", resp.StatusCode)
 
-	resp, _ = NewResponse[core.Log](core.StatusOK().HttpCode(), nil, "version 1.2.35")
+	resp, _ = NewResponse1[core.Log](core.StatusOK().HttpCode(), nil, "version 1.2.35")
 	buf, _ := io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -140,7 +140,7 @@ func ExampleNewJsonResponse() {
 func ExampleNewResponseWithBody() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
-	resp, _ := NewResponse[core.Log](http.StatusOK, h, testCore)
+	resp, _ := NewResponse1[core.Log](http.StatusOK, h, testCore)
 	fmt.Printf("test: ResponseBody() -> [status-code:%v] [header:%v] [content-length:%v]\n", resp.StatusCode, resp.Header, resp.ContentLength)
 
 	//Output:
@@ -221,6 +221,7 @@ func Example_NewResponseFromUri_504() {
 
 	//Output:
 	//test: NewResponseFromUri(file://[cwd]/httpxtest/resource/http-504.txt) -> [error:[<nil>]] [statusCode:504]
+	//test: readAll() -> [status:OK] [content-length:0]
 
 }
 
@@ -250,11 +251,11 @@ func ExampleNewError() {
 	err = NewError(status, nil)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", status, nil, err)
 
-	resp, _ := NewResponse[core.Output](http.StatusTeapot, nil, nil)
+	resp, _ := NewResponse1[core.Output](http.StatusTeapot, nil, nil)
 	err = NewError(nil, resp)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [err:%v]\n", nil, resp != nil, err)
 
-	resp, _ = NewResponse[core.Output](http.StatusTeapot, nil, "error: response content")
+	resp, _ = NewResponse1[core.Output](http.StatusTeapot, nil, "error: response content")
 	err = NewError(nil, resp)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", nil, resp != nil, err)
 
