@@ -24,6 +24,7 @@ func ExampleNewOrigin() {
 		Zone:       "zone",
 		SubZone:    "sub-zone",
 		Host:       "host",
+		Route:      "route",
 		InstanceId: "",
 	}
 	values := NewValues(o)
@@ -31,7 +32,7 @@ func ExampleNewOrigin() {
 	fmt.Printf("test: NewOrigin() -> [%v]\n", o)
 
 	//Output:
-	//test: NewOrigin() -> [{region zone sub-zone host }]
+	//test: NewOrigin() -> [{region zone sub-zone host route }]
 
 }
 
@@ -99,13 +100,13 @@ func ExampleOriginMatch() {
 	fmt.Printf("test: OriginMatch(%v,%v) -> [match:%v]\n", target, filter, OriginMatch(target, filter))
 
 	//Output:
-	//test: OriginMatch({Region zonE sub-zone hOst },{    }) -> [match:false]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region    }) -> [match:true]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region zone   }) -> [match:true]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region zone sub-zone  }) -> [match:true]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region zone sub-zone host }) -> [match:true]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region zone  host }) -> [match:true]
-	//test: OriginMatch({Region zonE sub-zone hOst },{region zone invalid host }) -> [match:false]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{     }) -> [match:false]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region     }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region zone    }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region zone sub-zone   }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region zone sub-zone host  }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region zone  host  }) -> [match:true]
+	//test: OriginMatch({Region zonE sub-zone hOst  },{region zone invalid host  }) -> [match:false]
 
 }
 
@@ -127,7 +128,8 @@ func ExampleOrigin_Uri() {
 	fmt.Printf("test: Origin_Uri_No_SubZone()    -> [%v]\n", target.Uri("class"))
 
 	//Output:
-	//test: Origin_Uri_SubZone()    -> [class:region.zone.sub-zone.host]
-	//test: Origin_Uri_No_SubZone() -> [class:region.zone.host]
+	//test: Origin_Uri_SubZone()       -> [class:region.zone.sub-zone.host]
+	//test: Origin_Uri_SubZone_Route() -> [class:region.zone.sub-zone.host.route]
+	//test: Origin_Uri_No_SubZone()    -> [class:region.zone.host]
 
 }

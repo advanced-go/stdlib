@@ -68,6 +68,9 @@ func NewValues(o Origin) url.Values {
 	if o.Host != "" {
 		values.Add(HostKey, o.Host)
 	}
+	if o.Route != "" {
+		values.Add(RouteKey, o.Route)
+	}
 	return values
 }
 
@@ -78,6 +81,7 @@ func NewOrigin(values url.Values) Origin {
 		o.Zone = values.Get(ZoneKey)
 		o.SubZone = values.Get(SubZoneKey)
 		o.Host = values.Get(HostKey)
+		o.Route = values.Get(RouteKey)
 	}
 	return o
 }
@@ -108,6 +112,12 @@ func OriginMatch(target Origin, filter Origin) bool {
 	if filter.Host != "" {
 		isFilter = true
 		if !StringMatch(target.Host, filter.Host) {
+			return false
+		}
+	}
+	if filter.Route != "" {
+		isFilter = true
+		if !StringMatch(target.Route, filter.Route) {
 			return false
 		}
 	}
