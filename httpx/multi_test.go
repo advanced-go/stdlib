@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-func onResponse(resp *http.Response, status *core.Status) (failure bool) {
+func onResponse(resp *http.Response, status *core.Status) (failure, proceed bool) {
 	//fmt.Printf("[req:%v]\n [resp:%v]\n [status:%v]\n", resp.Request, resp, status)
 	fmt.Printf("[status:%v]\n", status)
-	return !status.OK()
+	return !status.OK(), true
 }
 
 func ExampleMultiExchange() {

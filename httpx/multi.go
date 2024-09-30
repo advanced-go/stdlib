@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 )
 
-type OnResponse func(resp *http.Response, status *core.Status) (failure bool)
+type OnResponse func(resp *http.Response, status *core.Status) (failure, proceed bool)
 
 func MultiExchange(reqs []*http.Request, handler OnResponse) ([]core.ExchangeResult, *core.Status) {
 	cnt := len(reqs)
@@ -28,9 +28,13 @@ func MultiExchange(reqs []*http.Request, handler OnResponse) ([]core.ExchangeRes
 			defer wg.Done()
 			res.Resp, res.Status = Exchange(req)
 			if handler != nil {
-				if handler(res.Resp, res.Status) {
+				fail, proceed := handler(res.Resp, res.Status)
+				if fail {
 					res.Failure = true
 					failure.Store(true)
+				}
+				if !proceed {
+					return
 				}
 			}
 		}(reqs[i], &results[i])
