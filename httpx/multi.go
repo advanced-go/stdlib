@@ -1,47 +1,39 @@
 package httpx
 
 import (
-	"errors"
+	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	"net/http"
 	"sync"
-	"sync/atomic"
 )
 
-type OnResponse func(resp *http.Response, status *core.Status) (failure, proceed bool)
+type RequestItem struct {
+	Id      string
+	Request *http.Request
+}
 
-func MultiExchange(reqs []*http.Request, handler OnResponse) ([]core.ExchangeResult, *core.Status) {
+type OnResponse func(item RequestItem, resp *http.Response, status *core.Status) (proceed bool)
+
+func MultiExchange(reqs []RequestItem, handler OnResponse) {
 	cnt := len(reqs)
-	if cnt == 0 {
-		return nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: no requests were found to process"))
+	if cnt == 0 || handler == nil {
+		fmt.Printf("%v", "error: no requests were found to process, or OnResponse handler is nil")
+		return //nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: no requests were found to process"))
 	}
 	var wg sync.WaitGroup
-	failure := atomic.Bool{}
 
-	results := make([]core.ExchangeResult, cnt)
 	for i := 0; i < cnt; i++ {
-		if reqs[i] == nil {
+		if reqs[i].Request == nil {
 			continue
 		}
 		wg.Add(1)
-		go func(req *http.Request, res *core.ExchangeResult) {
+		go func(item RequestItem) {
 			defer wg.Done()
-			res.Resp, res.Status = Exchange(req)
-			if handler != nil {
-				fail, proceed := handler(res.Resp, res.Status)
-				if fail {
-					res.Failure = true
-					failure.Store(true)
-				}
-				if !proceed {
-					return
-				}
+			resp, status := Exchange(item.Request)
+			if !handler(item, resp, status) {
+				return
 			}
-		}(reqs[i], &results[i])
+		}(reqs[i])
 	}
 	wg.Wait()
-	if failure.Load() {
-		return results, core.NewStatusError(core.StatusExecError, errors.New("error: request failures"))
-	}
-	return results, core.StatusOK()
 }

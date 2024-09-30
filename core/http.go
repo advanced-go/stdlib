@@ -16,12 +16,6 @@ type HttpHandler func(w http.ResponseWriter, r *http.Request)
 
 type HttpExchange func(r *http.Request) (*http.Response, *Status)
 
-type ExchangeResult struct {
-	Failure bool
-	Resp    *http.Response
-	Status  *Status
-}
-
 var (
 	authorityReq *http.Request
 )
