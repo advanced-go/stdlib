@@ -17,6 +17,22 @@ import (
 //	string | *url.URL | []byte | io.Reader | io.ReadCloser
 //}
 
+const (
+	eofError = "EOF"
+)
+
+func decodeStatus(err error) *core.Status {
+	if err == nil || err.Error() == "" {
+		return core.StatusOK()
+	}
+	// If the error is "EOF", then the body was empty. If the error is "unexpected EOF", then the body has content
+	// but the EOF was reached when more JSON content was expected.
+	if err.Error() == eofError {
+		return core.StatusNotFound()
+	}
+	return core.NewStatusError(core.StatusJsonDecodeError, err)
+}
+
 // New - create a new type from JSON content, supporting: string, *url.URL, []byte, io.Reader, io.ReadCloser
 func New[T any](v any, h http.Header) (t T, status *core.Status) {
 	var buf []byte
@@ -34,10 +50,10 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 			return
 		}
 		err := json.Unmarshal(buf, &t)
-		if err != nil {
-			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
-		}
-		return
+		//if err != nil {
+		//	return t, decodeStatus(err)
+		//}
+		return t, decodeStatus(err)
 	case *url.URL:
 		if isStatusURL(ptr.String()) {
 			return t, NewStatusFrom(ptr.String())
@@ -47,20 +63,20 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 			return
 		}
 		err := json.Unmarshal(buf, &t)
-		if err != nil {
-			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
-		}
-		return
+		//if err != nil {
+		//	return t, decodeStatus(err)
+		//}
+		return t, decodeStatus(err)
 	case []byte:
 		buf, status = io2.Decode(ptr, h)
 		if !status.OK() {
 			return
 		}
 		err := json.Unmarshal(buf, &t)
-		if err != nil {
-			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
-		}
-		return
+		//if err != nil {
+		//	return t, decodeStatus(err)
+		//}
+		return t, decodeStatus(err)
 	case io.Reader:
 		reader, status0 := io2.NewEncodingReader(ptr, h)
 		if !status0.OK() {
@@ -68,10 +84,10 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		}
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
-		if err != nil {
-			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
-		}
-		return t, core.StatusOK()
+		//if err != nil {
+		//	return t, decodeStatus(err)
+		//	}
+		return t, decodeStatus(err)
 	case io.ReadCloser:
 		reader, status0 := io2.NewEncodingReader(ptr, h)
 		if !status0.OK() {
@@ -80,10 +96,10 @@ func New[T any](v any, h http.Header) (t T, status *core.Status) {
 		err := json.NewDecoder(reader).Decode(&t)
 		_ = reader.Close()
 		_ = ptr.Close()
-		if err != nil {
-			return t, core.NewStatusError(core.StatusJsonDecodeError, err)
-		}
-		return t, core.StatusOK()
+		//if err != nil {
+		//	return t, decodeStatus(err)
+		//}
+		return t, decodeStatus(err)
 	case *http.Request:
 		return New[T](ptr.Body, h)
 	case *http.Response:
