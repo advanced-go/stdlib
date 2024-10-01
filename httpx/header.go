@@ -29,11 +29,12 @@ func forwardDefaults(dest http.Header, src http.Header) http.Header {
 	if src == nil {
 		return dest
 	}
-	// TO DO : add other default headers
-	dest.Set(XRequestId, src.Get(XRequestId))
-	dest.Set(XRelatesTo, src.Get(XRelatesTo))
+	// TODO : add other default headers
+	dest.Set(core.XRequestId, src.Get(core.XRequestId))
+	dest.Set(core.XRelatesTo, src.Get(core.XRelatesTo))
+	dest.Set(core.XFrom, src.Get(core.XFrom))
 	// Verify
-	dest.Set(core.XTest, src.Get(core.XTest))
+	//dest.Set(core.XTest, src.Get(core.XTest))
 	return dest
 }
 

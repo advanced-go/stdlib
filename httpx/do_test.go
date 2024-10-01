@@ -65,8 +65,8 @@ func ExampleDo_Service_Unavailable() {
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add(XRequestId, requestId)
-	w.Header().Add(XRelatesTo, relatesTo)
+	w.Header().Add(core.XRequestId, requestId)
+	w.Header().Add(core.XRelatesTo, relatesTo)
 	w.WriteHeader(statusCode)
 	w.Write([]byte(testContent))
 }
