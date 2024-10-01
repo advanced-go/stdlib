@@ -12,13 +12,13 @@ type RequestItem struct {
 	Request *http.Request
 }
 
-type OnResponse func(item RequestItem, resp *http.Response, status *core.Status) (proceed bool)
+type OnResponse func(id string, resp *http.Response, status *core.Status) (proceed bool)
 
 func MultiExchange(reqs []RequestItem, handler OnResponse) {
 	cnt := len(reqs)
 	if cnt == 0 || handler == nil {
 		fmt.Printf("%v", "error: no requests were found to process, or OnResponse handler is nil")
-		return //nil, core.NewStatusError(core.StatusInvalidArgument, errors.New("error: no requests were found to process"))
+		return
 	}
 	var wg sync.WaitGroup
 
@@ -30,7 +30,7 @@ func MultiExchange(reqs []RequestItem, handler OnResponse) {
 		go func(item RequestItem) {
 			defer wg.Done()
 			resp, status := Exchange(item.Request)
-			if !handler(item, resp, status) {
+			if !handler(item.Id, resp, status) {
 				return
 			}
 		}(reqs[i])

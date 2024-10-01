@@ -14,9 +14,9 @@ type exchangeResult struct {
 
 var results []exchangeResult
 
-func onResponse(item RequestItem, resp *http.Response, status *core.Status) (proceed bool) {
+func onResponse(id string, resp *http.Response, status *core.Status) (proceed bool) {
 	//fmt.Printf("[req:%v]\n [resp:%v]\n [status:%v]\n", resp.Request, resp, status)
-	fmt.Printf("[id:%v] [status:%v]\n", item.Id, status)
+	fmt.Printf("[id:%v] [status:%v]\n", id, status)
 	results = append(results, exchangeResult{
 		Failure: false,
 		Resp:    resp,
