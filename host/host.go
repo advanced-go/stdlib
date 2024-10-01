@@ -30,9 +30,11 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 		defer cancel()
 		r2 := r.Clone(ctx)
 		start = time.Now().UTC()
+		r2.Header.Set(core.XFrom, HostRoute)
 		resp, status = handler(r2)
 	} else {
 		start = time.Now().UTC()
+		r.Header.Set(core.XFrom, HostRoute)
 		resp, status = handler(r)
 	}
 	if status.Code == http.StatusGatewayTimeout {

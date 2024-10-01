@@ -18,5 +18,6 @@ func ExampleHost() {
 	fmt.Printf("test: hostExchange() -> [resp:%v]\n", r.Result().StatusCode)
 
 	//Output:
-	//fail
+	//test: hostExchange() -> [resp:200]
+
 }
