@@ -1,9 +1,13 @@
 package httpxtest
 
 import (
-	"github.com/advanced-go/stdlib/httpx"
+	"bytes"
+	"errors"
+	"fmt"
+	"github.com/advanced-go/stdlib/core"
+	io2 "github.com/advanced-go/stdlib/io"
 	"net/http"
-	"testing"
+	"os"
 )
 
 /*
@@ -38,6 +42,7 @@ func NewResponse(uri any) (*http.Response, *core.Status) {
 
 */
 
+/*
 func NewResponseTest(uri any, t *testing.T) *http.Response {
 	resp, status := httpx.NewResponseFromUri(uri)
 	if status.OK() {
@@ -45,4 +50,55 @@ func NewResponseTest(uri any, t *testing.T) *http.Response {
 	}
 	t.Errorf("ReadResponse() err = %v", status.Err.Error())
 	return &http.Response{StatusCode: http.StatusTeapot}
+}
+
+
+*/
+
+func writeValues(buf *bytes.Buffer, name string, values []string) {
+	for _, value := range values {
+		buf.WriteString(fmt.Sprintf("%v: %v\n", name, value))
+	}
+}
+
+func writeHeader(buf *bytes.Buffer, resp *http.Response) {
+	for name, values := range resp.Header {
+		writeValues(buf, name, values)
+	}
+}
+
+func WriteResponse(url string, resp *http.Response) *core.Status {
+	if url == "" || resp == nil {
+		return core.NewStatusError(core.StatusInvalidArgument, errors.New("error: url is empty or response is nil"))
+	}
+	var buf bytes.Buffer
+
+	// Write status line
+	buf.WriteString(fmt.Sprintf("%v %v\n", resp.Proto, resp.Status))
+
+	// Write header
+	writeHeader(&buf, resp)
+	buf.WriteString("\n")
+
+	// Write content
+	buf1, status := io2.ReadAll(resp.Body, nil)
+	if !status.OK() {
+		return status
+	}
+	count, err := buf.Write(buf1)
+	if err != nil {
+		return core.NewStatusError(core.StatusIOError, err)
+	}
+	if count != len(buf1) {
+		return core.NewStatusError(core.StatusIOError, errors.New("error: writing bytes"))
+	}
+
+	// Create filename and write file
+	fname := io2.FileName(url)
+	// 0666 is read only
+	err = os.WriteFile(fname, buf.Bytes(), 0777)
+	if err != nil {
+		return core.NewStatusError(core.StatusIOError, err)
+	}
+	return core.StatusOK()
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	io2 "github.com/advanced-go/stdlib/io"
-	json2 "github.com/advanced-go/stdlib/json"
 	"io"
 	"net/http"
 	"reflect"
@@ -91,6 +90,7 @@ func NewResponse(statusCode int, h http.Header, content any) (resp *http.Respons
 	return resp, core.NewStatus(statusCode)
 }
 
+/*
 func NewResponse1[E core.ErrorHandler](statusCode int, h http.Header, content any) (resp *http.Response, status *core.Status) {
 	var e E
 
@@ -136,6 +136,9 @@ func NewResponse1[E core.ErrorHandler](statusCode int, h http.Header, content an
 	}
 	return resp, core.NewStatus(statusCode)
 }
+
+
+*/
 
 func NewVersionResponse(version string) *http.Response {
 	content := fmt.Sprintf(versionFmt, version)
