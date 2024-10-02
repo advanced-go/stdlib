@@ -44,7 +44,7 @@ func Content[T any](body io.Reader) (t T, status *core.Status) {
 			// If the error is "EOF", then the body was empty. If the error is "unexpected EOF", then the body has content
 			// but the EOF was reached when more JSON content was expected.
 			if err.Error() == eofError {
-				status = core.StatusNotFound()
+				status = core.StatusNoContent()
 			} else {
 				status = core.NewStatusError(core.StatusJsonDecodeError, err)
 			}

@@ -70,6 +70,12 @@ var notFoundStatus = func() *Status {
 	return s
 }()
 
+var noContentStatus = func() *Status {
+	s := new(Status)
+	s.Code = http.StatusNoContent
+	return s
+}()
+
 type Status struct {
 	Code      int    `json:"code"`
 	Err       error  `json:"err"`
@@ -90,6 +96,10 @@ func StatusBadRequest() *Status {
 
 func StatusNotFound() *Status {
 	return notFoundStatus
+}
+
+func StatusNoContent() *Status {
+	return noContentStatus
 }
 
 func NewStatus(code int) *Status {
@@ -122,6 +132,10 @@ func (s *Status) Timeout() bool {
 
 func (s *Status) NotFound() bool {
 	return s.Code == http.StatusNotFound
+}
+
+func (s *Status) NoContent() bool {
+	return s.Code == http.StatusNoContent
 }
 
 func (s *Status) StatusCode() int {
@@ -263,6 +277,8 @@ func HttpStatus(code int) string {
 		return "OK"
 	case http.StatusAccepted:
 		return "Accepted"
+	case http.StatusNoContent:
+		return "No Content"
 	case http.StatusBadRequest:
 		return "Bad Request"
 	case http.StatusTeapot:
