@@ -25,18 +25,18 @@ func hostExchange[E core.ErrorHandler](w http.ResponseWriter, r *http.Request, d
 	if from == "" {
 		r.Header.Set(core.XFrom, HostRoute)
 	}
+	r.Header.Set(core.XFrom, HostRoute)
 	if dur > 0 {
 		ctx, cancel := context.WithTimeout(r.Context(), dur)
 		defer cancel()
 		r2 := r.Clone(ctx)
 		start = time.Now().UTC()
-		r2.Header.Set(core.XFrom, HostRoute)
 		resp, status = handler(r2)
 	} else {
 		start = time.Now().UTC()
-		r.Header.Set(core.XFrom, HostRoute)
 		resp, status = handler(r)
 	}
+	resp.Header.Del(core.XRoute)
 	if status.Code == http.StatusGatewayTimeout {
 		controllerCode = access.ControllerTimeout
 	}
