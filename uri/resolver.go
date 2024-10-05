@@ -9,15 +9,15 @@ import (
 )
 
 const (
-	XContentLocationResolver = "X-Content-Location-Resolver"
-	ContentLocationSeparator = "->"
+	XResolver         = "X-Resolver"
+	ResolverSeparator = "->"
 )
 
 func AddResolverContentLocation(h http.Header, path, url string) http.Header {
 	if h == nil {
 		h = make(http.Header)
 	}
-	h.Add(XContentLocationResolver, path+ContentLocationSeparator+url)
+	h.Add(XResolver, path+ResolverSeparator+url)
 	return h
 }
 
@@ -33,7 +33,7 @@ func NewResolver(defaultHost string) *Resolver {
 
 func (r *Resolver) Url(host, authority, path string, query any, h http.Header) string {
 	path1 := BuildPath(authority, path, query)
-	if h != nil && h.Get(XContentLocationResolver) != "" {
+	if h != nil && h.Get(XResolver) != "" {
 		p2 := createUrl(h, path1)
 		if p2 != "" {
 			return p2
@@ -125,8 +125,8 @@ func createUrl(h http.Header, path string) string {
 	if h == nil || path == "" {
 		return ""
 	}
-	prefix := path + ContentLocationSeparator
-	if str, ok := h[XContentLocationResolver]; ok && str[0] != "" {
+	prefix := path + ResolverSeparator
+	if str, ok := h[XResolver]; ok && str[0] != "" {
 		for _, s := range str {
 			if s == "" {
 				continue
@@ -143,7 +143,7 @@ func createUrl(h http.Header, path string) string {
 
 func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 	path1 := BuildPath("",path, query)
-	if h != nil && h.Get(XContentLocationResolver) != "" {
+	if h != nil && h.Get(XResolver) != "" {
 		p2 := createUrl(h, path1) //h.Get(path1)
 		if p2 != "" {
 			return p2
@@ -157,7 +157,7 @@ func (r *Resolver) Url(host, path string, query any, h http.Header) string {
 
 func (r *Resolver) UrlWithAuthority(host, authority, version, resource string, query any, h http.Header) string {
 	path := BuildPath(authority, version, resource, query)
-	if h != nil && h.Get(XContentLocationResolver) != "" {
+	if h != nil && h.Get(XResolver) != "" {
 		p2 := createUrl(h, path) //h.Get(path)
 		if p2 != "" {
 			return p2

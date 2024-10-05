@@ -167,7 +167,7 @@ func ExampleCreateUrl() {
 
 	path := ""
 	h := make(http.Header)
-	h.Add(XContentLocationResolver, path)
+	h.Add(XResolver, path)
 	uri := createUrl(h, "")
 	fmt.Printf("test: createUrl(empty) -> [%v]\n", uri)
 
