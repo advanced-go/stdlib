@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
+	"github.com/advanced-go/stdlib/httpx"
 	io2 "github.com/advanced-go/stdlib/io"
 	"net/http"
 	"os"
+	"testing"
 )
 
 /*
@@ -42,7 +44,7 @@ func NewResponse(uri any) (*http.Response, *core.Status) {
 
 */
 
-/*
+// NewResponseTest - used from test packages
 func NewResponseTest(uri any, t *testing.T) *http.Response {
 	resp, status := httpx.NewResponseFromUri(uri)
 	if status.OK() {
@@ -51,9 +53,6 @@ func NewResponseTest(uri any, t *testing.T) *http.Response {
 	t.Errorf("ReadResponse() err = %v", status.Err.Error())
 	return &http.Response{StatusCode: http.StatusTeapot}
 }
-
-
-*/
 
 func writeValues(buf *bytes.Buffer, name string, values []string) {
 	for _, value := range values {
