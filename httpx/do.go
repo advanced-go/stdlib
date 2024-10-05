@@ -62,6 +62,8 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 
 	resp, err = Client.Do(req)
 	if err != nil {
+		//if urlErr, ok := any(err).(*url.Error); ok {
+		//}
 		// catch connectivity error, even with a valid URL
 		if resp == nil {
 			resp = serverErrorResponse()

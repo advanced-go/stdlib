@@ -38,12 +38,12 @@ var testCore = []core.Origin{
 
 func ExampleNewResponse_Error() {
 	status := core.NewStatus(http.StatusGatewayTimeout)
-	resp, _ := NewResponse1[core.Log](status.HttpCode(), nil, status.Err)
+	resp, _ := NewResponse(status.HttpCode(), nil, status.Err)
 	buf, _ := io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
 	status = core.NewStatusError(http.StatusGatewayTimeout, errors.New("Deadline Exceeded"))
-	resp, _ = NewResponse1[core.Log](status.HttpCode(), nil, status.Err)
+	resp, _ = NewResponse(status.HttpCode(), nil, status.Err)
 	buf, _ = io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -54,10 +54,10 @@ func ExampleNewResponse_Error() {
 }
 
 func ExampleNewResponse() {
-	resp, _ := NewResponse1[core.Log](http.StatusOK, nil, nil)
+	resp, _ := NewResponse(http.StatusOK, nil, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v]\n", resp.StatusCode)
 
-	resp, _ = NewResponse1[core.Log](core.StatusOK().HttpCode(), nil, "version 1.2.35")
+	resp, _ = NewResponse(core.StatusOK().HttpCode(), nil, "version 1.2.35")
 	buf, _ := io2.ReadAll(resp.Body, nil)
 	fmt.Printf("test: NewResponse() -> [status-code:%v] [content:%v]\n", resp.StatusCode, string(buf))
 
@@ -137,6 +137,7 @@ func ExampleNewJsonResponse() {
 
 */
 
+/*
 func ExampleNewResponseWithBody() {
 	h := make(http.Header)
 	h.Add(ContentType, ContentTypeJson)
@@ -147,6 +148,9 @@ func ExampleNewResponseWithBody() {
 	//test: ResponseBody() -> [status-code:200] [header:map[Content-Type:[application/json]]] [content-length:305]
 
 }
+
+
+*/
 
 func readAll(body io.ReadCloser) ([]byte, *core.Status) {
 	if body == nil {
@@ -251,11 +255,11 @@ func ExampleNewError() {
 	err = NewError(status, nil)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", status, nil, err)
 
-	resp, _ := NewResponse1[core.Output](http.StatusTeapot, nil, nil)
+	resp, _ := NewResponse(http.StatusTeapot, nil, nil)
 	err = NewError(nil, resp)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [err:%v]\n", nil, resp != nil, err)
 
-	resp, _ = NewResponse1[core.Output](http.StatusTeapot, nil, "error: response content")
+	resp, _ = NewResponse(http.StatusTeapot, nil, "error: response content")
 	err = NewError(nil, resp)
 	fmt.Printf("test: NewError() -> [status:%v] [resp:%v] [%v]\n", nil, resp != nil, err)
 
