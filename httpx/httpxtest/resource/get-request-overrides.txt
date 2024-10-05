@@ -1,11 +1,11 @@
 GET /advanced-go/example-domain/activity/entry?v=v2 HTTP/1.1
 Host: localhost:8080
 Content-Location: github/advanced-go/example-domain/activity/EntryV1
-X-Content-Location-Exchange: request->file:///f:/resource/request.json
-X-Content-Location-Exchange: response->file:///f:/resource/response.json
-X-Content-Location-Exchange: status->file:///f:/resource/status.json
-X-Content-Location-Resolver: github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/info.json
-X-Content-Location-Resolver: github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/test.json
+X-Exchange-Resolver: request->file:///f:/resource/request.json
+X-Exchange-Resolver: response->file:///f:/resource/response.json
+X-Exchange-Resolver: status->file:///f:/resource/status.json
+X-Resolver: github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/info.json
+X-Resolver: github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/test.json
 X-Content-Location-Empty:
 Connection: close
 User-Agent: Fake
