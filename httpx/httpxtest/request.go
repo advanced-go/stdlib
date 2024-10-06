@@ -66,7 +66,7 @@ func createExchange(h http.Header) *core.ExchangeOverride {
 	}
 	var ex *core.ExchangeOverride
 
-	if str, ok := h[httpx.ContentLocationExchange]; ok && str[0] != "" {
+	if str, ok := h[httpx.ExchangeOverride]; ok && str[0] != "" {
 		for _, s := range str {
 			if s == "" {
 				continue
@@ -74,17 +74,17 @@ func createExchange(h http.Header) *core.ExchangeOverride {
 			if ex == nil {
 				ex = core.NewExchangeOverrideEmpty()
 			}
-			prefix := core.ExchangeRequestKey + httpx.ContentLocationSeparator
+			prefix := core.ExchangeRequestKey + httpx.ResolverSeparator
 			if strings.HasPrefix(s, prefix) {
 				ex.SetRequest(s[len(prefix):])
 				continue
 			}
-			prefix = core.ExchangeResponseKey + httpx.ContentLocationSeparator
+			prefix = core.ExchangeResponseKey + httpx.ResolverSeparator
 			if strings.HasPrefix(s, prefix) {
 				ex.SetResponse(s[len(prefix):])
 				continue
 			}
-			prefix = core.ExchangeStatusKey + httpx.ContentLocationSeparator
+			prefix = core.ExchangeStatusKey + httpx.ResolverSeparator
 			if strings.HasPrefix(s, prefix) {
 				ex.SetStatus(s[len(prefix):])
 			}

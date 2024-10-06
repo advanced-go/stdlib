@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	XResolver         = "X-Resolver"
+	XContentResolver  = "X-Content-Resolver"
 	ResolverSeparator = "->"
 )
 
@@ -17,7 +17,7 @@ func AddResolverContentLocation(h http.Header, path, url string) http.Header {
 	if h == nil {
 		h = make(http.Header)
 	}
-	h.Add(XResolver, path+ResolverSeparator+url)
+	h.Add(XContentResolver, path+ResolverSeparator+url)
 	return h
 }
 
@@ -33,7 +33,7 @@ func NewResolver(defaultHost string) *Resolver {
 
 func (r *Resolver) Url(host, authority, path string, query any, h http.Header) string {
 	path1 := BuildPath(authority, path, query)
-	if h != nil && h.Get(XResolver) != "" {
+	if h != nil && h.Get(XContentResolver) != "" {
 		p2 := createUrl(h, path1)
 		if p2 != "" {
 			return p2
@@ -126,7 +126,7 @@ func createUrl(h http.Header, path string) string {
 		return ""
 	}
 	prefix := path + ResolverSeparator
-	if str, ok := h[XResolver]; ok && str[0] != "" {
+	if str, ok := h[XContentResolver]; ok && str[0] != "" {
 		for _, s := range str {
 			if s == "" {
 				continue

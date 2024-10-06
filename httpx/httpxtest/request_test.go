@@ -104,7 +104,7 @@ func ExampleNewRequest_Overrides() {
 	s := "file://[cwd]/resource/get-request-overrides.txt"
 	req, err := NewRequest(parseRaw(s))
 
-	fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v]\n", s, err, req.Header[httpx.ContentLocationResolver])
+	fmt.Printf("test: NewRequest(%v) -> [status:%v] [header:%v]\n", s, err, req.Header[httpx.ContentResolver])
 
 	//Output:
 	//test: NewRequest(file://[cwd]/resource/get-request-overrides.txt) -> [status:OK] [header:[github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/info.json github/advanced-go/observation:v1/timeseries/egress/entry?region=*->file:///f:/resource/test.json]]
@@ -126,15 +126,15 @@ func ExampleNewRequest_Overrides_Empty() {
 func ExampleCreateExchange() {
 	h := make(http.Header)
 
-	h.Add(httpx.ContentLocationExchange, "")
+	h.Add(httpx.ExchangeOverride, "")
 
 	ex := createExchange(h)
 	fmt.Printf("test: createExchange() -> [ex:%v]\n", ex)
 
 	h = make(http.Header)
-	h.Add(httpx.ContentLocationExchange, "request->file:///f:/resource/request.json")
-	h.Add(httpx.ContentLocationExchange, "response->file:///f:/resource/response.json")
-	h.Add(httpx.ContentLocationExchange, "status->file:///f:/resource/status.json")
+	h.Add(httpx.ExchangeOverride, "request->file:///f:/resource/request.json")
+	h.Add(httpx.ExchangeOverride, "response->file:///f:/resource/response.json")
+	h.Add(httpx.ExchangeOverride, "status->file:///f:/resource/status.json")
 
 	ex = createExchange(h)
 	fmt.Printf("test: createExchange() -> [ex:%v]\n", ex)
