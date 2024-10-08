@@ -12,7 +12,7 @@ type RequestItem struct {
 	Request *http.Request
 }
 
-type OnResponse func(id string, resp *http.Response, status *core.Status) (proceed bool)
+type OnResponse func(id string, resp *http.Response, status *core.Status)
 
 func MultiExchange(reqs []RequestItem, handler OnResponse) {
 	cnt := len(reqs)
@@ -30,9 +30,7 @@ func MultiExchange(reqs []RequestItem, handler OnResponse) {
 		go func(item RequestItem) {
 			defer wg.Done()
 			resp, status := Exchange(item.Request)
-			if !handler(item.Id, resp, status) {
-				return
-			}
+			handler(item.Id, resp, status)
 		}(reqs[i])
 	}
 	wg.Wait()

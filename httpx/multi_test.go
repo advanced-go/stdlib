@@ -14,7 +14,7 @@ type exchangeResult struct {
 
 var results []exchangeResult
 
-func onResponse(id string, resp *http.Response, status *core.Status) (proceed bool) {
+func onResponse(id string, resp *http.Response, status *core.Status) {
 	//fmt.Printf("[req:%v]\n [resp:%v]\n [status:%v]\n", resp.Request, resp, status)
 	fmt.Printf("[id:%v] [status:%v]\n", id, status)
 	results = append(results, exchangeResult{
@@ -22,7 +22,7 @@ func onResponse(id string, resp *http.Response, status *core.Status) (proceed bo
 		Resp:    resp,
 		Status:  status,
 	})
-	return true
+	//return true
 }
 
 func ExampleMultiExchange() {
