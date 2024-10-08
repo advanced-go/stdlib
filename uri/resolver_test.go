@@ -171,8 +171,8 @@ func ExampleCreateUrl() {
 	uri := createUrl(h, "")
 	fmt.Printf("test: createUrl(empty) -> [%v]\n", uri)
 
-	h = AddResolverContentLocation(nil, path1, url1)
-	AddResolverContentLocation(h, path2, url2)
+	h = AddResolverEntry(nil, path1, url1)
+	AddResolverEntry(h, path2, url2)
 	uri = createUrl(h, path1)
 	fmt.Printf("test: createUrl(\"%v\") -> %v\n", path1, uri)
 
