@@ -34,7 +34,7 @@ func ExampleDo_ServiceUnavailable_Uri() {
 		resp != nil, status.Code, status.Err, resp.Header.Get("content-type"), resp.Body != nil)
 
 	//Output:
-	//test: Do(req) -> [resp:true] [statusCode:503] [errs:<nil>] [content-type:text/html] [body:true]
+	//test: Do(req) -> [resp:true] [statusCode:503] [errs:Service Unavailable] [content-type:text/html] [body:true]
 
 }
 
@@ -60,7 +60,7 @@ func ExampleDo_Service_Unavailable() {
 	fmt.Printf("test: Do() -> [status-code:%v] [status:%v]\n", resp.StatusCode, status)
 
 	//Output:
-	//test: Do() -> [status-code:503] [status:Service Unavailable]
+	//test: Do() -> [status-code:503] [status:Service Unavailable [Service Unavailable]]
 
 }
 

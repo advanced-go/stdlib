@@ -56,7 +56,7 @@ func Do(req *http.Request) (resp *http.Response, status *core.Status) {
 		if !status1.OK() {
 			return resp1, status1.AddLocation()
 		}
-		return resp1, core.NewStatus(resp1.StatusCode)
+		return resp1, fileSchemeStatus(resp1)
 	}
 	var err error
 
@@ -82,4 +82,15 @@ func serverErrorResponse() *http.Response {
 	resp.StatusCode = http.StatusInternalServerError
 	resp.Status = internalError
 	return resp
+}
+
+func fileSchemeStatus(resp *http.Response) *core.Status {
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return core.StatusOK()
+	case http.StatusNotFound:
+		return core.StatusNotFound()
+	default:
+		return core.NewStatusError(resp.StatusCode, errors.New(core.HttpStatus(resp.StatusCode)))
+	}
 }
